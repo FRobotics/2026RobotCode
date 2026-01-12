@@ -1,0 +1,28 @@
+Adding an automatic deploy directory to LabVIEW project
+-------------------------------------------------------
+
+1. Open an existing LabVIEW robot project.
+
+2. Create a physical sub-directory "Deploy" under the main project directory.
+
+3. Add the "Deploy" directory to the project as an auto-populating folder.
+
+4. Right click on the build specification, "FRC Robot Boot-up Deployment" and select properties.
+
+5. Select "Source Files" tab.  Under "Project Files" tab, highlight "Deploy".  Press the "right arrow" next to the "Always Include" section to add this directory to that section.
+(picture)
+
+6. Select "Destinations" tab.  Press "Plus" to add a new destination.  Fill in the dialog as follows.  Destination Label "DeployDirectory" (no quotes), Destination path "/home/lvuser/natinst/LabVIEW Data" (no quotes, case MUST match), Destination type "Directory", Preserve disk heirarchy "unchecked"
+
+7. Select "Source FIle Settings" tab.  Under the Project Files section highlight "Deploy".  On the right side, "Inclusion Type" should read "Always Include".  Check "Set Destination for all contained items" box and select "DeployDirectory" underneath the check box.  
+
+8. Press "Ok" to close the build specification properties.
+
+9. Save the project.
+
+10. To build and deploy. 
+	a. Right click on build specification and click on "Build"
+	b. After build completes, and while connected to the robot, right clic on
+		build specification and click "Run as startup".  As part of this
+		deploy the files in the "Deploy" directory will be copied to the robot.
+		

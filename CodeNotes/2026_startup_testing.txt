@@ -1,0 +1,119 @@
+FRC 2025 Team 4150 startup and testing notes / to do list
+=============================================
+
+==========
+Radios
+==========
+ - configure with newest firmware
+ - configure a radio for the driver station.
+
+==========
+Spark Motor Controllers
+==========
+ - upload firmware
+ - set to factory defaults
+ - pick correct motor type
+ - set CAN ID
+
+==========
+CanCoders
+==========
+ - update firmware
+ - assign CAN IDs
+ - read 0 position angle
+
+
+==========
+Drive
+==========
+ - Read zero position of CanCoders
+	- set in begin
+ - Measure horiz and vert distance between center of wheels
+	- Set kinematics in begin
+ - Determine which X,Y,Z IMU correspond to Roll, Pitch, Yaw.
+	- Update DriveExecReadSensors
+ - Verify operation of spin control with drive off the ground.
+ - Verify distance driven after drive works..
+	- If off, correct in drive begin.
+
+==========
+Climb
+==========
+ - CLIMB LOGIC needs work
+	- can't just or all the limit switches together to set cancel
+	- don't use sensor position for pull or reach.  
+	- REST cmd is probably not needed.  
+ - verify operation of limit switches.
+	- they engage
+	- they are labeled and used correctly.
+ - verify current limit for NEO 550
+	https://motors.vex.com/other-motors/neo550
+	- Appears max current should be set between 25 and 30 amps.
+
+ - set motor output to be low for both directions ( +/- 0.2 )
+ - verify motor direction (+ = pull up)
+ - reset motor output as needed.
+ - verify climb works.
+ - verify what motor encoder reads when extended and pulled in.
+	(add a little to each and use as virtual limit switches.)
+
+==========
+Outer Elevator
+==========
+ - Verify limit switches
+ - Verify and scale encoder
+ - Verify direction of motor
+ - Determine and set values for setpoints
+ - Set motor outputs to be small
+	- set control max output
+ - Set elevator to middle of range.
+ - Test, ......
+
+
+==========
+Inner Elevator
+==========
+ - Verify limit switches
+ - Verify and scale encoder
+ - Verify direction of motor
+ - Determine and set values for setpoints
+ - Set motor outputs to be small
+	- set control max output
+ - Set elevator to middle of range.
+ - Ensure that lower limit of setpoint is set based on wrist position!!!!
+ - Test, ......
+
+
+==========
+Intake
+==========
+ - Verify operation of Coral sensor
+ - Verify operation of Algae sensor
+ - Test Get Coral (don't feed coral)
+ - Test Cancel
+ - Test Get Coral
+ - Test Deliver Coral
+ - Test Get Algae
+ - Test Deliver Algae
+ - Update motor outputs for each action based on testing.
+
+==========
+Wrist
+==========
+ - WRIST logic needs work.
+	- Make wrist ExecuteLogic VI.  (99% of Execute)
+	- Add motor output to Execute
+	- Add cmds
+	- Add dash write (network)
+	- Add dash read (if there is going to be dash tuning params)
+ - Verify operation of abs encoder
+ - Determine angle offset between raw encoder reading and desired angle
+	- update code
+ - Verify direction of motor.
+	- reverse output if backwards.
+ - Verify minimum allowed position based on inner elevator height.
+	- inner elevator height has to work correctly first...
+	- update if not valid.
+ - Review initial tuning - set motor output to be slow to start.
+ - Look at force needed to keep wrist at zero angle.  
+	- Set gravity constant.

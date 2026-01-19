@@ -22,9 +22,9 @@ public class SwerveTeleop {
     public static final double motorOffsetX=11.5; 
     public static final double motorOffsetY=10.5;
     //measured in feet
-    private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
-    private static final double circumfrence=2*Math.PI*motorOffsetTotal;
-    private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
+   // private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
+    //private static final double circumfrence=2*Math.PI*motorOffsetTotal;
+    //private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
     // true is field orient false is robot orient
     private static boolean orient;
     private static double exeTime=0;

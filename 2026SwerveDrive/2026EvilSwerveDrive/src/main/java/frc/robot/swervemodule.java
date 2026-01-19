@@ -5,12 +5,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.CAN;
+//import edu.wpi.first.wpilibj.CAN;
 import Lib4150.Lib4150PositionControl;
 import edu.wpi.first.math.geometry.Rotation2d;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig;
+//import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -18,11 +18,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
+//import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+//import com.ctre.phoenix6.configs.CANcoderConfiguration;
+//import com.ctre.phoenix6.configs.CANcoderConfigurator;
+//import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -35,10 +35,9 @@ public class swervemodule {
     private int driveid = 0;
     private int spinid = 0;
     private int spinEnc = 0;
-    private double magOffset = 0.0;
     private Translation2d moduleoffset;
-    private double spinPosRad = 0.0;
-    private double driveSpeedMPS = 0.0;
+    //private double spinPosRad = 0.0;
+    //private double driveSpeedMPS = 0.0;
     private SparkMax driveMotor;
     private SparkMax spinMotor;
     private Lib4150PositionControl spinPositionControl;
@@ -49,6 +48,7 @@ public class swervemodule {
     private double locSpeedActual = 0.0;
     private double locDistanceActual = 0.0;
     private int spinAbsEncoderCANid = 0;
+
     private double absEncoderOffset = 0.0;
     private double actualSpinAngleRad = 0.0;
     private SwerveModulePosition modulePosition = new SwerveModulePosition();
@@ -60,7 +60,7 @@ public class swervemodule {
         driveid = paradriveid;
         spinid = paraspinid;
         spinEnc = paraspinEnc;
-        magOffset = paramagOffset;
+        absEncoderOffset = paramagOffset;
 
         moduleoffset = new Translation2d(xOff, yOff);
         driveMotor = new SparkMax(driveid,MotorType.kBrushless);
@@ -77,18 +77,22 @@ public class swervemodule {
 
         //position and velocity conversion
         //convert from rotations to feet
-        final double driveDistFactor = 0.143697;
+        //3.705 in diameter * pi / 12 in to feet / 6.75 gear ratio
+        final double driveDistFactor = 0.143699;
         driveConfig.encoder.positionConversionFactor(driveDistFactor);
-        driveConfig.encoder.velocityConversionFactor(driveDistFactor);
+        driveConfig.encoder.velocityConversionFactor(driveDistFactor/60.0);
 
-        final double spinDistFactor = 1.0/360.0;
+                final double spinDistFactor = 1.0/360.0;
         spinConfig.encoder.positionConversionFactor(spinDistFactor);
         spinConfig.encoder.velocityConversionFactor(spinDistFactor/60.0);
 
         driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         spinMotor.configure(spinConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
+
+         
         spinAbsEncoder = new CANcoder(spinEnc);
+        /* 
         CANcoderConfiguration absEncoderConfig = new CANcoderConfiguration();
         absEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         absEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
@@ -99,13 +103,17 @@ public class swervemodule {
         spinMagConfig.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         spinMagConfig.AbsoluteSensorDiscontinuityPoint = 0.5;
         spinMagConfig.MagnetOffset = Units.degreesToRotations(absEncoderOffset);
-
+        */
+        // getting config but not applying it
+        
+        
         // (Error Deadband,error threshhold )
         spinPositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 0.005, 0.35, 0.8, 1.0e-5, false, true);
 
         drivFeedforward = new SimpleMotorFeedforward (0.0, 0.07645406, 0.0);
-        drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
-
+        //drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
+        drivePID = new PIDController (0.07645406*.5, 0, 0);
+        
     }
 
     public Translation2d getModuleLocation() {
@@ -115,10 +123,10 @@ public class swervemodule {
     public void ExecuteLogic( SwerveModuleState parmModState, double timeValue ) {
         
         //TODO:Check how encoders actualy output; maybe need to change this.
-
+        this.readSensors();
         
         
-        double currentAngle = absoluteAngle.getAbsolutePosition().getValueAsDouble()*2.0*Math.PI;
+        double currentAngle = actualSpinAngleRad;
         parmModState.optimize(new Rotation2d(currentAngle));
         
         double targetAngle = parmModState.angle.getRadians();
@@ -127,13 +135,13 @@ public class swervemodule {
         
 
         double TargetSpeed = parmModState.speedMetersPerSecond;
-        double ActualSpeed = driveMotor.getEncoder().getVelocity();
+        double ActualSpeed = locSpeedActual;
         double feedForward = drivFeedforward.calculate(TargetSpeed);
         double PIDoutput = drivePID.calculate(ActualSpeed, TargetSpeed);
         double MotorDemand = MathUtil.clamp(feedForward+PIDoutput, -1.0, 1.0);
         driveMotor.set(MotorDemand);
         
-        this.readSensors();
+        
 
     }
 
@@ -142,7 +150,7 @@ public class swervemodule {
         //Reads current drive speed
         RelativeEncoder driveEncoder = driveMotor.getEncoder();
         locDistanceActual = Units.feetToMeters(driveEncoder.getPosition()); //double check unit conversion
-        locSpeedActual = Units.feetToMeters(driveEncoder.getVelocity());      
+        locSpeedActual = Units.feetToMeters(driveEncoder.getVelocity());      //METERS
         //Reads absolute encoder
         StatusSignal<Angle> absolutepositioSignal = spinAbsEncoder.getAbsolutePosition();
         actualSpinAngleRad = MathUtil.angleModulus(Units.rotationsToRadians(absolutepositioSignal.getValueAsDouble()));

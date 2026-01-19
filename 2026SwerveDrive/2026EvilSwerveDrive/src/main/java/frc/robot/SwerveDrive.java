@@ -4,6 +4,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.SPI;
 
 public class SwerveDrive {
     static private swervemodule module1;
@@ -13,16 +15,22 @@ public class SwerveDrive {
     static private ChassisSpeeds locSpeedTarget = new ChassisSpeeds();
     static private ChassisSpeeds locSpeedActual = new ChassisSpeeds();
     static public SwerveDriveKinematics publicDriveKinematics;
+    static private ADIS16470_IMU swerveGyro;
+    static private double gyroYawDeg = 0.0;
+    static private double gyroRollDeg = 0.0;
+    static private double gyroPitchDeg = 0.0;
+    static private boolean gryoConnected = false;
+
 
     private SwerveDrive (){
 
     }
     static public void SwerveInit(){    
         //module1 is left front, module2 is right front, module3 is left rear, module4 is right rear
-        module1=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22, 0.0);
-        module2=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32, 0.0);
-        module3=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 40, 41, 42, 0.0);
-        module4=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 50, 51, 52, 0.0);
+        module1=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22, 0.0);
+        module2=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32, 0.0);
+        module3=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 40, 41, 42, 0.0);
+        module4=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 50, 51, 52, 0.0);
 
         //init kinematics
         publicDriveKinematics = new SwerveDriveKinematics(
@@ -31,8 +39,28 @@ public class SwerveDrive {
             module3.getModuleLocation(),
             module4.getModuleLocation()  );
 
+        //init gyro
+        swerveGyro = new ADIS16470_IMU(ADIS16470_IMU.IMUAxis.kX, ADIS16470_IMU.IMUAxis.kY , ADIS16470_IMU.IMUAxis.kZ, SPI.Port.kOnboardCS0, ADIS16470_IMU.CalibrationTime._8s );
+        gyroRollDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
+        gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
+        gyroPitchDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
+        gryoConnected = swerveGyro.isConnected();
+        
         
     }
+
+    static public double getPitch(){
+        return gyroPitchDeg;
+    }
+
+    static public double getYaw(){
+        return gyroYawDeg;
+    }
+
+    static public double getRoll(){
+        return gyroRollDeg;
+    }
+
     static public void SwerveExec(double timeValue){
         //-------calc swerve module states from chassis speed
         SwerveModuleState[] desiredModStates = publicDriveKinematics.toSwerveModuleStates( locSpeedTarget);

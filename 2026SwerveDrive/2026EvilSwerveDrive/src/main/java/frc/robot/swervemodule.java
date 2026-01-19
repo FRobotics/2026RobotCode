@@ -88,7 +88,7 @@ public class swervemodule {
         driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         spinMotor.configure(spinConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        spinAbsEncoder = new CANcoder(spinAbsEncoderCANid);
+        spinAbsEncoder = new CANcoder(spinEnc);
         CANcoderConfiguration absEncoderConfig = new CANcoderConfiguration();
         absEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         absEncoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
@@ -115,6 +115,8 @@ public class swervemodule {
     public void ExecuteLogic( SwerveModuleState parmModState, double timeValue ) {
         
         //TODO:Check how encoders actualy output; maybe need to change this.
+
+        
         
         double currentAngle = absoluteAngle.getAbsolutePosition().getValueAsDouble()*2.0*Math.PI;
         parmModState.optimize(new Rotation2d(currentAngle));
@@ -130,6 +132,8 @@ public class swervemodule {
         double PIDoutput = drivePID.calculate(ActualSpeed, TargetSpeed);
         double MotorDemand = MathUtil.clamp(feedForward+PIDoutput, -1.0, 1.0);
         driveMotor.set(MotorDemand);
+        
+        this.readSensors();
 
     }
 

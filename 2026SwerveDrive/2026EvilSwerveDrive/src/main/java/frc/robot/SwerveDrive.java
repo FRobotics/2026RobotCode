@@ -19,8 +19,8 @@ public class SwerveDrive {
     }
     static public void SwerveInit(){    
         //module1 is left front, module2 is right front, module3 is left rear, module4 is right rear
-        module1=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22, 0.0);
-        module2=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32, 0.0);
+        module1=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22, 0.0);
+        module2=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32, 0.0);
         module3=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 40, 41, 42, 0.0);
         module4=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 50, 51, 52, 0.0);
 

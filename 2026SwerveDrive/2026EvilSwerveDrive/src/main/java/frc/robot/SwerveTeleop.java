@@ -19,8 +19,8 @@ public class SwerveTeleop {
     public static final int maxLinearSpeed = 13; // measured in fps
     public static final int maxRotSpeed = 360; //measured in degrees
     //measured in inches
-    public static final double motorOffsetX=14; 
-    public static final double motorOffsetY=12;
+    public static final double motorOffsetX=11.5; 
+    public static final double motorOffsetY=10.5;
     //measured in feet
     private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
     private static final double circumfrence=2*Math.PI*motorOffsetTotal;

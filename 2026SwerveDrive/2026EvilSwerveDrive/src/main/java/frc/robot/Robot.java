@@ -72,11 +72,18 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    SwerveDrive.SwerveInit();
+    SwerveTeleop.init();
+
+  }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    SwerveDrive.SwerveExec(kDefaultPeriod);
+    SwerveTeleop.SwerveExecute();
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override

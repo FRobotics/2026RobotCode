@@ -22,7 +22,7 @@ public class SwerveOdometry {
         double execElapsedTime;
 
         execElapsedTime=getElasped*1000;
-// todo: currTimeSecs, gyroangle(Rotation2D), wheelPosition(serveModukePosition{})
+// TODO: currTimeSecs, gyroangle(Rotation2D), wheelPosition(serveModukePosition{})
         locPoseEst.updateWithTime(execElapsedTime, null, null);
         
     }

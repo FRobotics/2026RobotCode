@@ -53,7 +53,7 @@ public class SwerveDrive {
         gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
         gyroPitchDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
         gryoConnected = swerveGyro.isConnected();
-
+        
         // Network Table
         DoubleSupplier gyroRoll = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
         DoubleSupplier gyroYaw = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
@@ -68,7 +68,8 @@ public class SwerveDrive {
         sender.addItemBoolean("Connected", gyroConnect);
         sender.addItemString("Speed Target", speedTarget);
 
-        
+
+
         
     }
 

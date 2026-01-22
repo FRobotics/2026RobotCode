@@ -27,6 +27,15 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    SwerveDrive.SwerveInit();
+    SwerveTeleop.init();
+    Climb.init();
+    TurretLauncher.init();
+    evilIntakesystem.init();
+    FreakyAgitatorSystem.init();
+
+
+
   }
 
   /**
@@ -37,7 +46,12 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+
+    SwerveDrive.SwerveExec(kDefaultPeriod);
+    Climb.executeLogic();
+
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -73,16 +87,14 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    SwerveDrive.SwerveInit();
-    SwerveTeleop.init();
 
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SwerveDrive.SwerveExec(kDefaultPeriod);
     SwerveTeleop.SwerveExecute();
+
   }
 
   /** This function is called once when the robot is disabled. */

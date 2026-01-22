@@ -1,8 +1,10 @@
 package frc.robot;
 
+import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -10,9 +12,25 @@ public class SwerveOdometry {
 
     
     static private SwerveDrivePoseEstimator locPoseEst;
-     
+    static private Lib4150NetTableSystemSend sender = new Lib4150NetTableSystemSend("Odometry");
+    static private double xpos = 0.0;
+    static private double ypos = 0.0;
+    static private double rotpos = 0.0;
+
     static void init(){
-       
+        Pose2d initPose = new Pose2d(0.0,0.0,new Rotation2d(0.0));
+        locPoseEst = new SwerveDrivePoseEstimator(
+                        SwerveDrive.publicDriveKinematics, 
+                        new Rotation2d(SwerveDrive.getYaw()), 
+                        null, 
+                        initPose );
+
+
+        sender.addItemDouble("X position", SwerveOdometry::getxposition);
+        sender.addItemDouble("Y position", SwerveOdometry::getyposition);
+        sender.addItemDouble("Rotation position", SwerveOdometry::getrotposition);
+
+
     }
     
     static void execute(){
@@ -24,6 +42,9 @@ public class SwerveOdometry {
         execElapsedTime=getElasped*1000;
 // TODO: currTimeSecs, gyroangle(Rotation2D), wheelPosition(serveModukePosition{})
         locPoseEst.updateWithTime(execElapsedTime, null, null);
+        xpos = locPoseEst.getEstimatedPosition().getX();
+        ypos = locPoseEst.getEstimatedPosition().getY();
+        rotpos = locPoseEst.getEstimatedPosition().getRotation().getRadians();
         
     }
 
@@ -36,19 +57,16 @@ public class SwerveOdometry {
     }
 
     static double getrotposition(){
-        locPoseEst.getEstimatedPosition().getRotation().getRadians();
-        return(0.0);
+        return(rotpos);
     }
 
     static double getxposition(){
-        locPoseEst.getEstimatedPosition().getX();
         //getEstimatedPosition is from Pose2D
-        return(0.0);
+        return(xpos);
     }
 
     static double getyposition(){
-        locPoseEst.getEstimatedPosition().getY();
-        return(0.0);
+        return(ypos);
     }
 
     static void setstartingpose(double xPos, double yPos, double rotRadians){

@@ -2,9 +2,9 @@ package frc.robot;
 
 import Lib4150.Lib4150NetTableSystemSend;
 
-public class evilIntakesystem {
+public class AgitatorSystem {
 
-    private evilIntakesystem(){}
+    private AgitatorSystem(){}
 
     // contants
 
@@ -17,9 +17,9 @@ public class evilIntakesystem {
         // open motors
         // set system state
         // init network table
-        locNTSend = new Lib4150NetTableSystemSend("EvilIntakeSystem");
+        locNTSend = new Lib4150NetTableSystemSend("FreakyAgitatorSystem");
 
-        locNTSend.addItemBoolean("IntakeIsExtended", evilIntakesystem::getIntakeExtended);
+        locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
         
         locNTSend.triggerUpdate();
         
@@ -30,7 +30,7 @@ public class evilIntakesystem {
         locNTSend.triggerUpdate();
     }
 
-    public static boolean getIntakeExtended() {
+    public static boolean getAgitatorExtended() {
         return locIntakeExtended;
     }
 

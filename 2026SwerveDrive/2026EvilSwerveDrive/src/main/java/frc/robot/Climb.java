@@ -19,7 +19,7 @@ public class Climb {
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("Climb");
 
-        locNTSend.addItemBoolean("ClimbIsExtended", evilIntakesystem::getIntakeExtended);
+        locNTSend.addItemBoolean("ClimbIsExtended", IntakeSystem::getIntakeExtended);
         
         locNTSend.triggerUpdate();
         

@@ -19,7 +19,7 @@ public class TurretLauncher {
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
 
-        locNTSend.addItemBoolean("IntakeIsExtended", evilIntakesystem::getIntakeExtended);
+        locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
         
         locNTSend.triggerUpdate();
         

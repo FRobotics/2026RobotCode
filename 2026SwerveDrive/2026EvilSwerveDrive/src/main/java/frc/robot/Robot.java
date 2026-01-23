@@ -31,8 +31,8 @@ public class Robot extends TimedRobot {
     SwerveTeleop.init();
     Climb.init();
     TurretLauncher.init();
-    evilIntakesystem.init();
-    FreakyAgitatorSystem.init();
+    IntakeSystem.init();
+    AgitatorSystem.init();
 
 
 

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
     TurretLauncher.init();
     IntakeSystem.init();
     AgitatorSystem.init();
+    SwerveOdometry.init();
 
 
 
@@ -48,7 +50,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
 
-    SwerveDrive.SwerveExec(kDefaultPeriod);
+    // double fpgatime = Timer.getFPGATimestamp();
+    SwerveDrive.SwerveExec( kDefaultPeriod);
+    SwerveOdometry.execute();
     Climb.executeLogic();
 
   }

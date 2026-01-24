@@ -17,7 +17,7 @@ public class AgitatorSystem {
         // open motors
         // set system state
         // init network table
-        locNTSend = new Lib4150NetTableSystemSend("FreakyAgitatorSystem");
+        locNTSend = new Lib4150NetTableSystemSend("AgitatorSystem");
 
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
         

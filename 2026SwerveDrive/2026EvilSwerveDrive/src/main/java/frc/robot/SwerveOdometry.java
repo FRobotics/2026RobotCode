@@ -44,6 +44,7 @@ public class SwerveOdometry {
         ypos = locPoseEst.getEstimatedPosition().getY();
         rotpos = locPoseEst.getEstimatedPosition().getRotation().getRadians();
         
+        sender.triggerUpdate();
     }
 
     static double getExecElapsedTimeMilli(){
@@ -76,5 +77,6 @@ public class SwerveOdometry {
         //TODO: change DriveSwerveSystem.getCurrentFieldRotation, DriveSwerveSystem.getModulePositions, newPose
     }
 
+    
 }
 

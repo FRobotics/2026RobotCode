@@ -22,7 +22,7 @@ public class SwerveOdometry {
     static void init(){
         Pose2d initPose = new Pose2d(0.0,0.0,new Rotation2d(0.0));
         locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  null, initPose );
-        swerveOdometry = new SwerveDriveOdometry(SwerveDrive.getKinematics(), new Rotation2d(SwerveDrive.getRoll()), SwerveDrive.getModulePositions(), initPose);
+        swerveOdometry = new SwerveDriveOdometry(SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getRoll()), SwerveDrive.getModulePositions(), initPose);
 
         sender.addItemDouble("X position", SwerveOdometry::getxposition);
         sender.addItemDouble("Y position", SwerveOdometry::getyposition);

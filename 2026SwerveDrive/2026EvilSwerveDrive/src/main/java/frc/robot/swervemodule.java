@@ -119,6 +119,10 @@ public class swervemodule {
     public Translation2d getModuleLocation() {
         return moduleoffset;
     }
+
+    public SwerveModulePosition getModulePosition(){
+        return modulePosition;
+    }
         
     public void ExecuteLogic( SwerveModuleState parmModState, double timeValue ) {
         

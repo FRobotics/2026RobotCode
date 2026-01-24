@@ -1,88 +1,88 @@
 package frc.robot;
 
+import Lib4150.Lib4150NetTableSystemSend;
+
 public class AutoSystem {
 
-static void execute(){}
+    private static Lib4150NetTableSystemSend locNTSend;
+    
+    
+     static void execute(){}
 
-static void init(){}
+    
 
-static String getautochoices(){
-    return("");
-}
+    public static void ExecuteList(AutoRoutine AutoList){
 
-static double getautostepcmdDouble(){
-    return(0.0);
-}
+        int count = AutoList.getStepAmount();
+        for ( int index = 0; index < count; index++){
+            //get step
+            AutoStep ourStep = AutoList.getStep(index);   
+            
+            // run step
+            switch (ourStep.getCmd()){
+                case DriveStraight:
+                        break;
+                
+                case DriveTurn:
+                        break;
 
-static int getautostepcmdint(){
-    return(0);
-}
+                case FollowAbsTrajectory:
+                        break;
 
-static double getautostepDouble(){
-    return(0.0);
-}
+                case FollowRelTrajectory:
+                        break;
 
-static String getautostepname(){
-    return("");
-}
+                case AutoWait:
+                        break;
 
-static double getautostepParm1(){
-    return(0.0);
-}
+                case FollowAbsTrajWithTimedCmd:
+                        break;
 
-static double getautostepParm2(){
-    return(0.0);
-}
+                case FollowRelTrajWithTimedComd:
+                        break;
 
-static double getautostepParm3(){
-    return(0.0);
-}
+                case IntakUpOff:
+                      
+                        break;
 
-static double getautosteptimeout(){
-    return(0.0);
-}
+                case IntakeDownOff:
+                        break;
 
+                case IntakeDownOn:
+                        break;
+            }
+        
+        }
 
-static double getExecElapsedtime(){
-    return(0.0);
-}
+    } 
 
+     public static void init() {
 
-static double getExecerrorXmeters(){
-    return(0.0);
-}
+        // open motors
+        // set system state
+        // init network table
+        locNTSend = new Lib4150NetTableSystemSend("AutoSystem");
 
+        //locNTSend.addItemBoolean(, AutoSystem::);
+        
+        //locNTSend.triggerUpdate(, AutoSystem::);
 
-static double getExecerrorYmeters(){
-    return(0.0);
-}
+        
+        
+        
+    }
 
+    public static void executeLogic() {
 
-static boolean getExec0nTarget(){
-    return(false);
-}
+        locNTSend.triggerUpdate();
+    }
 
-
-static String getSelectedAutoDescription(){
-    return("");
-}
-
-
-static double getTotalStepsDouble(){
-    return(0.0);
-}
-
-
-
-static void setExecError0rientDeg(double orientErrorDeg){}
-
-
-static void setExecErrorXMeters (double xErrorM){}
-
-
-static void setExecErrorYMeters (double yErrorM){}
+    
+    
 
 
-static void setExec0nTarget(boolean onTarget){}
+
+
+
 
 }

@@ -8,6 +8,7 @@ import Lib4150.Lib4150NetTableSystemSend;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
@@ -87,7 +88,11 @@ public class SwerveDrive {
     static public ChassisSpeeds getTargetSpeed(){
         return locSpeedTarget;
     }
-
+    static public SwerveModulePosition[] getModulePositions(){
+        SwerveModulePosition[] xxxx =  { module1.getModulePosition(), module2.getModulePosition(), module3.getModulePosition(), module4.getModulePosition()};
+        return xxxx;
+    }
+    
     static public void SwerveExec(double timeValue){
         //-------calc swerve module states from chassis speed
         SwerveModuleState[] desiredModStates = publicDriveKinematics.toSwerveModuleStates( locSpeedTarget);

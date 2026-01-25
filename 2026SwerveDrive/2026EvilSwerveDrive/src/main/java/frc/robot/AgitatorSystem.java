@@ -10,12 +10,15 @@ public class AgitatorSystem {
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
+    // TODO: this isn't the intake system.  Remove or revise.
     private static boolean locIntakeExtended = false;  // false if up, true if down.
 
     public static void init() {
 
-        // open motors
-        // set system state
+        // TODO: open and configure motors
+        // TODO: open and configure sensors
+        // TODO: set initial system state
+
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AgitatorSystem");
 
@@ -30,6 +33,7 @@ public class AgitatorSystem {
         locNTSend.triggerUpdate();
     }
 
+    // TODO: Rename or replace variable named Intake...
     public static boolean getAgitatorExtended() {
         return locIntakeExtended;
     }

@@ -4,6 +4,9 @@ public class AutoStep {
 
     
    
+    // TODO: Suggest adding the following Cmd -- ExecuteCmd (command name is in Function variable)
+    // TODO: Suggest adding the following Cmd -- ExecuteCheckFor (command name is in function )
+    // TODO: Suggest adding the following Cmd -- AutoDone -- This will do nothing forever....
     static public enum StepCmd{
 
         DriveStraight,
@@ -19,6 +22,7 @@ public class AutoStep {
 
     }
 
+    // TODO: add some documentation....
     private StepCmd Cmd;
     private double Timeout;
     private double Param1;

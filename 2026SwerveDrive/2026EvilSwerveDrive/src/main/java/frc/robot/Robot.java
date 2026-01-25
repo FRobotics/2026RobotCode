@@ -25,9 +25,11 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
+    // TODO: update this code after reading auto files from roborio mem card.  This might be moved to end of this method, after the system inits.
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
     SwerveDrive.SwerveInit();
     SwerveTeleop.init();
     Climb.init();
@@ -35,8 +37,8 @@ public class Robot extends TimedRobot {
     IntakeSystem.init();
     AgitatorSystem.init();
     SwerveOdometry.init();
-
-
+    // TODO: Add swervevision init.
+    // TODO: Add Auto System init.
 
   }
 
@@ -51,9 +53,15 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
 
     // double fpgatime = Timer.getFPGATimestamp();
+    // TODO: I don't this is correct.  I think it is FPGA elapsed time, not a constant.
+    // TODO: Suggest getting the elapsed time once here and passing it to each function.
     SwerveDrive.SwerveExec( kDefaultPeriod);
     SwerveOdometry.execute();
     Climb.executeLogic();
+    // TODO: Add Intake execute
+    // TODO: Add Agitator execute
+    // TODO: Add SwerveVision Execute -- maybe -- If a separate thread no need for it here.
+    // TODO: Add TurretLauncher execute
 
   }
 
@@ -72,6 +80,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    // TODO: Update as needed to init for running an auto routine...
   }
 
   /** This function is called periodically during autonomous. */
@@ -86,6 +95,7 @@ public class Robot extends TimedRobot {
         // Put default auto code here
         break;
     }
+    // TODO: Add call to our auto routine.  May need to rework our auto to not be continuous.
   }
 
   /** This function is called once when teleop is enabled. */

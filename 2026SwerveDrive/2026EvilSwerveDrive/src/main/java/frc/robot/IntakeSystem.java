@@ -17,8 +17,10 @@ public class IntakeSystem {
     
     public static void init() {
 
-        // open motors
-        // set system state
+        // TODO: open and configure motors
+        // TODO: open and configure sensors
+        // TODO: set initial system state
+
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
 
@@ -26,10 +28,11 @@ public class IntakeSystem {
         
         locNTSend.triggerUpdate();
 
-
+        // TODO: This appears to be a duplicate.  Suggest removal.
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
+        // TODO: This appears to be a duplicate.  Suggest removal.
         locNTSend.addItemBoolean("IntakeIsExtendedOn", IntakeSystem::getIntakeExtended);
-        
+       
         
     }
 

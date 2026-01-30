@@ -48,7 +48,7 @@ public class swervemodule {
     private double locSpeedActual = 0.0;
     private double locDistanceActual = 0.0;
     private int spinAbsEncoderCANid = 0;
-
+    
     private double absEncoderOffset = 0.0;
     private double actualSpinAngleRad = 0.0;
     private SwerveModulePosition modulePosition = new SwerveModulePosition();
@@ -119,7 +119,7 @@ public class swervemodule {
     public Translation2d getModuleLocation() {
         return moduleoffset;
     }
-
+        
     public SwerveModulePosition getModulePosition(){
         return modulePosition;
     }
@@ -149,7 +149,9 @@ public class swervemodule {
 
     }
 
-
+    public SwerveModulePosition getSwerveModulePosition(){
+        return modulePosition;
+    }
     public void readSensors(){
         //Reads current drive speed
         RelativeEncoder driveEncoder = driveMotor.getEncoder();

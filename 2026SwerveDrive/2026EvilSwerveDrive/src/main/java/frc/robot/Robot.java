@@ -37,8 +37,9 @@ public class Robot extends TimedRobot {
     IntakeSystem.init();
     AgitatorSystem.init();
     SwerveOdometry.init();
-    // TODO: Add swervevision init.
-    // TODO: Add Auto System init.
+    SwerveVision.init();
+    AutoSystem.init();
+  
 
   }
 
@@ -55,13 +56,13 @@ public class Robot extends TimedRobot {
     // double fpgatime = Timer.getFPGATimestamp();
     // TODO: I don't this is correct.  I think it is FPGA elapsed time, not a constant.
     // TODO: Suggest getting the elapsed time once here and passing it to each function.
-    SwerveDrive.SwerveExec( kDefaultPeriod);
+    SwerveDrive.SwerveExec(kDefaultPeriod);
     SwerveOdometry.execute();
     Climb.executeLogic();
-    // TODO: Add Intake execute
-    // TODO: Add Agitator execute
-    // TODO: Add SwerveVision Execute -- maybe -- If a separate thread no need for it here.
-    // TODO: Add TurretLauncher execute
+    IntakeSystem.executeLogic();
+    AgitatorSystem.executeLogic();
+    SwerveVision.execute();
+    TurretLauncher.executeLogic();
 
   }
 

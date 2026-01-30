@@ -23,6 +23,8 @@ public class Robot extends TimedRobot {
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
+   * 
+   * This is the class constructor.
    */
   public Robot() {
     // TODO: update this code after reading auto files from roborio mem card.  This might be moved to end of this method, after the system inits.
@@ -53,11 +55,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
 
-    // double fpgatime = Timer.getFPGATimestamp();
-    // TODO: I don't this is correct.  I think it is FPGA elapsed time, not a constant.
-    // TODO: Suggest getting the elapsed time once here and passing it to each function.
-    SwerveDrive.SwerveExec(kDefaultPeriod);
-    SwerveOdometry.execute();
+    double systemElapsedTimeSec = Timer.getFPGATimestamp();
+    SwerveDrive.SwerveExec(systemElapsedTimeSec);
+    SwerveOdometry.execute(systemElapsedTimeSec);
+    // TODO: pass systemElapsedTimeSec to these methods too...
     Climb.executeLogic();
     IntakeSystem.executeLogic();
     AgitatorSystem.executeLogic();

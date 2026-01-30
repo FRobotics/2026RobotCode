@@ -16,7 +16,7 @@ public class SwerveOdometry {
     static private double xpos = 0.0;
     static private double ypos = 0.0;
     static private double rotpos = 0.0;
-    static private double getElasped = 0.0;
+    static private double execElapsedTime = 0.0;
     
     public static void init(){
         // TODO: put some comments here.  For example, this is the initial robot position (pose)
@@ -28,37 +28,36 @@ public class SwerveOdometry {
         
 
         sender = new Lib4150NetTableSystemSend("Odometry");
-        sender.addItemDouble("X position", SwerveOdometry::getxposition);
-        sender.addItemDouble("Y position", SwerveOdometry::getyposition);
-        sender.addItemDouble("Rotation position", SwerveOdometry::getrotposition);
+        sender.addItemDouble("X_position", SwerveOdometry::getxposition);
+        sender.addItemDouble("Y_position", SwerveOdometry::getyposition);
+        sender.addItemDouble("Rotation_position", SwerveOdometry::getrotposition);
+        sender.addItemDouble("execElapsedTime", SwerveOdometry::getExecCycleTime);
 
 
     }
     
     
     static void execute(double systemElapsedTime){
+
+
+        // TODO: Use these ONLY for diagnostics...  
         double startTime = Timer.getFPGATimestamp();
-        
-        double execElapsedTime= startTime;
 
         // TODO: currTimeSecs, gyroangle(Rotation2D), wheelPosition(serveModukePosition{})
-        locPoseEst.updateWithTime(systemElapsedTime, new Rotation2d(SwerveDrive.getYaw()), SwerveDrive.getModulePositions());
+
+        locPoseEst.updateWithTime( systemElapsedTime, new Rotation2d(SwerveDrive.getYaw()), SwerveDrive.getModulePositions());
         xpos = locPoseEst.getEstimatedPosition().getX();
         ypos = locPoseEst.getEstimatedPosition().getY();
         rotpos = locPoseEst.getEstimatedPosition().getRotation().getRadians();
 
-        
+        execElapsedTime = Timer.getFPGATimestamp() - startTime;
+
         sender.triggerUpdate();
-        double endTime = Timer.getFPGATimestamp();
-        getElasped= endTime - startTime;
         
     }
 
     public static double getExecCycleTime(){
-        return getElasped;
-    }
-    public static double getExecElapsedTimeMilli(){
-        return(Timer.getFPGATimestamp());
+        return execElapsedTime;
     }
 
    

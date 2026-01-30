@@ -26,13 +26,14 @@ public class SwerveDrive {
     static private double gyroYawDeg = 0.0;
     static private double gyroRollDeg = 0.0;
     static private double gyroPitchDeg = 0.0;
-    static private boolean gryoConnected = false;
-    static private Lib4150NetTableSystemSend sender = new Lib4150NetTableSystemSend("Swerve Drive");
+    static private boolean gyroConnected = false;
+    static private Lib4150NetTableSystemSend sender;
 
 
     private SwerveDrive (){
 
     }
+
     static public void SwerveInit(){    
         //module1 is left front, module2 is right front, module3 is left rear, module4 is right rear
         module1=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22, 0.0);
@@ -50,16 +51,23 @@ public class SwerveDrive {
         //init gyro
         // original values, roll=kx, yaw=ky, pitch=kz
         swerveGyro = new ADIS16470_IMU(ADIS16470_IMU.IMUAxis.kZ, ADIS16470_IMU.IMUAxis.kX, ADIS16470_IMU.IMUAxis.kY, SPI.Port.kOnboardCS0, ADIS16470_IMU.CalibrationTime._8s );
+
+        // TODO: NO.  Dont read the gyro here.  It has to be read every execute cycle.  Move to the execute method.
         gyroRollDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
         gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
         gyroPitchDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
-        gryoConnected = swerveGyro.isConnected();
+        gyroConnected = swerveGyro.isConnected();
         
         // Network Table
+        sender = new Lib4150NetTableSystemSend("SwerveDrive");
+
+        // TODO: NO Get rid of these... They are not needed.
         DoubleSupplier gyroRoll = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
         DoubleSupplier gyroYaw = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
         DoubleSupplier gyroPitch = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
         BooleanSupplier gyroConnect = () -> swerveGyro.isConnected();
+
+        // TODO: NO.  What is this?  Don't pass strings to network tables - unless there is no other choice.  Break out each part of the value.
         Supplier<String> speedTarget = () -> locSpeedTarget.toString();
 
         //Pitch and roll are swapped
@@ -67,7 +75,9 @@ public class SwerveDrive {
         sender.addItemDouble("Roll", gyroRoll);
         sender.addItemDouble("Yaw", gyroYaw);
         sender.addItemBoolean("Connected", gyroConnect);
+        // TODO: change string to VelXDmd, VelYDmd, VelRotDmd items...
         sender.addItemString("Speed Target", speedTarget);
+        // TODO: Send actual X,Y,Rotation speed.
 
 
 
@@ -85,15 +95,33 @@ public class SwerveDrive {
     static public double getRoll(){
         return gyroRollDeg;
     }
+
+    static public boolean getGyroConnected() {
+        return gyroConnected;
+    }
+
     static public ChassisSpeeds getTargetSpeed(){
         return locSpeedTarget;
     }
+
+    // TODO: Add getters for individual parts of TargetSpeed
+
+    static public ChassisSpeeds getActualSpeed(){
+        return locSpeedActual;
+    }
+
+    // TODO: Add getters for individual parts of ActualSpeed
+
     static public SwerveModulePosition[] getModulePositions(){
         SwerveModulePosition[] xxxx =  { module1.getModulePosition(), module2.getModulePosition(), module3.getModulePosition(), module4.getModulePosition()};
         return xxxx;
     }
     
-    static public void SwerveExec(double timeValue){
+    static public void SwerveExec(double systemElapsedTimeSec){
+
+        // TODO: The gyro has to be read each cycle here....  Move the read code from init to here!!!...
+
+
         //-------calc swerve module states from chassis speed
         SwerveModuleState[] desiredModStates = publicDriveKinematics.toSwerveModuleStates( locSpeedTarget);
 
@@ -102,10 +130,12 @@ public class SwerveDrive {
 
         //----- Drives each Module
         //-----must be in same order as def
-        module1.ExecuteLogic( desiredModStates[0], timeValue);
-        module2.ExecuteLogic( desiredModStates[1], timeValue);
-        module3.ExecuteLogic( desiredModStates[2], timeValue);
-        module4.ExecuteLogic( desiredModStates[3], timeValue);
+        module1.ExecuteLogic( desiredModStates[0], systemElapsedTimeSec);
+        module2.ExecuteLogic( desiredModStates[1], systemElapsedTimeSec);
+        module3.ExecuteLogic( desiredModStates[2], systemElapsedTimeSec);
+        module4.ExecuteLogic( desiredModStates[3], systemElapsedTimeSec);
+
+        // TODO: Calculate actual speed so other systems can see this!
 
         //update network tables
         sender.triggerUpdate();

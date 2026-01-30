@@ -43,18 +43,19 @@ public class swervemodule {
     private Lib4150PositionControl spinPositionControl;
     private PIDController drivePID;
     private SimpleMotorFeedforward drivFeedforward;
-    private CANcoder absoluteAngle;
+    private CANcoder absoluteAngle;  //TODO: THere is only 1 CANcoder.  Remove this one!!!
     private CANcoder spinAbsEncoder;
     private double locSpeedActual = 0.0;
     private double locDistanceActual = 0.0;
-    private int spinAbsEncoderCANid = 0;
+    private int spinAbsEncoderCANid = 0; //TODO: if not needed, remove.
     
-    private double absEncoderOffset = 0.0;
+    private double absEncoderOffset = 0.0; //TODO: if not needed remove.
     private double actualSpinAngleRad = 0.0;
     private SwerveModulePosition modulePosition = new SwerveModulePosition();
     private SwerveModuleState moduleState = new SwerveModuleState();
 
     public swervemodule(double paraXoffset, double paraYoffset, int paradriveid, int paraspinid, int paraspinEnc, double paramagOffset) {
+
         xOff = paraXoffset;
         yOff = paraYoffset;
         driveid = paradriveid;
@@ -66,8 +67,10 @@ public class swervemodule {
         driveMotor = new SparkMax(driveid,MotorType.kBrushless);
         spinMotor = new SparkMax(spinid,MotorType.kBrushless);
         absoluteAngle = new CANcoder(spinEnc);
+
         SparkMaxConfig driveConfig = new SparkMaxConfig();
         SparkMaxConfig spinConfig = new SparkMaxConfig();
+
         driveConfig.idleMode(IdleMode.kBrake);
         spinConfig.idleMode(IdleMode.kBrake);
         driveConfig.smartCurrentLimit(50);
@@ -82,16 +85,15 @@ public class swervemodule {
         driveConfig.encoder.positionConversionFactor(driveDistFactor);
         driveConfig.encoder.velocityConversionFactor(driveDistFactor/60.0);
 
-                final double spinDistFactor = 1.0/360.0;
+        final double spinDistFactor = 1.0/360.0;
         spinConfig.encoder.positionConversionFactor(spinDistFactor);
         spinConfig.encoder.velocityConversionFactor(spinDistFactor/60.0);
 
         driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         spinMotor.configure(spinConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-
          
         spinAbsEncoder = new CANcoder(spinEnc);
+
         /* 
         CANcoderConfiguration absEncoderConfig = new CANcoderConfiguration();
         absEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -112,6 +114,7 @@ public class swervemodule {
 
         drivFeedforward = new SimpleMotorFeedforward (0.0, 0.07645406, 0.0);
         //drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
+        // TODO: put normal PID tuning back.
         drivePID = new PIDController (0.07645406*.5, 0, 0);
         
     }
@@ -124,11 +127,9 @@ public class swervemodule {
         return modulePosition;
     }
         
-    public void ExecuteLogic( SwerveModuleState parmModState, double timeValue ) {
+    public void ExecuteLogic( SwerveModuleState parmModState, double systemElapsedTime ) {
         
-        //TODO:Check how encoders actualy output; maybe need to change this.
         this.readSensors();
-        
         
         double currentAngle = actualSpinAngleRad;
         parmModState.optimize(new Rotation2d(currentAngle));
@@ -152,6 +153,9 @@ public class swervemodule {
     public SwerveModulePosition getSwerveModulePosition(){
         return modulePosition;
     }
+
+    // TODO: add a getter for moduleState.  Need this to calculate actual chassis speeds.
+
     public void readSensors(){
         //Reads current drive speed
         RelativeEncoder driveEncoder = driveMotor.getEncoder();
@@ -164,6 +168,7 @@ public class swervemodule {
         //---------------
         modulePosition.angle = Rotation2d.fromRadians(actualSpinAngleRad);
         modulePosition.distanceMeters = locDistanceActual;
+
         moduleState.speedMetersPerSecond = locSpeedActual;
         moduleState.angle = Rotation2d.fromRadians(actualSpinAngleRad);        
 

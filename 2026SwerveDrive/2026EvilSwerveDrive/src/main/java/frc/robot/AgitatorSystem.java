@@ -10,6 +10,7 @@ public class AgitatorSystem {
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
+
     // TODO: this isn't the intake system.  Remove or revise.
     private static boolean locIntakeExtended = false;  // false if up, true if down.
 

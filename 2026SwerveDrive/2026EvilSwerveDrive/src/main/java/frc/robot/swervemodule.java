@@ -18,6 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
 //import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.StatusSignal;
 //import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -43,30 +44,27 @@ public class swervemodule {
     private Lib4150PositionControl spinPositionControl;
     private PIDController drivePID;
     private SimpleMotorFeedforward drivFeedforward;
-    private CANcoder absoluteAngle;  //TODO: THere is only 1 CANcoder.  Remove this one!!!
+     
     private CANcoder spinAbsEncoder;
     private double locSpeedActual = 0.0;
     private double locDistanceActual = 0.0;
-    private int spinAbsEncoderCANid = 0; //TODO: if not needed, remove.
-    
-    private double absEncoderOffset = 0.0; //TODO: if not needed remove.
     private double actualSpinAngleRad = 0.0;
     private SwerveModulePosition modulePosition = new SwerveModulePosition();
     private SwerveModuleState moduleState = new SwerveModuleState();
 
-    public swervemodule(double paraXoffset, double paraYoffset, int paradriveid, int paraspinid, int paraspinEnc, double paramagOffset) {
+    public swervemodule(double paraXoffset, double paraYoffset, int paradriveid, int paraspinid, int paraspinEnc) {
 
         xOff = paraXoffset;
         yOff = paraYoffset;
         driveid = paradriveid;
         spinid = paraspinid;
         spinEnc = paraspinEnc;
-        absEncoderOffset = paramagOffset;
+        
 
         moduleoffset = new Translation2d(xOff, yOff);
         driveMotor = new SparkMax(driveid,MotorType.kBrushless);
         spinMotor = new SparkMax(spinid,MotorType.kBrushless);
-        absoluteAngle = new CANcoder(spinEnc);
+        
 
         SparkMaxConfig driveConfig = new SparkMaxConfig();
         SparkMaxConfig spinConfig = new SparkMaxConfig();
@@ -114,7 +112,6 @@ public class swervemodule {
 
         drivFeedforward = new SimpleMotorFeedforward (0.0, 0.07645406, 0.0);
         //drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
-        // TODO: put normal PID tuning back.
         drivePID = new PIDController (0.07645406*.5, 0, 0);
         
     }
@@ -143,7 +140,7 @@ public class swervemodule {
         double ActualSpeed = locSpeedActual;
         double feedForward = drivFeedforward.calculate(TargetSpeed);
         double PIDoutput = drivePID.calculate(ActualSpeed, TargetSpeed);
-        double MotorDemand = MathUtil.clamp(feedForward+PIDoutput, -1.0, 1.0);
+        double MotorDemand = -MathUtil.clamp(feedForward+PIDoutput, -1.0, 1.0);
         driveMotor.set(MotorDemand);
         
         
@@ -153,14 +150,16 @@ public class swervemodule {
     public SwerveModulePosition getSwerveModulePosition(){
         return modulePosition;
     }
-
-    // TODO: add a getter for moduleState.  Need this to calculate actual chassis speeds.
+    
+    public SwerveModuleState getSwerveModuleState(){
+        return moduleState;
+    }
 
     public void readSensors(){
         //Reads current drive speed
         RelativeEncoder driveEncoder = driveMotor.getEncoder();
-        locDistanceActual = Units.feetToMeters(driveEncoder.getPosition()); //double check unit conversion
-        locSpeedActual = Units.feetToMeters(driveEncoder.getVelocity());      //METERS
+        locDistanceActual = -Units.feetToMeters(driveEncoder.getPosition()); //double check unit conversion
+        locSpeedActual = -Units.feetToMeters(driveEncoder.getVelocity());      //METERS
         //Reads absolute encoder
         StatusSignal<Angle> absolutepositioSignal = spinAbsEncoder.getAbsolutePosition();
         actualSpinAngleRad = MathUtil.angleModulus(Units.rotationsToRadians(absolutepositioSignal.getValueAsDouble()));

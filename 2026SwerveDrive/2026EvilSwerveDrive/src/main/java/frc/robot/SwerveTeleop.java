@@ -73,9 +73,10 @@ public class SwerveTeleop {
         double RotInDeg = RotIn * maxRotSpeed;
 
         //------Converts the X, Y, and Rotation values in new units
-        myChassisSpeeds.vxMetersPerSecond = Units.feetToMeters(XInFT);
-        myChassisSpeeds.vyMetersPerSecond = Units.feetToMeters(YInFT);
-        myChassisSpeeds.omegaRadiansPerSecond = Units.degreesToRadians(RotInDeg);
+        //switcheed X and Y to negative
+        myChassisSpeeds.vxMetersPerSecond = Units.feetToMeters(-XInFT);
+        myChassisSpeeds.vyMetersPerSecond = Units.feetToMeters(-YInFT);
+        myChassisSpeeds.omegaRadiansPerSecond = Units.degreesToRadians(-RotInDeg);
         //-----tell drive system our desired speed
         SwerveDrive.setDesiredSpeed(myChassisSpeeds);
 

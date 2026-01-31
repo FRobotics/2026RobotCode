@@ -36,10 +36,10 @@ public class SwerveDrive {
 
     static public void SwerveInit(){    
         //module1 is left front, module2 is right front, module3 is left rear, module4 is right rear
-        module1=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22, 0.0);
-        module2=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32, 0.0);
-        module3=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 40, 41, 42, 0.0);
-        module4=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 50, 51, 52, 0.0);
+        module1=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22);
+        module2=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32);
+        module3=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 40, 41, 42);
+        module4=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 50, 51, 52);
 
         //init kinematics
         publicDriveKinematics = new SwerveDriveKinematics(
@@ -53,28 +53,25 @@ public class SwerveDrive {
         swerveGyro = new ADIS16470_IMU(ADIS16470_IMU.IMUAxis.kZ, ADIS16470_IMU.IMUAxis.kX, ADIS16470_IMU.IMUAxis.kY, SPI.Port.kOnboardCS0, ADIS16470_IMU.CalibrationTime._8s );
 
         // TODO: NO.  Dont read the gyro here.  It has to be read every execute cycle.  Move to the execute method.
-        gyroRollDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
-        gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
-        gyroPitchDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
-        gyroConnected = swerveGyro.isConnected();
+        
         
         // Network Table
         sender = new Lib4150NetTableSystemSend("SwerveDrive");
 
         // TODO: NO Get rid of these... They are not needed.
-        DoubleSupplier gyroRoll = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
-        DoubleSupplier gyroYaw = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
-        DoubleSupplier gyroPitch = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
-        BooleanSupplier gyroConnect = () -> swerveGyro.isConnected();
+        // DoubleSupplier gyroRoll = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
+        // DoubleSupplier gyroYaw = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
+        // DoubleSupplier gyroPitch = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
+        // BooleanSupplier gyroConnect = () -> swerveGyro.isConnected();
 
         // TODO: NO.  What is this?  Don't pass strings to network tables - unless there is no other choice.  Break out each part of the value.
         Supplier<String> speedTarget = () -> locSpeedTarget.toString();
 
         //Pitch and roll are swapped
-        sender.addItemDouble("Pitch", gyroPitch);
-        sender.addItemDouble("Roll", gyroRoll);
-        sender.addItemDouble("Yaw", gyroYaw);
-        sender.addItemBoolean("Connected", gyroConnect);
+        sender.addItemDouble("Pitch", SwerveDrive::getPitch);
+        sender.addItemDouble("Roll", SwerveDrive::getRoll);
+        sender.addItemDouble("Yaw", SwerveDrive::getYaw);
+        sender.addItemBoolean("Connected", SwerveDrive::getGyroConnected);
         // TODO: change string to VelXDmd, VelYDmd, VelRotDmd items...
         sender.addItemString("Speed Target", speedTarget);
         // TODO: Send actual X,Y,Rotation speed.
@@ -120,7 +117,10 @@ public class SwerveDrive {
     static public void SwerveExec(double systemElapsedTimeSec){
 
         // TODO: The gyro has to be read each cycle here....  Move the read code from init to here!!!...
-
+        gyroRollDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
+        gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
+        gyroPitchDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
+        gyroConnected = swerveGyro.isConnected();
 
         //-------calc swerve module states from chassis speed
         SwerveModuleState[] desiredModStates = publicDriveKinematics.toSwerveModuleStates( locSpeedTarget);

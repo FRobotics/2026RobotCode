@@ -15,21 +15,26 @@ public class IntakeSystem {
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
-    private static boolean locIntakeExtendedOff = false;  // false if up, true if down.
-    private static boolean locIntakeExtenedOn = false; 
+    private static boolean locIntakeExtended = false;  // false if up, true if down.
     private static SparkMax intakeMotor1;
     private static SparkMax intakeMotor2;
     private static DutyCycleEncoder intakeEncoder;
+    private static int intakeState;//1 is up off 2 is down off 3 is down on
+    private static double intakeAngle;
+    //TODO determine up and down angles on the robot
+    private static double intakeSpeed;
 
-    
     public static void init() {
 
+        //motors
         intakeMotor1 = new SparkMax(1,MotorType.kBrushless);
         intakeMotor2 = new SparkMax(2,MotorType.kBrushless);
-
+        
+        //open motor config
         SparkMaxConfig intake1Config = new SparkMaxConfig();
         SparkMaxConfig intake2Config = new SparkMaxConfig();
 
+        //motor Config
         //TODO: config values need changed/tuned
         intake1Config.idleMode(IdleMode.kBrake);
         intake2Config.idleMode(IdleMode.kBrake);
@@ -38,10 +43,13 @@ public class IntakeSystem {
         intake1Config.openLoopRampRate(0.2);
         intake2Config.openLoopRampRate(0.08);
         
-        // TODO: open and configure sensors
+        //sensors
         intakeEncoder = new DutyCycleEncoder(4);
-        intakeMotor1.getForwardLimitSwitch();
-        // TODO: set initial system state
+
+        //initial state
+        intakeAngle=90;
+        intakeSpeed=0;
+        intakeState=1;
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
@@ -49,22 +57,66 @@ public class IntakeSystem {
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
         
         locNTSend.triggerUpdate();
-
-        // TODO: This appears to be a duplicate.  Suggest removal.
-        locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
-        // TODO: This appears to be a duplicate.  Suggest removal.
+        
         locNTSend.addItemBoolean("IntakeIsExtendedOn", IntakeSystem::getIntakeExtended);
        
+        
         
     }
 
     public static void executeLogic() {
-
         locNTSend.triggerUpdate();
+        //TODO set actual angles
+        if (intakeState>1){
+            intakeAngle=0;
+        }else{
+            intakeAngle=90;
+        }
+
+        if (intakeState==3){
+            intakeSpeed=1;
+        }else {
+            intakeSpeed=0;
+        }//TODO set actual speeds for intake speed and angle
+
+        if (intakeAngle>intakeEncoder.get()+1){//+1 and -1 for within by 1 degree
+            intakeMotor2.set(1);
+        }else if((intakeAngle<intakeEncoder.get()-1)&& !(intakeMotor2.getForwardLimitSwitch().isPressed())){
+            intakeMotor2.set(-1);
+        }else{
+            if (intakeState==1){
+                locIntakeExtended=false;
+            }else{
+                locIntakeExtended=true;
+            }
+        }
+        intakeMotor1.set(intakeSpeed);
+        if (intakeMotor2.getForwardLimitSwitch().isPressed()){
+            intakeAngle=0;
+        }
+        
     }
 
+    public static void setDownOffState(){
+        intakeState=2;
+    }
+    public static void setDownOnState(){
+        intakeState=3;
+    }
+    public static void setUpOffState(){
+        intakeState=1;
+    }
+    public static int getIntakeState(){
+        return intakeState;
+    }
+    public static double getIntakeSpeed(){
+        return intakeSpeed;
+    }
+    public static double getIntakeAngle(){
+        return intakeAngle;
+    }
     public static boolean getIntakeExtended() {
-        return locIntakeExtendedOff;
+        return locIntakeExtended;
     }
 
 }

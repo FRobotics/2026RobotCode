@@ -24,7 +24,7 @@ public class SwerveOdometry {
         Pose2d initPose = new Pose2d(0.0,0.0,new Rotation2d(0.0));
         
         locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );
-        
+        setstartingpose(0.0, 0.0, 0.0);
         
 
         sender = new Lib4150NetTableSystemSend("Odometry");

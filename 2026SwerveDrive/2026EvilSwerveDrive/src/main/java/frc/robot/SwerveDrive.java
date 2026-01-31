@@ -15,6 +15,14 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.SPI;
 
 public class SwerveDrive {
+
+    //measured in inches
+    private static final double motorOffsetX=11.5; 
+    private static final double motorOffsetY=10.5;
+
+    public static final double maxLinearSpeed = 13.0; // measured in fps
+    public static final double maxRotSpeed = 360.0; //measured in degrees
+
     static private swervemodule module1;
     static private swervemodule module2;
     static private swervemodule module3;
@@ -36,10 +44,10 @@ public class SwerveDrive {
 
     static public void SwerveInit(){    
         //module1 is left front, module2 is right front, module3 is left rear, module4 is right rear
-        module1=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 20, 21, 22);
-        module2=new swervemodule(Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 30, 31, 32);
-        module3=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), Units.inchesToMeters(SwerveTeleop.motorOffsetY), 40, 41, 42);
-        module4=new swervemodule(-1*Units.inchesToMeters(SwerveTeleop.motorOffsetX), -1*Units.inchesToMeters(SwerveTeleop.motorOffsetY), 50, 51, 52);
+        module1=new swervemodule(Units.inchesToMeters(motorOffsetX), Units.inchesToMeters(motorOffsetY), 20, 21, 22);
+        module2=new swervemodule(Units.inchesToMeters(motorOffsetX), -1*Units.inchesToMeters(motorOffsetY), 30, 31, 32);
+        module3=new swervemodule(-1*Units.inchesToMeters(motorOffsetX), Units.inchesToMeters(motorOffsetY), 40, 41, 42);
+        module4=new swervemodule(-1*Units.inchesToMeters(motorOffsetX), -1*Units.inchesToMeters(motorOffsetY), 50, 51, 52);
 
         //init kinematics
         publicDriveKinematics = new SwerveDriveKinematics(
@@ -119,7 +127,7 @@ public class SwerveDrive {
         SwerveModuleState[] desiredModStates = publicDriveKinematics.toSwerveModuleStates( locSpeedTarget);
 
         //------ Safeguard against going too fast
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredModStates,Units.feetToMeters( SwerveTeleop.maxLinearSpeed));
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredModStates,Units.feetToMeters( maxLinearSpeed));
 
         //----- Drives each Module
         //-----must be in same order as def

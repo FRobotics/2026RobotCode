@@ -18,7 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
+//import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
 //import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.StatusSignal;
 //import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -30,6 +30,12 @@ import com.revrobotics.ResetMode;
 
 public class swervemodule {
 
+
+    // max motor output = 1.0
+    // max speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
+    // Kn (normalization constant) = max motor out / max speed = 0.07645406
+    // when doing everything in meters then max speed is 3.98670783
+    private static double Drive_Kn = 1.0 / 3.98670783;
 
     private double xOff = 0.0;
     private double yOff = 0.0;
@@ -110,9 +116,14 @@ public class swervemodule {
         // (Error Deadband,error threshhold )
         spinPositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 0.005, 0.35, 0.8, 1.0e-5, false, true);
 
-        drivFeedforward = new SimpleMotorFeedforward (0.0, 0.07645406, 0.0);
+        // original was in feet .... change to meters...
+
+        
+        // drivFeedforward = new SimpleMotorFeedforward (0.0, 0.07645406, 0.0);
+        drivFeedforward = new SimpleMotorFeedforward (0.0, Drive_Kn, 0.0);
         //drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
-        drivePID = new PIDController (0.07645406*.5, 0, 0);
+        // drivePID = new PIDController (0.07645406*.5, 0, 0);
+        drivePID = new PIDController ( Drive_Kn *.5, 0, 0);
         
     }
 
@@ -127,15 +138,16 @@ public class swervemodule {
     public void ExecuteLogic( SwerveModuleState parmModState, double systemElapsedTime ) {
         
         this.readSensors();
-        
+
         double currentAngle = actualSpinAngleRad;
         parmModState.optimize(new Rotation2d(currentAngle));
         
+        // control the spin motor
         double targetAngle = parmModState.angle.getRadians();
 
         spinMotor.set(spinPositionControl.PosCtrlExec(targetAngle, currentAngle));
         
-
+        // control the drive motor
         double TargetSpeed = parmModState.speedMetersPerSecond;
         double ActualSpeed = locSpeedActual;
         double feedForward = drivFeedforward.calculate(TargetSpeed);

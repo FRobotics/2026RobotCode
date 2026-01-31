@@ -1,8 +1,8 @@
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
+// import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import java.util.function.BooleanSupplier;
+// import java.util.function.BooleanSupplier;
 
 import Lib4150.Lib4150NetTableSystemSend;
 
@@ -51,14 +51,10 @@ public class SwerveDrive {
         //init gyro
         // original values, roll=kx, yaw=ky, pitch=kz
         swerveGyro = new ADIS16470_IMU(ADIS16470_IMU.IMUAxis.kZ, ADIS16470_IMU.IMUAxis.kX, ADIS16470_IMU.IMUAxis.kY, SPI.Port.kOnboardCS0, ADIS16470_IMU.CalibrationTime._8s );
-
-        // TODO: NO.  Dont read the gyro here.  It has to be read every execute cycle.  Move to the execute method.
-        
         
         // Network Table
         sender = new Lib4150NetTableSystemSend("SwerveDrive");
 
-        // TODO: NO Get rid of these... They are not needed.
         // DoubleSupplier gyroRoll = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
         // DoubleSupplier gyroYaw = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
         // DoubleSupplier gyroPitch = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
@@ -75,8 +71,6 @@ public class SwerveDrive {
         // TODO: change string to VelXDmd, VelYDmd, VelRotDmd items...
         sender.addItemString("Speed Target", speedTarget);
         // TODO: Send actual X,Y,Rotation speed.
-
-
 
         
     }
@@ -116,7 +110,6 @@ public class SwerveDrive {
     
     static public void SwerveExec(double systemElapsedTimeSec){
 
-        // TODO: The gyro has to be read each cycle here....  Move the read code from init to here!!!...
         gyroRollDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
         gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kRoll);
         gyroPitchDeg = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
@@ -135,7 +128,7 @@ public class SwerveDrive {
         module3.ExecuteLogic( desiredModStates[2], systemElapsedTimeSec);
         module4.ExecuteLogic( desiredModStates[3], systemElapsedTimeSec);
 
-        // TODO: Calculate actual speed so other systems can see this!
+        // TODO: Calculate actual chassis speed from module states so other systems can see this!
 
         //update network tables
         sender.triggerUpdate();

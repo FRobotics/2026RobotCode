@@ -2,6 +2,7 @@ package frc.robot;
 
 
 
+import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -12,9 +13,10 @@ public class SwerveTeleop {
    
     private static XboxController myXboxController;
     private static ChassisSpeeds myChassisSpeeds;
-    private static double YIn=0;
-    private static double XIn=0;
-    private static double RotIn=0;
+    private static double YIn=0.0;
+    private static double XIn=0.0;
+    private static double RotIn=0.0;
+    // TODO: Why are these int.  They should probably be double
     public static final int maxLinearSpeed = 13; // measured in fps
     public static final int maxRotSpeed = 360; //measured in degrees
     //measured in inches
@@ -26,11 +28,13 @@ public class SwerveTeleop {
     //private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
     // true is field orient false is robot orient
     private static boolean orient;
-    private static double exeTime=0;
-    private static double endTime=0;
-    private static double lastStartTime=0;
-    private static double periodicTime=0;
-    private static double startTime=0;
+    private static double exeTime=0.0;
+    private static double endTime=0.0;
+    private static double lastStartTime=0.0;
+    private static double periodicTime=0.0;
+    private static double startTime=0.0;
+
+    private static Lib4150NetTableSystemSend locNTsend;
 
     private SwerveTeleop(){
 
@@ -43,11 +47,16 @@ public class SwerveTeleop {
         // TODO: add second controller.
         // TODO: add driver button box - if you want one
         // TODO: add aux button box - if you want one.
+
+        locNTsend = new Lib4150NetTableSystemSend("Teleop");
+        locNTsend.addItemDouble("DriveSpeedTarg_X", SwerveTeleop::getDriveSpeedTargX);
+        locNTsend.addItemDouble("DriveSpeedTarg_Y", SwerveTeleop::getDriveSpeedTargY);
+        locNTsend.addItemDouble("DriveSpeedTarg_Rot", SwerveTeleop::getDriveSpeedTargRot);
         
     }
     
     public static void SwerveExecute(){
-        //start time
+        //start time --- only for diagnostices !!!
         startTime = Timer.getFPGATimestamp();
         periodicTime = (startTime - lastStartTime)*1000;
         lastStartTime = startTime;
@@ -80,20 +89,36 @@ public class SwerveTeleop {
         //-----tell drive system our desired speed
         SwerveDrive.setDesiredSpeed(myChassisSpeeds);
 
-        
+      
         endTime = Timer.getFPGATimestamp();
         exeTime = (endTime-startTime)*1000;
+
+        locNTsend.triggerUpdate();
     }
+
     public static boolean getFieldOrientedDriving(){
         return(orient);
     }
+
     public static double getTeleopElapsedTimeMilli(){
         return(exeTime);
     }
+
     public static double getTeleopPeriodicTimeMilli(){
         return(periodicTime);
     }
-  /*   public static double TeleopCalc(double input) {
+
+    public static double getDriveSpeedTargX() {
+        return myChassisSpeeds.vxMetersPerSecond; 
+    }
+    public static double getDriveSpeedTargY() {
+        return myChassisSpeeds.vyMetersPerSecond; 
+    }
+    public static double getDriveSpeedTargRot() {
+        return myChassisSpeeds.omegaRadiansPerSecond; 
+    }
+
+    /*   public static double TeleopCalc(double input) {
 
         double joyval = input;
         if ((joyval <= 0.05) && (joyval >= -0.05)) {

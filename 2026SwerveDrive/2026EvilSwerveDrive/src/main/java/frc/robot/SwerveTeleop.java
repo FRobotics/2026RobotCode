@@ -16,12 +16,6 @@ public class SwerveTeleop {
     private static double YIn=0.0;
     private static double XIn=0.0;
     private static double RotIn=0.0;
-    // TODO: Why are these int.  They should probably be double
-    public static final int maxLinearSpeed = 13; // measured in fps
-    public static final int maxRotSpeed = 360; //measured in degrees
-    //measured in inches
-    public static final double motorOffsetX=11.5; 
-    public static final double motorOffsetY=10.5;
     //measured in feet
    // private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
     //private static final double circumfrence=2*Math.PI*motorOffsetTotal;
@@ -52,6 +46,7 @@ public class SwerveTeleop {
         locNTsend.addItemDouble("DriveSpeedTarg_X", SwerveTeleop::getDriveSpeedTargX);
         locNTsend.addItemDouble("DriveSpeedTarg_Y", SwerveTeleop::getDriveSpeedTargY);
         locNTsend.addItemDouble("DriveSpeedTarg_Rot", SwerveTeleop::getDriveSpeedTargRot);
+        locNTsend.triggerUpdate();
         
     }
     
@@ -77,9 +72,9 @@ public class SwerveTeleop {
         RotIn = RotIn * RotIn * Math.signum(RotIn);
 
         //--------Changes values to Ft and degrees
-        double YInFT = YIn * maxLinearSpeed;
-        double XInFT = XIn * maxLinearSpeed;
-        double RotInDeg = RotIn * maxRotSpeed;
+        double YInFT = YIn * SwerveDrive.maxLinearSpeed;
+        double XInFT = XIn * SwerveDrive.maxLinearSpeed;
+        double RotInDeg = RotIn * SwerveDrive.maxRotSpeed;
 
         //------Converts the X, Y, and Rotation values in new units
         //switcheed X and Y to negative

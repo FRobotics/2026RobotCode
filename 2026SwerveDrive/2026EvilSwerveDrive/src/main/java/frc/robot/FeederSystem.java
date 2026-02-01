@@ -9,9 +9,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 // import com.revrobotics.spark.config.SparkMaxConfig;
 // import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
-public class AgitatorSystem {
+public class FeederSystem {
 
-    private AgitatorSystem(){}
+    private FeederSystem(){}
 
     // contants
 
@@ -19,19 +19,19 @@ public class AgitatorSystem {
     private static Lib4150NetTableSystemSend locNTSend;
 
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
-    private static boolean locAgitatorOn = false; 
-    private static SparkMax AgitatorMotor;
-    private static double AgitatorOutput = 0;
+    private static boolean locFeederOn = false; 
+    private static SparkMax FeederMotor;
+    private static double FeederOutput = 0;
 
     public static void init() {
 
 
         // init network table
-        AgitatorMotor = new SparkMax(70,MotorType.kBrushless);
-        locNTSend = new Lib4150NetTableSystemSend("AgitatorSystem");
+        FeederMotor = new SparkMax(68,MotorType.kBrushless);
+        locNTSend = new Lib4150NetTableSystemSend("FeederSystem");
 
-        locNTSend.addItemBoolean("GetAgitator", AgitatorSystem::getAgitatorState);
-        locNTSend.addItemDouble("AgitatorOutput", AgitatorSystem::getMotorOutput);
+        locNTSend.addItemBoolean("GetFeeder", FeederSystem::getFeederState);
+        locNTSend.addItemDouble("FeederOutput", FeederSystem::getMotorOutput);
         cmdAgitatorOff();
         
         locNTSend.triggerUpdate();
@@ -44,14 +44,14 @@ public class AgitatorSystem {
 
     public static void executeLogic() {
 
-        if (locAgitatorOn){
-            AgitatorOutput=0.2;
+        if (locFeederOn){
+            FeederOutput=0.2;
         }
         else {
-            AgitatorOutput=0;
+            FeederOutput=0;
         };
 
-        AgitatorMotor.set(AgitatorOutput);
+        FeederMotor.set(FeederOutput);
 
 
 
@@ -60,19 +60,20 @@ public class AgitatorSystem {
         locNTSend.triggerUpdate();
     }
 
-    public static boolean getAgitatorState() {
-        return locAgitatorOn;
+    public static boolean getFeederState() {
+        return locFeederOn;
     }
 
     public static void cmdAgitatorOn() {
-        locAgitatorOn=true;
+        locFeederOn=true;
     }
 
     public static void cmdAgitatorOff() {
-        locAgitatorOn=false;
+        locFeederOn=false;
     }
      public static double getMotorOutput() {
-        return AgitatorOutput;
+        return FeederOutput;
     }
 
 }
+

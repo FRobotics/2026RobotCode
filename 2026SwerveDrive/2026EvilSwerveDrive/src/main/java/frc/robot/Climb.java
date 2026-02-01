@@ -10,8 +10,8 @@ public class Climb {
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
-    // TODO: This isn't the intake system.  Remove or change.
-    private static boolean locIntakeExtended = false;  // false if up, true if down.
+
+    private static boolean locClimbExtended = false;  // false if up, true if down.
 
     public static void init() {
 
@@ -23,8 +23,8 @@ public class Climb {
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("Climb");
 
-        // TODO: This isnt the intake system. change to climb functions..
-        locNTSend.addItemBoolean("ClimbIsExtended", IntakeSystem::getIntakeExtended);
+       
+        locNTSend.addItemBoolean("ClimbIsExtended", Climb::getClimbExtended);
         
         locNTSend.triggerUpdate();
         
@@ -35,9 +35,9 @@ public class Climb {
         locNTSend.triggerUpdate();
     }
 
-    // TODO: This isnt the agitator system.  Remove or change ..
-    public static boolean getAgitatorExtended() {
-        return locIntakeExtended;
+    
+    public static boolean getClimbExtended() {
+        return locClimbExtended;
     }
 
 }

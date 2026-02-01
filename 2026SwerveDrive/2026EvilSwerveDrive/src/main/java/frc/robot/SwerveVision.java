@@ -5,9 +5,7 @@ public class SwerveVision {
     private SwerveVision(){}
 
     
-    public static void init(){
-
-    }
+    public static void init(){}
     
     public static void execute(){
 

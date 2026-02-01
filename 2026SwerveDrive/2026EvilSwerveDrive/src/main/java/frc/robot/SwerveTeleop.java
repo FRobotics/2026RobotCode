@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 public class SwerveTeleop {
    
     private static XboxController myXboxController;
+    private static XboxController myXboxController2;
     private static ChassisSpeeds myChassisSpeeds;
     private static double YIn=0.0;
     private static double XIn=0.0;
@@ -35,7 +36,8 @@ public class SwerveTeleop {
     }
     
     public static void init() {
-        myXboxController = new XboxController(0); 
+        myXboxController = new XboxController(0);
+        myXboxController2 = new XboxController(1);
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
         // TODO: add second controller.
@@ -60,6 +62,7 @@ public class SwerveTeleop {
         YIn=myXboxController.getLeftX();
         XIn=myXboxController.getLeftY();  //reverses the x and y
         RotIn=myXboxController.getRightX();
+        
 
         // --------apply deadband to joystick....
         YIn=MathUtil.applyDeadband(YIn,.05);

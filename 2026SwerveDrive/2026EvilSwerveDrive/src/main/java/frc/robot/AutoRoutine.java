@@ -39,7 +39,9 @@ public class AutoRoutine {
         return locAutoSteps.get(index);
     }
 
-
-    // TODO: Add a getter for the description of this routine.
+    public String getAutoDescription(){
+        return locAutoDescription;
+    }
+    // TODO: Check getter ^^ for auto description.
 
 }

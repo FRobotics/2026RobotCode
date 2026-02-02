@@ -92,15 +92,11 @@ public class SwerveOdometry {
     
     }
 
-    public static void addVisionMeasremennt(Pose2d locPoseEstimator, double timestamp){
-        locPoseEst.addVisionMeasurement(getpose(), timestamp);
-
-
+    // TODO: look at having another function that would also take the vision stddev values as a parameter.
+    public static void addVisionMeasremennt(Pose2d visionPose, double visionTimestamp){
+        locPoseEst.addVisionMeasurement(visionPose, visionTimestamp);
     }
 
-    
-
-    // TODO: Add a public function to allow vision to add updates to the pose estimator..
 
     
 }

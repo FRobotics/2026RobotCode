@@ -21,8 +21,9 @@ public class IntakeSystem {
     private static DutyCycleEncoder intakeEncoder;
     private static int intakeState;//1 is up off 2 is down off 3 is down on
     private static double intakeAngle;
-    //TODO determine up and down angles on the robot
+    //TODO determine up and down angles on the robot -- suggest starting with 90 is up and 0 is down...
     private static double intakeSpeed;
+    // TODO: suggest using position control class to control intake arm position...  See swervemodule
 
     public static void init() {
 
@@ -55,10 +56,10 @@ public class IntakeSystem {
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
 
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
+        locNTSend.addItemBoolean("IntakeIsExtendedOn", IntakeSystem::getIntakeExtended);
         
         locNTSend.triggerUpdate();
         
-        locNTSend.addItemBoolean("IntakeIsExtendedOn", IntakeSystem::getIntakeExtended);
        
         
         
@@ -79,6 +80,9 @@ public class IntakeSystem {
             intakeSpeed=0;
         }//TODO set actual speeds for intake speed and angle
 
+        // TODO: Only read intake arm encoder sensor once !!  Set an internal variable.  Publist to network tables.
+        // TODO: Read limit switch to an internal variable so it can be published to network tables. 
+        // TODO: This is a type of BANG-BANG control.  It won't work for controlling position!  I don't see the motor being turned off?
         if (intakeAngle>intakeEncoder.get()+1){//+1 and -1 for within by 1 degree
             intakeMotor2.set(1);
         }else if((intakeAngle<intakeEncoder.get()-1)&& !(intakeMotor2.getForwardLimitSwitch().isPressed())){
@@ -91,6 +95,7 @@ public class IntakeSystem {
             }
         }
         intakeMotor1.set(intakeSpeed);
+        // TODO: Do this before executing the positioning logic.  Is "intakeAngle" desired or actual position.  
         if (intakeMotor2.getForwardLimitSwitch().isPressed()){
             intakeAngle=0;
         }

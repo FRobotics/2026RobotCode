@@ -19,6 +19,7 @@ public class SwerveVision {
     private static PhotonCamera camera1;
     private static PhotonPoseEstimator photonPoseEstimator1;
     private static AprilTagFieldLayout fieldLayout;
+    // TODO: will have to set physical camera offset position once it is known.
     private static Transform3d robotToCamera1 = new Transform3d(0.0, 0.0, 0.5, new edu.wpi.first.math.geometry.Rotation3d(0.0, 0.0, 0.0));
 
     private SwerveVision(){}
@@ -43,12 +44,14 @@ public class SwerveVision {
     public static void execute(){
 
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
+
         for (var result : camera1.getAllUnreadResults()) {
             visionEst = photonPoseEstimator1.estimateCoprocMultiTagPose(result);
             if (visionEst.isEmpty()) {
                 visionEst = photonPoseEstimator1.estimatePnpDistanceTrigSolvePose(result);
             }
-            SwerveOdometry.addVisionMeasremennt(visionEst.get(), 0);
+            // TODO: Only call below function if visionEst.isPresent().  had to "get" individual items from the "visionEst" variable.
+            SwerveOdometry.addVisionMeasremennt(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds);
         }
 
 

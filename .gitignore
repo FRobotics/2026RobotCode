@@ -1,3 +1,4 @@
+# -------- for LabVIEW
 # Libraries
 *.lvlibp
 *.llb
@@ -10,10 +11,14 @@
 
 # Executables
 *.exe
+**/Builds/**
+**/builds/**
 
 # Metadata
 *.aliases
+**/*.aliases
 *.lvlps
+**/*.lvlps
 .cache/
 
 

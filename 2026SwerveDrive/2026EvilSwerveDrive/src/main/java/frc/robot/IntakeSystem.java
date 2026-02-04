@@ -42,7 +42,7 @@ public class IntakeSystem {
         SparkMaxConfig intake2Config = new SparkMaxConfig();
 
         //motor Config
-        //TODO: config values need changed/tuned
+        //TODO: config values need to be changed/tuned
         intake1Config.idleMode(IdleMode.kBrake);
         intake2Config.idleMode(IdleMode.kBrake);
         intake1Config.smartCurrentLimit(50);

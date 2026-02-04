@@ -40,7 +40,7 @@ public class SwerveTeleop {
         myXboxController2 = new XboxController(1);
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
-        // TODO: add second controller.
+        // TODO: add second controller. Variable exists; Needs to be configured?
         // TODO: add driver button box - if you want one
         // TODO: add aux button box - if you want one.
 

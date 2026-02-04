@@ -4,8 +4,11 @@ import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.Matrix;
 
 
 
@@ -32,6 +35,10 @@ public class SwerveOdometry {
         sender.addItemDouble("Y_position", SwerveOdometry::getyposition);
         sender.addItemDouble("Rotation_position", SwerveOdometry::getrotposition);
         sender.addItemDouble("execElapsedTime", SwerveOdometry::getExecCycleTime);
+
+        //TODO make sure these are the right parameters
+        //set up with starting parameters
+        setstartingpose(xpos, ypos, rotpos);
 
 
     }
@@ -92,9 +99,11 @@ public class SwerveOdometry {
     
     }
 
-    // TODO: look at having another function that would also take the vision stddev values as a parameter.
-    public static void addVisionMeasremennt(Pose2d visionPose, double visionTimestamp){
+    public static void addVisionMeasurement(Pose2d visionPose, double visionTimestamp){
         locPoseEst.addVisionMeasurement(visionPose, visionTimestamp);
+    }
+    public static void addVisionMeasurementDevs(Pose2d visionPose, double visionTimestamp, Matrix<N3,N1> visionStdDev){
+        locPoseEst.addVisionMeasurement(visionPose, visionTimestamp, visionStdDev);
     }
 
 

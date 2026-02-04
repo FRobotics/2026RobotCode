@@ -28,7 +28,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
-public class swervemodule {
+public class SwerveModule {
 
 
     // max motor output = 1.0
@@ -58,7 +58,7 @@ public class swervemodule {
     private SwerveModulePosition modulePosition = new SwerveModulePosition();
     private SwerveModuleState moduleState = new SwerveModuleState();
 
-    public swervemodule(double paraXoffset, double paraYoffset, int paradriveid, int paraspinid, int paraspinEnc) {
+    public SwerveModule(double paraXoffset, double paraYoffset, int paradriveid, int paraspinid, int paraspinEnc) {
 
         xOff = paraXoffset;
         yOff = paraYoffset;

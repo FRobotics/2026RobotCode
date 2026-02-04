@@ -59,8 +59,6 @@ public class AutoSystem {
 
      public static void init() {
 
-        // TODO: remove the comments about opening motors.   Auto system has no motors..
-        // open motors
         // set system state
 
         // init network table

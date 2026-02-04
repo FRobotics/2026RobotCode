@@ -29,7 +29,7 @@ public class TurretLauncher {
         
     }
 
-    public static void executeLogic() {
+    public static void executeLogic(double systemElapsedTimeSec) {
 
         locNTSend.triggerUpdate();
     }

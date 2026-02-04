@@ -43,7 +43,7 @@ public class AgitatorSystem {
         
     }
 
-    public static void executeLogic() {
+    public static void executeLogic(double systemElapsedTimeSec) {
 
         // if on, output 0.2
         // if off, output 0

@@ -1,13 +1,14 @@
 package frc.robot;
 
 import Lib4150.Lib4150NetTableSystemSend;
-
-import java.util.function.DoubleSupplier; //TODO: Remove unused import?
+import Lib4150.Lib4150PositionControl;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import Lib4150.Lib4150PositionControl;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class IntakeSystem {
@@ -21,16 +22,18 @@ public class IntakeSystem {
     private static boolean locIntakeExtended = false;  // false if up, true if down.
     private static SparkMax intakeMotor1;
     private static SparkMax intakeMotor2;
+    private static Lib4150PositionControl IntakePositionControl;
     private static DutyCycleEncoder intakeEncoder;
     private static int intakeState;//1 is up off 2 is down off 3 is down on
     private static double intakeAngleTarget;
     public static boolean limitState;
-
+    private static double INTAKEUPANGLE;
+    private static double INTAKEDOWNANGLE;
     private static double encoderRot; //stores current value from encoder
     //TODO: determine up and down angles on the robot -- suggest starting with 90 is up and 0 is down...
     private static double intakeSpeed;
-    //TODO: suggest using position control class to control intake arm position...  See SwerveModule
-
+    private static double intakeAngleMotorDemand;
+  
     public static void init() {
 
         //motors
@@ -58,10 +61,12 @@ public class IntakeSystem {
         intakeSpeed=0;
         intakeState=1;
 
-        limitState = intakeMotor2.getForwardLimitSwitch().isPressed(); //is there only one limit switch?
-
-        //TODO: this will be overwritten by encoder value before use. Is it fine to initalise to zero as default? Please check
+        INTAKEDOWNANGLE= 0;
+        INTAKEUPANGLE=  90;
         encoderRot = 0;
+
+        IntakePositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 
+                            0.005, 0.35, 0.35, 1.0e-5, false, false);
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
@@ -75,48 +80,36 @@ public class IntakeSystem {
         locNTSend.addItemDouble("EncoderRotation", IntakeSystem::getEncoderRot);
 
         locNTSend.triggerUpdate();
-        
-
-        
-        
+         
     }
 
     public static void executeLogic(double systemElapsedTimeSec) {
         limitState = intakeMotor2.getForwardLimitSwitch().isPressed();
+        encoderRot = intakeEncoder.get();
 
         locNTSend.triggerUpdate();
-        //TODO: set actual angles
+        
         if (intakeState>1){
-            intakeAngleTarget=0;
+            intakeAngleTarget= INTAKEDOWNANGLE;
         }else{
-            intakeAngleTarget=90;
+            intakeAngleTarget= INTAKEUPANGLE;
         }
 
         if (intakeState==3){
             intakeSpeed=1;
         }else {
             intakeSpeed=0;
-        }//TODO: set actual speeds for intake speed and angle
-        if (limitState){
-            intakeAngleTarget=0;
         }
-
-        //get encoder rotations
-        encoderRot = intakeEncoder.get();
-        // TODO: This is a type of BANG-BANG control.  It won't work for controlling position!  I don't see the motor being turned off?
-        if (intakeAngleTarget>encoderRot+1){//+1 and -1 for within by 1 degree
-            intakeMotor2.set(1);
-        }else if((intakeAngleTarget<encoderRot-1)&& !(limitState)){
-            intakeMotor2.set(-1);
-        }else{
-            if (intakeState==1){
-                locIntakeExtended=false;
-            }else{
-                locIntakeExtended=true;
-            }
-        }
+        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, encoderRot);
+        intakeMotor2.set(intakeAngleMotorDemand);
+        
         intakeMotor1.set(intakeSpeed);
         
+        if (intakeState==1){
+            locIntakeExtended=false;
+        }else{
+            locIntakeExtended=true;
+        }
     }
 
     public static void setDownOffState(){
@@ -143,7 +136,10 @@ public class IntakeSystem {
     public static boolean getLimitState() {
         return limitState;
     }
-    private static double getEncoderRot() {
+    public static double getEncoderRot() {
         return encoderRot;
+    }
+    public static double getIntakeAngleMotorDemand() {
+        return intakeAngleMotorDemand;
     }
 }

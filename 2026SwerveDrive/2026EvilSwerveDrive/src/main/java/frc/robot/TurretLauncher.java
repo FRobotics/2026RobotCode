@@ -26,6 +26,8 @@ public class TurretLauncher {
     private static Translation2d TurretOffset;
     private static Translation2d goalPose;
     private static double TurretDistance;
+    private static double DesiredTurretAngle;
+    private static double TurretRelativeAngle;
 
     public static void init() {
 
@@ -66,6 +68,10 @@ public class TurretLauncher {
         robotPose.minus(TurretOffset);
 
         TurretDistance=robotPose.getDistance(goalPose);
+
+        DesiredTurretAngle = Math.tan();
+
+        
 
 
 

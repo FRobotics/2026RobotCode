@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
     SwerveOdometry.init();
     SwerveVision.init();
     AutoSystem.init();
+    // todo: add feeder
   
 
   }
@@ -57,12 +58,13 @@ public class Robot extends TimedRobot {
 
     double systemElapsedTimeSec = Timer.getFPGATimestamp();
     SwerveDrive.SwerveExec(systemElapsedTimeSec);
+    SwerveVision.execute(systemElapsedTimeSec);
     SwerveOdometry.execute(systemElapsedTimeSec);
     Climb.executeLogic(systemElapsedTimeSec);
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
-    SwerveVision.execute(systemElapsedTimeSec);
     TurretLauncher.executeLogic(systemElapsedTimeSec);
+    // TODO: add feeder
 
   }
 

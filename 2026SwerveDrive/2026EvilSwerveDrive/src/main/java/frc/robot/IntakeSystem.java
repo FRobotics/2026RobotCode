@@ -7,7 +7,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import Lib4150.Lib4150PositionControl;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
@@ -16,6 +15,12 @@ public class IntakeSystem {
     private IntakeSystem(){}
 
     // contants
+    //TODO: determine up and down angles on the robot -- suggest starting with 90 is up and 0 is down...
+    private static final double INTAKEUPANGLE = 90.0;
+    private static final double INTAKEDOWNANGLE = 0.0;
+
+    private static final double PICKUP_MOTOR_ON = 0.25;
+    private static final double PICKUP_MOTOR_OFF = 0.0;
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -27,10 +32,7 @@ public class IntakeSystem {
     private static int intakeState;//1 is up off 2 is down off 3 is down on
     private static double intakeAngleTarget;
     public static boolean limitState;
-    private static double INTAKEUPANGLE;
-    private static double INTAKEDOWNANGLE;
     private static double encoderRot; //stores current value from encoder
-    //TODO: determine up and down angles on the robot -- suggest starting with 90 is up and 0 is down...
     private static double intakeSpeed;
     private static double intakeAngleMotorDemand;
   
@@ -61,8 +63,6 @@ public class IntakeSystem {
         intakeSpeed=0;
         intakeState=1;
 
-        INTAKEDOWNANGLE= 0;
-        INTAKEUPANGLE=  90;
         encoderRot = 0;
 
         IntakePositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 
@@ -87,29 +87,41 @@ public class IntakeSystem {
         limitState = intakeMotor2.getForwardLimitSwitch().isPressed();
         encoderRot = intakeEncoder.get();
 
-        locNTSend.triggerUpdate();
         
+        //1 is up off 2 is down off 3 is down on
+
+        // down (on or off )
         if (intakeState>1){
             intakeAngleTarget= INTAKEDOWNANGLE;
-        }else{
+        }
+        // up
+        else{
             intakeAngleTarget= INTAKEUPANGLE;
         }
 
+        // on
         if (intakeState==3){
-            intakeSpeed=1;
-        }else {
-            intakeSpeed=0;
+            intakeSpeed=PICKUP_MOTOR_ON;
         }
+        // off
+        else {
+            intakeSpeed=PICKUP_MOTOR_OFF;
+        }
+
+        // do control
         intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, encoderRot);
         intakeMotor2.set(intakeAngleMotorDemand);
         
         intakeMotor1.set(intakeSpeed);
         
+        // TODO: what is this for?  Maybe check the actual angle -- encoderRot -- instead.  
         if (intakeState==1){
             locIntakeExtended=false;
         }else{
             locIntakeExtended=true;
         }
+
+        locNTSend.triggerUpdate();
     }
 
     public static void setDownOffState(){

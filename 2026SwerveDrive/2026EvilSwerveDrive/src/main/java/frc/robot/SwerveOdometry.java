@@ -25,7 +25,12 @@ public class SwerveOdometry {
     public static void init(){
         // TODO: put some comments here.  For example, this is the initial robot position (pose)
         Pose2d initPose = new Pose2d(0.0,0.0,new Rotation2d(0.0));
+
         
+        //TODO make sure these are the right parameters
+        //set up with starting parameters
+        setStartingPose(initPose.getX(),initPose.getY(),initPose.getRotation().getRadians());
+
         
         locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );        
         //add items to push to network tables
@@ -34,10 +39,6 @@ public class SwerveOdometry {
         sender.addItemDouble("Y_position", SwerveOdometry::getyposition);
         sender.addItemDouble("Rotation_position", SwerveOdometry::getrotposition);
         sender.addItemDouble("execElapsedTime", SwerveOdometry::getExecCycleTime);
-
-        //TODO make sure these are the right parameters
-        //set up with starting parameters
-        setStartingPose(xpos, ypos, rotpos);
 
 
     }

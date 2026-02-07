@@ -26,7 +26,7 @@ public class TurretLauncher {
     private static Translation2d TurretOffset;
     private static Translation2d goalPose;
     private static double TurretDistance;
-    private static double DesiredTurretAngle;
+    private static Rotation2d DesiredTurretAngle;
     private static double TurretRelativeAngle;
 
     public static void init() {
@@ -48,7 +48,7 @@ public class TurretLauncher {
         //set initial system state
         TurretOffset = new Translation2d(4.872 , 0);
         //TODO: get the values of the goal position based on alliance
-        goalPose = new Translation2d();
+        goalPose = new Translation2d(470, 158);
         
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
@@ -69,9 +69,9 @@ public class TurretLauncher {
 
         TurretDistance=robotPose.getDistance(goalPose);
 
-        DesiredTurretAngle = Math.tan();
+        DesiredTurretAngle = (goalPose.minus(robotPose)).getAngle();
 
-        
+        DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()));
 
 
 

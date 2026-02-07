@@ -41,17 +41,18 @@ public class SwerveVision {
            
     }
     
-    public static void execute(){
+    public static void execute(double systemElapsedTimeSec){
 
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
 
         for (var result : camera1.getAllUnreadResults()) {
             visionEst = photonPoseEstimator1.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
+            if (visionEst.isPresent()) {
+                SwerveOdometry.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds);
+            }
+            else {
                 visionEst = photonPoseEstimator1.estimatePnpDistanceTrigSolvePose(result);
             }
-            // TODO: Only call below function if visionEst.isPresent().  had to "get" individual items from the "visionEst" variable.
-            SwerveOdometry.addVisionMeasremennt(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds);
         }
 
 
@@ -60,7 +61,7 @@ public class SwerveVision {
     
 
     // TODO: Suggest creating a fast thread to check network tables for updates or use a NT subscriber function.
-    
+
 
 
 

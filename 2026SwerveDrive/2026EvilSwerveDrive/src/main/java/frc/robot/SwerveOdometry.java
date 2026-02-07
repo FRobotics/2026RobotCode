@@ -4,8 +4,11 @@ import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.Matrix;
 
 
 
@@ -23,15 +26,18 @@ public class SwerveOdometry {
         // TODO: put some comments here.  For example, this is the initial robot position (pose)
         Pose2d initPose = new Pose2d(0.0,0.0,new Rotation2d(0.0));
         
-        locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );
-        setstartingpose(0.0, 0.0, 0.0);
         
-
+        locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );        
+        //add items to push to network tables
         sender = new Lib4150NetTableSystemSend("Odometry");
         sender.addItemDouble("X_position", SwerveOdometry::getxposition);
         sender.addItemDouble("Y_position", SwerveOdometry::getyposition);
         sender.addItemDouble("Rotation_position", SwerveOdometry::getrotposition);
         sender.addItemDouble("execElapsedTime", SwerveOdometry::getExecCycleTime);
+
+        //TODO make sure these are the right parameters
+        //set up with starting parameters
+        setStartingPose(xpos, ypos, rotpos);
 
 
     }
@@ -45,7 +51,7 @@ public class SwerveOdometry {
 
         //currTimeSecs, gyroangle(Rotation2D), wheelPosition(serveModukePosition{})
 
-        locPoseEst.updateWithTime( systemElapsedTime, new Rotation2d(Units.degreesToRadians(SwerveDrive.getYaw())), SwerveDrive.getModulePositions());
+        locPoseEst.updateWithTime(systemElapsedTime, new Rotation2d(Units.degreesToRadians(SwerveDrive.getYaw())), SwerveDrive.getModulePositions());
         xpos = locPoseEst.getEstimatedPosition().getX();
         ypos = locPoseEst.getEstimatedPosition().getY();
         rotpos = locPoseEst.getEstimatedPosition().getRotation().getRadians();
@@ -83,7 +89,7 @@ public class SwerveOdometry {
 
    
     
-    public static void setstartingpose(double xPos, double yPos, double rotRadians){
+    public static void setStartingPose(double xPos, double yPos, double rotRadians){
         Rotation2d rot= new Rotation2d(rotRadians);
         Pose2d newPose = new Pose2d(xPos, yPos, rot);
         //Pose2D is object that stores x,y,and rotation in radians. 
@@ -92,9 +98,11 @@ public class SwerveOdometry {
     
     }
 
-    // TODO: look at having another function that would also take the vision stddev values as a parameter.
-    public static void addVisionMeasremennt(Pose2d visionPose, double visionTimestamp){
+    public static void addVisionMeasurement(Pose2d visionPose, double visionTimestamp){
         locPoseEst.addVisionMeasurement(visionPose, visionTimestamp);
+    }
+    public static void addVisionMeasurementDevs(Pose2d visionPose, double visionTimestamp, Matrix<N3,N1> visionStdDev){
+        locPoseEst.addVisionMeasurement(visionPose, visionTimestamp, visionStdDev);
     }
 
 

@@ -58,12 +58,11 @@ public class Robot extends TimedRobot {
     double systemElapsedTimeSec = Timer.getFPGATimestamp();
     SwerveDrive.SwerveExec(systemElapsedTimeSec);
     SwerveOdometry.execute(systemElapsedTimeSec);
-    // TODO: pass systemElapsedTimeSec to these methods too...
-    Climb.executeLogic();
-    IntakeSystem.executeLogic();
-    AgitatorSystem.executeLogic();
-    SwerveVision.execute();
-    TurretLauncher.executeLogic();
+    Climb.executeLogic(systemElapsedTimeSec);
+    IntakeSystem.executeLogic(systemElapsedTimeSec);
+    AgitatorSystem.executeLogic(systemElapsedTimeSec);
+    SwerveVision.execute(systemElapsedTimeSec);
+    TurretLauncher.executeLogic(systemElapsedTimeSec);
 
   }
 

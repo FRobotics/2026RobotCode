@@ -1,7 +1,8 @@
 package frc.robot;
 
+//TODO: remove unused imports?
 // import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
+// import java.util.function.Supplier; 
 // import java.util.function.BooleanSupplier;
 
 import Lib4150.Lib4150NetTableSystemSend;
@@ -23,10 +24,10 @@ public class SwerveDrive {
     public static final double maxLinearSpeed = 13.0; // measured in fps
     public static final double maxRotSpeed = 360.0; //measured in degrees
 
-    static private swervemodule module1;
-    static private swervemodule module2;
-    static private swervemodule module3;
-    static private swervemodule module4;
+    static private SwerveModule module1;
+    static private SwerveModule module2;
+    static private SwerveModule module3;
+    static private SwerveModule module4;
     static private ChassisSpeeds locSpeedTarget = new ChassisSpeeds();
     static private ChassisSpeeds locSpeedActual = new ChassisSpeeds();
     static public SwerveDriveKinematics publicDriveKinematics;
@@ -44,10 +45,10 @@ public class SwerveDrive {
 
     static public void SwerveInit(){    
         //module1 is left front, module2 is right front, module3 is left rear, module4 is right rear
-        module1=new swervemodule(Units.inchesToMeters(motorOffsetX), Units.inchesToMeters(motorOffsetY), 20, 21, 22);
-        module2=new swervemodule(Units.inchesToMeters(motorOffsetX), -1*Units.inchesToMeters(motorOffsetY), 30, 31, 32);
-        module3=new swervemodule(-1*Units.inchesToMeters(motorOffsetX), Units.inchesToMeters(motorOffsetY), 40, 41, 42);
-        module4=new swervemodule(-1*Units.inchesToMeters(motorOffsetX), -1*Units.inchesToMeters(motorOffsetY), 50, 51, 52);
+        module1=new SwerveModule(Units.inchesToMeters(motorOffsetX), Units.inchesToMeters(motorOffsetY), 20, 21, 22);
+        module2=new SwerveModule(Units.inchesToMeters(motorOffsetX), -1*Units.inchesToMeters(motorOffsetY), 30, 31, 32);
+        module3=new SwerveModule(-1*Units.inchesToMeters(motorOffsetX), Units.inchesToMeters(motorOffsetY), 40, 41, 42);
+        module4=new SwerveModule(-1*Units.inchesToMeters(motorOffsetX), -1*Units.inchesToMeters(motorOffsetY), 50, 51, 52);
 
         //init kinematics
         publicDriveKinematics = new SwerveDriveKinematics(
@@ -68,17 +69,21 @@ public class SwerveDrive {
         // DoubleSupplier gyroPitch = () -> swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kPitch);
         // BooleanSupplier gyroConnect = () -> swerveGyro.isConnected();
 
-        // TODO: NO.  What is this?  Don't pass strings to network tables - unless there is no other choice.  Break out each part of the value.
-        Supplier<String> speedTarget = () -> locSpeedTarget.toString();
+        //speed target stuff
+        sender.addItemDouble("vxTarget", SwerveDrive::getTargetVX);
+        sender.addItemDouble("vyTarget", SwerveDrive::getTargetVY);
+        sender.addItemDouble("omegaTarget", SwerveDrive::getTargetOmega);
 
         //Pitch and roll are swapped
         sender.addItemDouble("Pitch", SwerveDrive::getPitch);
         sender.addItemDouble("Roll", SwerveDrive::getRoll);
         sender.addItemDouble("Yaw", SwerveDrive::getYaw);
         sender.addItemBoolean("Connected", SwerveDrive::getGyroConnected);
-        // TODO: change string to VelXDmd, VelYDmd, VelRotDmd items...
-        sender.addItemString("Speed Target", speedTarget);
-        // TODO: Send actual X,Y,Rotation speed.
+
+        //Send actual X,Y,Rotation speed.
+        sender.addItemDouble("vxActual", SwerveDrive::getActualVX);
+        sender.addItemDouble("vyActual", SwerveDrive::getActualVY);
+        sender.addItemDouble("omegaActual", SwerveDrive::getActualOmega);
 
         
     }
@@ -102,14 +107,32 @@ public class SwerveDrive {
     static public ChassisSpeeds getTargetSpeed(){
         return locSpeedTarget;
     }
+    //individual parts of target speed
+    static public double getTargetVX() {
+        return locSpeedTarget.vxMetersPerSecond;
+    }
+    static public double getTargetVY() {
+        return locSpeedTarget.vyMetersPerSecond;
+    }
+    static public double getTargetOmega() {
+        return locSpeedTarget.omegaRadiansPerSecond;
+    }
 
-    // TODO: Add getters for individual parts of TargetSpeed
-
+    
     static public ChassisSpeeds getActualSpeed(){
         return locSpeedActual;
     }
-
-    // TODO: Add getters for individual parts of ActualSpeed
+    //individual parts of actual speed
+    static public double getActualVX() {
+        return locSpeedActual.vxMetersPerSecond;
+    }
+    static public double getActualVY() {
+        return locSpeedActual.vyMetersPerSecond;
+    }
+    static public double getActualOmega() {
+        return locSpeedActual.omegaRadiansPerSecond;
+    }
+    
 
     static public SwerveModulePosition[] getModulePositions(){
         SwerveModulePosition[] xxxx =  { module1.getModulePosition(), module2.getModulePosition(), module3.getModulePosition(), module4.getModulePosition()};

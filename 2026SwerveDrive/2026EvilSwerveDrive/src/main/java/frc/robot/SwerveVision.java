@@ -9,6 +9,7 @@ import org.photonvision.PhotonPoseEstimator;
 //import org.photonvision.targeting.PhotonPipelineResult;
 //import org.photonvision.targeting.PhotonTrackedTarget;
 
+import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -19,7 +20,9 @@ import edu.wpi.first.math.util.Units;
 public class SwerveVision {
     
     private static final String cam1name = "Arducam_OV9281_USB_Camera";
+    private static Lib4150NetTableSystemSend    locNtSend;
 
+    private static long locCam1Count = 0;
     private static PhotonCamera camera1;
     private static PhotonPoseEstimator photonPoseEstimator1;
     private static AprilTagFieldLayout fieldLayout;
@@ -29,8 +32,8 @@ public class SwerveVision {
                                                                 Units.inchesToMeters(11.0), 
                                                                 Units.inchesToMeters(8.5), 
                                                 new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(15.0), 
-                                                                Units.degreesToRadians(25.0)));
+                                                                Units.degreesToRadians(-15.0), 
+                                                                Units.degreesToRadians(-25.0)));
 
     private SwerveVision(){}
 
@@ -48,6 +51,11 @@ public class SwerveVision {
 
 
         photonPoseEstimator1 = new PhotonPoseEstimator(fieldLayout,robotToCamera1);
+
+        
+        //add items to push to network tables
+        locNtSend = new Lib4150NetTableSystemSend("Vision");
+        locNtSend.addItemDouble("Cam1Count", SwerveVision::getCam1Count);
            
     }
 
@@ -64,15 +72,18 @@ public class SwerveVision {
                 visionEst = photonPoseEstimator1.estimatePnpDistanceTrigSolvePose(result);
             }
             if ( visionEst.isPresent() ) {
+                locCam1Count++;
                 SwerveOdometry.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds);
             }
         }
 
-
+        locNtSend.triggerUpdate();
 
     }
     
-
+    public static double getCam1Count() {
+        return (double)locCam1Count;
+    }
 
 
 

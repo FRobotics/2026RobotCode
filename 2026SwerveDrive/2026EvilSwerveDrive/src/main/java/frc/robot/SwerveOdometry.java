@@ -23,16 +23,20 @@ public class SwerveOdometry {
     static private double execElapsedTime = 0.0;
     
     public static void init(){
+
         // TODO: put some comments here.  For example, this is the initial robot position (pose)
         Pose2d initPose = new Pose2d(0.0,0.0,new Rotation2d(0.0));
+        
+        locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );        
 
         
         //TODO make sure these are the right parameters
         //set up with starting parameters
         setStartingPose(initPose.getX(),initPose.getY(),initPose.getRotation().getRadians());
 
-        
-        locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );        
+
+
+
         //add items to push to network tables
         sender = new Lib4150NetTableSystemSend("Odometry");
         sender.addItemDouble("X_position", SwerveOdometry::getxposition);

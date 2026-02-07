@@ -75,10 +75,10 @@ public class SwerveDrive {
         sender.addItemDouble("omegaTarget", SwerveDrive::getTargetOmega);
 
         //Pitch and roll are swapped
-        sender.addItemDouble("Pitch", SwerveDrive::getPitch);
-        sender.addItemDouble("Roll", SwerveDrive::getRoll);
-        sender.addItemDouble("Yaw", SwerveDrive::getYaw);
-        sender.addItemBoolean("Connected", SwerveDrive::getGyroConnected);
+        sender.addItemDouble("GyroPitch", SwerveDrive::getPitch);
+        sender.addItemDouble("GyroRoll", SwerveDrive::getRoll);
+        sender.addItemDouble("GyroYaw", SwerveDrive::getYaw);
+        sender.addItemBoolean("GyroConnected", SwerveDrive::getGyroConnected);
 
         //Send actual X,Y,Rotation speed.
         sender.addItemDouble("vxActual", SwerveDrive::getActualVX);
@@ -160,6 +160,8 @@ public class SwerveDrive {
         module4.ExecuteLogic( desiredModStates[3], systemElapsedTimeSec);
 
         // TODO: Calculate actual chassis speed from module states so other systems can see this!
+        locSpeedActual = publicDriveKinematics.toChassisSpeeds( module1.getSwerveModuleState(), module2.getSwerveModuleState(), 
+                                                                module3.getSwerveModuleState(), module4.getSwerveModuleState() );
 
         //update network tables
         sender.triggerUpdate();

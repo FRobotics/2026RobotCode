@@ -1,17 +1,17 @@
 package frc.robot;
 
-import java.util.List;
+//import java.util.List;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
+//import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+//import org.photonvision.targeting.PhotonPipelineResult;
+//import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
+//import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class SwerveVision {
@@ -40,6 +40,9 @@ public class SwerveVision {
         photonPoseEstimator1 = new PhotonPoseEstimator(fieldLayout,robotToCamera1);
            
     }
+
+
+    // TODO: Suggest creating a fast thread to check network tables for updates or use a NT subscriber function.
     
     public static void execute(double systemElapsedTimeSec){
 
@@ -47,11 +50,11 @@ public class SwerveVision {
 
         for (var result : camera1.getAllUnreadResults()) {
             visionEst = photonPoseEstimator1.estimateCoprocMultiTagPose(result);
-            if (visionEst.isPresent()) {
-                SwerveOdometry.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds);
-            }
-            else {
+            if (visionEst.isEmpty()) {
                 visionEst = photonPoseEstimator1.estimatePnpDistanceTrigSolvePose(result);
+            }
+            if ( visionEst.isPresent() ) {
+                SwerveOdometry.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds);
             }
         }
 
@@ -59,8 +62,6 @@ public class SwerveVision {
 
     }
     
-
-    // TODO: Suggest creating a fast thread to check network tables for updates or use a NT subscriber function.
 
 
 

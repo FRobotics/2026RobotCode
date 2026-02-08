@@ -32,15 +32,16 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    SwerveDrive.SwerveInit();
     SwerveTeleop.init();
+    SwerveDrive.SwerveInit();
     SwerveOdometry.init();
     SwerveVision.init();
+    IntakeSystem.init();
+    AgitatorSystem.init();
+    FeederSystem.init();
     // Climb.init();
     // TurretLauncher.init();
-    // IntakeSystem.init();
-    // AgitatorSystem.init();
-    // AutoSystem.init();
+    // AutoSystem.init(); 
     // todo: add feeder
   
 
@@ -59,12 +60,13 @@ public class Robot extends TimedRobot {
     double systemElapsedTimeSec = Timer.getFPGATimestamp();
 
     SwerveDrive.SwerveExec(systemElapsedTimeSec);
-    SwerveVision.execute(systemElapsedTimeSec);
     SwerveOdometry.execute(systemElapsedTimeSec);
-    // Climb.executeLogic(systemElapsedTimeSec);
-    // IntakeSystem.executeLogic(systemElapsedTimeSec);
-    // AgitatorSystem.executeLogic(systemElapsedTimeSec);
+    SwerveVision.execute(systemElapsedTimeSec);
+    IntakeSystem.executeLogic(systemElapsedTimeSec);
+    AgitatorSystem.executeLogic(systemElapsedTimeSec);
+    FeederSystem.executeLogic();
     // TurretLauncher.executeLogic(systemElapsedTimeSec);
+    // Climb.executeLogic(systemElapsedTimeSec);
     // TODO: add feeder
 
   }

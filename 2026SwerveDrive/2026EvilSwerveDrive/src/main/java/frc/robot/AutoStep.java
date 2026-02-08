@@ -15,10 +15,13 @@ public class AutoStep {
         FollowRelTrajectory,
         AutoWait,
         FollowAbsTrajWithTimedCmd,
-        FollowRelTrajWithTimedComd,
-        IntakUpOff,
-        IntakeDownOff,
-        IntakeDownOn
+        FollowRelTrajWithTimedComd, 
+        Collect,
+        Shoot,
+        Stop,
+        BallsToAlliance,
+        Climb,
+        Descend
 
     }
 

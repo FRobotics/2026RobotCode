@@ -42,6 +42,6 @@ public class AutoRoutine {
     public String getAutoDescription(){
         return locAutoDescription;
     }
-    // TODO: Check getter ^^ for auto description.
+
 
 }

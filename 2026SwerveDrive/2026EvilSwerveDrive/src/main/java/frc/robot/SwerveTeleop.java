@@ -87,6 +87,9 @@ public class SwerveTeleop {
         //-----tell drive system our desired speed
         SwerveDrive.setDesiredSpeed(myChassisSpeeds);
 
+        //------- Second controller buttons
+        myXboxController2.a(null);
+
       
         endTime = Timer.getFPGATimestamp();
         exeTime = (endTime-startTime)*1000;

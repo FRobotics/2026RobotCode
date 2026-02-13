@@ -1,29 +1,40 @@
 
 package frc.robot;
 
-import choreo.trajectory.Trajectory;
-import choreo.trajectory.TrajectorySample;
-import choreo.trajectory.DifferentialSample;
-import choreo.trajectory.EventMarker;
-import choreo.trajectory.SwerveSample;
-import choreo.auto.AutoChooser;
-import choreo.auto.AutoRoutine;
-import choreo.auto.AutoTrajectory;
-import choreo.util.ChoreoAlert;
-import choreo.util.ChoreoAlert.MultiAlert;
-import choreo.util.ChoreoAllianceFlipUtil;
-import choreo.util.ChoreoAllianceFlipUtil.Flipper;
-import choreo.util.TrajSchemaVersion;
-import choreo.Choreo.TrajectoryCache;
+import choreo.Choreo;
+
 
 public class TrajectorySystem {
-    
+   
+    private static Choreo.TrajectoryCache TrajectoryStorage;
+
+    private static Trajectory<SwerveSample> TrajectoryToRun;
+
+    private TrajectorySystem(){
+
+    }
+
     public static void TrajectoryInit() {
 
-        
+        TrajectoryStorage = new Choreo.TrajectoryCache();
+
+        String[] TrajectoryNames = Choreo.availableTrajectories();
+
+        for ( String oneTraj : TrajectoryNames     )  {
+
+            TrajectoryStorage.loadTrajectory(oneTraj);
+
+        }
+    
 
 
+    }
 
+    public static boolean FollowTrajectory(Boolean Init, String TrajectoryName){
+
+        if(Init){
+            TrajectoryToRun = TrajectoryStorage.loadTrajectory(TrajectoryName);
+        }
     }
 
 }

@@ -4,6 +4,7 @@ package frc.robot;
 
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,7 +23,7 @@ public class SwerveTeleop {
     //private static final double circumfrence=2*Math.PI*motorOffsetTotal;
     //private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
     // true is field orient false is robot orient
-    private static boolean orient;
+    private static boolean orient = true; //true is field false is robot oriented
     private static double exeTime=0.0;
     private static double endTime=0.0;
     private static double lastStartTime=0.0;
@@ -53,6 +54,7 @@ public class SwerveTeleop {
     }
     
     public static void SwerveExecute(){
+        
         //start time --- only for diagnostices !!!
         startTime = Timer.getFPGATimestamp();
         periodicTime = (startTime - lastStartTime)*1000;
@@ -62,7 +64,9 @@ public class SwerveTeleop {
         YIn=myXboxController.getLeftX();
         XIn=myXboxController.getLeftY();  //reverses the x and y
         RotIn=myXboxController.getRightX();
-        
+        if (myXboxController.getLeftStickButtonPressed()){
+            orient= !orient;
+        }
 
         // --------apply deadband to joystick....
         YIn=MathUtil.applyDeadband(YIn,.05);
@@ -84,11 +88,36 @@ public class SwerveTeleop {
         myChassisSpeeds.vxMetersPerSecond = Units.feetToMeters(-XInFT);
         myChassisSpeeds.vyMetersPerSecond = Units.feetToMeters(-YInFT);
         myChassisSpeeds.omegaRadiansPerSecond = Units.degreesToRadians(-RotInDeg);
+
+        if (orient) {
+            myChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(myChassisSpeeds, new Rotation2d(SwerveOdometry.getrotposition()));
+        }
+
         //-----tell drive system our desired speed
         SwerveDrive.setDesiredSpeed(myChassisSpeeds);
 
         //------- Second controller buttons
-        myXboxController2.a(null);
+        if (myXboxController2.getAButtonPressed()){
+            SupervisoryCmds.Collecting();
+        }
+        if (myXboxController2.getBButtonPressed()){
+            SupervisoryCmds.StopAction();
+        }
+        if(myXboxController2.getLeftBumperButtonPressed()){
+            SupervisoryCmds.Shooting();
+        }
+        if (myXboxController2.getRightBumperButtonPressed()){
+            SupervisoryCmds.BallsToAlliance();
+        }
+        if (myXboxController2.getYButtonPressed()){
+            SupervisoryCmds.Descend();
+        }
+        if (myXboxController2.getXButtonPressed()){
+            SupervisoryCmds.Climb();
+        }
+        
+        
+
 
       
         endTime = Timer.getFPGATimestamp();

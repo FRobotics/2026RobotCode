@@ -1,8 +1,15 @@
 package frc.robot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 import Lib4150.Lib4150NetTableSystemSend;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.AutoStep.StepCmd;
 public class AutoSystem {
 
     private static Lib4150NetTableSystemSend locNTSend;
@@ -13,7 +20,8 @@ public class AutoSystem {
     private static AutoRoutine locExecRoutine;
     private static Timer autoTimer = new Timer();
     private static boolean locExecDoNextStep = false;
-    
+    private static String AUTO_FILE_EXTENSION = ".csv";
+    private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
 
     public static void ExecuteListInit(AutoRoutine autoToRun ) {
 
@@ -27,8 +35,60 @@ public class AutoSystem {
 
         // -------we should init this step...
         locExecInitStep = true;
+        
     }
 
+    public static String[] availableTrajectories() {
+        List<String> autos = new ArrayList<>();
+        File[] files = AUTO_DIR.listFiles();
+        if (files != null) {
+                for (File file : files) {
+                        if (file.getName().endsWith(AUTO_FILE_EXTENSION)) {
+                                autos.add(
+                                file.getName().substring(0, file.getName().length() - AUTO_FILE_EXTENSION.length()));
+                        }
+                 }
+        }
+        return autos.toArray(new String[0]);
+    }
+
+    public static ArrayList<AutoRoutine> readFiles(String[] files){
+        ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
+        for (String fileInstance : files){
+                
+                try (Scanner myReader = new Scanner(fileInstance)) {
+                        while (myReader.hasNextLine()) {
+                                String data = myReader.nextLine();
+                                if (!data.startsWith("#")){
+                                        String[] datas = data.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                                        int commandNum;
+                                        double timeout;
+                                        double param1;
+                                        double param2;
+                                        double param3;
+                                        String Funcname;
+                                        commandNum = (int)Double.parseDouble(datas[0]);
+                                        timeout = Double.parseDouble(datas[1]);
+                                        param1 = Double.parseDouble(datas[2]);
+                                        param2 = Double.parseDouble(datas[3]);
+                                        param3 = Double.parseDouble(datas[4]);
+                                        Funcname = datas[5];
+                                        
+                                        AutoStep newStep=new AutoStep(AutoStep.StepCmd(commandNum), timeout, param1, param2, param3, Funcname);
+                                        
+                                }
+                        }
+                        
+                } catch (FileNotFoundException e) {
+      
+                        e.printStackTrace();
+                }
+        }
+        return routines;
+    }
+      
+
+    
      // TODO: This may have to change.  It looks like java wants to call the execute routine every 20ms.  The concept is the same...not a for loop though..
     public static void ExecuteList(){
 

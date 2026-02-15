@@ -3,6 +3,7 @@ package frc.robot;
 import Lib4150.Lib4150NetTableSystemSend;
 import Lib4150.Lib4150PositionControl;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -27,6 +28,7 @@ public class IntakeSystem {
     private static boolean locIntakeExtended = false;  // false if up, true if down.
     private static SparkMax intakeMotor1;
     private static SparkMax intakeMotor2;
+    private static RelativeEncoder intakeMotor1Encoder;
     private static Lib4150PositionControl IntakePositionControl;
     private static DutyCycleEncoder intakeEncoder;
     private static int intakeState;//1 is up off 2 is down off 3 is down on
@@ -34,13 +36,18 @@ public class IntakeSystem {
     public static boolean limitState;
     private static double encoderRot; //stores current value from encoder
     private static double intakeSpeed;
+    private static double intakeMotorRPM;
     private static double intakeAngleMotorDemand;
   
     public static void init() {
 
         //motors
+        // TODO: Say which motor is arm and which is intake....  Is 1 intake, and 2 arm ??
         intakeMotor1 = new SparkMax(1,MotorType.kBrushless);
         intakeMotor2 = new SparkMax(2,MotorType.kBrushless);
+
+        intakeMotor1Encoder = intakeMotor1.getEncoder();
+
         
         //open motor config
         SparkMaxConfig intake1Config = new SparkMaxConfig();
@@ -56,6 +63,7 @@ public class IntakeSystem {
         intake2Config.openLoopRampRate(0.08);
         
         //sensors
+        // TODO: This doesn't appear to be correct...
         intakeEncoder = new DutyCycleEncoder(4);
 
         //initial state
@@ -74,18 +82,26 @@ public class IntakeSystem {
         locNTSend.addItemBoolean("IntakeLimitIsPressed", IntakeSystem::getLimitState);
 
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
+        // TODO: This appears to be redundant.
         locNTSend.addItemBoolean("IntakeIsExtendedOn", IntakeSystem::getIntakeExtended);
         
         //encoder rotations
+        // TODO: Is this intake or arm motor ????
         locNTSend.addItemDouble("EncoderRotation", IntakeSystem::getEncoderRot);
+        locNTSend.addItemDouble("IntakeAngleTarget", IntakeSystem::getIntakeAngleTarget);
+
+        locNTSend.addItemDouble("IntakeMotorOut", IntakeSystem::getIntakeSpeed);
+        locNTSend.addItemDouble("IntakeMotorRPM", IntakeSystem::getIntakeMotorRPM);
 
         locNTSend.triggerUpdate();
          
     }
 
     public static void executeLogic(double systemElapsedTimeSec) {
+        // TODO: limit switch is likely wired to roboRIO... so this won't work.
         limitState = intakeMotor2.getForwardLimitSwitch().isPressed();
         encoderRot = intakeEncoder.get();
+        intakeMotorRPM = intakeMotor1Encoder.getVelocity();
 
         
         //1 is up off 2 is down off 3 is down on
@@ -138,6 +154,9 @@ public class IntakeSystem {
     }
     public static double getIntakeSpeed(){
         return intakeSpeed;
+    }
+    public static double getIntakeMotorRPM(){
+        return intakeMotorRPM;
     }
     public static double getIntakeAngleTarget(){
         return intakeAngleTarget;

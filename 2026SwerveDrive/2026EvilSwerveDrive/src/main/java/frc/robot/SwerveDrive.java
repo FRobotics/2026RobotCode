@@ -37,6 +37,7 @@ public class SwerveDrive {
     static private double gyroPitchDeg = 0.0;
     static private boolean gyroConnected = false;
     static private Lib4150NetTableSystemSend sender;
+    
 
 
     private SwerveDrive (){

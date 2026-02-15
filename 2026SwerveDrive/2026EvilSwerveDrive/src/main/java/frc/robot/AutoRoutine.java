@@ -18,6 +18,10 @@ public class AutoRoutine {
         }
     }
 
+    public AutoRoutine(String autoDescription, ArrayList<AutoStep> routine){
+        locAutoSteps.addAll(locAutoSteps.size(), routine);
+    }
+
     //amount of steps, 
     public int getStepAmount(){
         return locAutoSteps.size();

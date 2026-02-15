@@ -9,7 +9,6 @@ import java.util.Scanner;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.AutoStep.StepCmd;
 public class AutoSystem {
 
     private static Lib4150NetTableSystemSend locNTSend;
@@ -57,6 +56,7 @@ public class AutoSystem {
         for (String fileInstance : files){
                 
                 try (Scanner myReader = new Scanner(fileInstance)) {
+                        ArrayList<AutoStep> newRoutine= new ArrayList<AutoStep>();
                         while (myReader.hasNextLine()) {
                                 String data = myReader.nextLine();
                                 if (!data.startsWith("#")){
@@ -74,10 +74,12 @@ public class AutoSystem {
                                         param3 = Double.parseDouble(datas[4]);
                                         Funcname = datas[5];
                                         
-                                        AutoStep newStep=new AutoStep(AutoStep.StepCmd(commandNum), timeout, param1, param2, param3, Funcname);
-                                        
+                                        AutoStep newStep=new AutoStep(AutoStep.StepCommandCases(commandNum), timeout, param1, param2, param3, Funcname);
+                                        newRoutine.add(newStep);
                                 }
+
                         }
+                        
                         
                 } catch (FileNotFoundException e) {
       

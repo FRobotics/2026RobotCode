@@ -27,8 +27,41 @@
 			<Item Name="Initialize Camera and CheckList.vi" Type="VI" URL="../Initialize Camera and CheckList.vi"/>
 			<Item Name="Handle Camera Configuration.vi" Type="VI" URL="../Handle Camera Configuration.vi"/>
 		</Item>
+		<Item Name="FixedSizeVI" Type="Folder">
+			<Item Name="Adjust Dashboard Window_NO_RESIZE.vi" Type="VI" URL="../Adjust Dashboard Window_NO_RESIZE.vi"/>
+		</Item>
+		<Item Name="SystemPanels" Type="Folder">
+			<Property Name="NI.SortType" Type="Int">0</Property>
+			<Item Name="AgitatorSystem.vi" Type="VI" URL="../AgitatorSystem.vi"/>
+			<Item Name="ClimbSystem.vi" Type="VI" URL="../ClimbSystem.vi"/>
+			<Item Name="DriveSystem.vi" Type="VI" URL="../DriveSystem.vi"/>
+			<Item Name="FeederSystem.vi" Type="VI" URL="../FeederSystem.vi"/>
+			<Item Name="IntakeSystem.vi" Type="VI" URL="../IntakeSystem.vi"/>
+			<Item Name="LauncherSystem.vi" Type="VI" URL="../LauncherSystem.vi"/>
+			<Item Name="TurretSystem.vi" Type="VI" URL="../TurretSystem.vi"/>
+			<Item Name="VisionSystem.vi" Type="VI" URL="../VisionSystem.vi"/>
+		</Item>
+		<Item Name="FieldElements" Type="Folder">
+			<Item Name="SmallDot.png" Type="Document" URL="../SmallDot.png"/>
+			<Item Name="Robot_kitbot_5.png" Type="Document" URL="../Robot_kitbot_5.png"/>
+			<Item Name="Robot_kitbot_4.png" Type="Document" URL="../Robot_kitbot_4.png"/>
+		</Item>
+		<Item Name="FieldInfo" Type="Folder" URL="../FieldInfo">
+			<Property Name="NI.DISK" Type="Bool">true</Property>
+		</Item>
+		<Item Name="VIsualControls" Type="Folder">
+			<Item Name="IntakeControl.xctl" Type="XControl" URL="../VisualControls/Intake/IntakeControl.xctl"/>
+		</Item>
+		<Item Name="Windows" Type="Folder">
+			<Item Name="DriveModuleTrend.vi" Type="VI" URL="../DriveModuleTrend.vi"/>
+			<Item Name="FieldDisplaySmall.vi" Type="VI" URL="../FieldDisplaySmall.vi"/>
+			<Item Name="TrajectoryTrend.vi" Type="VI" URL="../TrajectoryTrend.vi"/>
+		</Item>
 		<Item Name="Dashboard Main.vi" Type="VI" URL="../Dashboard Main.vi"/>
 		<Item Name="Dashboard Main1920x1080fixed.vi" Type="VI" URL="../Dashboard Main1920x1080fixed.vi"/>
+		<Item Name="OLD_Dashboard_Main_Fixed_1280_768.vi" Type="VI" URL="../OLD_Dashboard_Main_Fixed_1280_768.vi"/>
+		<Item Name="subpanel_sizes.txt" Type="Document" URL="../subpanel_sizes.txt"/>
+		<Item Name="Dashboard Main1920x1080fixed_ALT.vi" Type="VI" URL="../Dashboard Main1920x1080fixed_ALT.vi"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build">
 			<Item Name="FRC_Dashboard" Type="EXE">
@@ -92,7 +125,7 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
-				<Property Name="Bld_version.build" Type="Int">6</Property>
+				<Property Name="Bld_version.build" Type="Int">14</Property>
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>
@@ -101,9 +134,15 @@
 				<Property Name="Destination[0].type" Type="Str">App</Property>
 				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
 				<Property Name="Destination[1].path" Type="Path">../builds/FRC_Dashboard/data</Property>
-				<Property Name="DestinationCount" Type="Int">2</Property>
+				<Property Name="Destination[2].destName" Type="Str">FieldInfo</Property>
+				<Property Name="Destination[2].path" Type="Path">../builds/FRC_Dashboard/FieldInfo</Property>
+				<Property Name="Destination[2].preserveHierarchy" Type="Bool">true</Property>
+				<Property Name="Destination[3].destName" Type="Str">Base</Property>
+				<Property Name="Destination[3].path" Type="Path">../builds/FRC_Dashboard</Property>
+				<Property Name="Destination[3].preserveHierarchy" Type="Bool">true</Property>
+				<Property Name="DestinationCount" Type="Int">4</Property>
 				<Property Name="Exe_iconItemID" Type="Ref">/My Computer/Support/App EXE.ico</Property>
-				<Property Name="Source[0].itemID" Type="Str">{F3F7BA03-CBA6-4747-95EB-4936CEB03668}</Property>
+				<Property Name="Source[0].itemID" Type="Str">{C06A13B7-5EB8-4C72-8AB4-1FF8BDD2D78F}</Property>
 				<Property Name="Source[0].type" Type="Str">Container</Property>
 				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
 				<Property Name="Source[1].itemID" Type="Ref">/My Computer/Dashboard Main.vi</Property>
@@ -120,7 +159,23 @@
 				<Property Name="Source[4].itemID" Type="Ref">/My Computer/Dashboard Main1920x1080fixed.vi</Property>
 				<Property Name="Source[4].sourceInclusion" Type="Str">TopLevel</Property>
 				<Property Name="Source[4].type" Type="Str">VI</Property>
-				<Property Name="SourceCount" Type="Int">5</Property>
+				<Property Name="Source[5].Container.applyDestination" Type="Bool">true</Property>
+				<Property Name="Source[5].Container.applyInclusion" Type="Bool">true</Property>
+				<Property Name="Source[5].Container.depDestIndex" Type="Int">0</Property>
+				<Property Name="Source[5].destinationIndex" Type="Int">2</Property>
+				<Property Name="Source[5].itemID" Type="Ref">/My Computer/FieldInfo</Property>
+				<Property Name="Source[5].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="Source[5].type" Type="Str">Container</Property>
+				<Property Name="Source[6].destinationIndex" Type="Int">3</Property>
+				<Property Name="Source[6].itemID" Type="Ref">/My Computer/FieldElements/SmallDot.png</Property>
+				<Property Name="Source[6].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="Source[7].destinationIndex" Type="Int">3</Property>
+				<Property Name="Source[7].itemID" Type="Ref">/My Computer/FieldElements/Robot_kitbot_5.png</Property>
+				<Property Name="Source[7].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="Source[8].destinationIndex" Type="Int">3</Property>
+				<Property Name="Source[8].itemID" Type="Ref">/My Computer/FieldElements/Robot_kitbot_4.png</Property>
+				<Property Name="Source[8].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="SourceCount" Type="Int">9</Property>
 				<Property Name="TgtF_fileDescription" Type="Str">FRC_Dashboard</Property>
 				<Property Name="TgtF_internalName" Type="Str">FRC_Dashboard</Property>
 				<Property Name="TgtF_targetfileGUID" Type="Str">{5E4E6760-0A78-428A-ABCD-98D797FDE190}</Property>

@@ -9,19 +9,29 @@ public class AutoStep {
     // TODO: Suggest adding the following Cmd -- AutoDone -- This will do nothing forever....
     static public enum StepCmd{
 
-        DriveStraight,
-        DriveTurn,
-        FollowAbsTrajectory,
-        FollowRelTrajectory,
-        AutoWait,
-        FollowAbsTrajWithTimedCmd,
-        FollowRelTrajWithTimedComd, 
-        Collect,
-        Shoot,
-        Stop,
-        BallsToAlliance,
-        Climb,
-        Descend
+        DriveStraight(0),
+        DriveTurn(1),
+        FollowAbsTrajectory(2),
+        FollowRelTrajectory(3),
+        AutoWait(1),
+        FollowAbsTrajWithTimedCmd(1),
+        FollowRelTrajWithTimedComd(1), 
+        Collect(1),
+        Shoot(1),
+        Stop(1),
+        BallsToAlliance(1),
+        Climb(1),
+        Descend(1);
+
+        private final int id;
+
+        private StepCmd(int id){
+            this.id= id;
+        }
+
+        public int getId(){
+            return id;
+        }
 
     }
 

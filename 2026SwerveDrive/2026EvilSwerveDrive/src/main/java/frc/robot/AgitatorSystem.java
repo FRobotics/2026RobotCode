@@ -1,6 +1,8 @@
 package frc.robot;
 
 import Lib4150.Lib4150NetTableSystemSend;
+
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -21,7 +23,9 @@ public class AgitatorSystem {
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
     private static boolean locAgitatorOn = false; 
     private static SparkMax AgitatorMotor;
-    private static double AgitatorOutput = 0;
+    private static RelativeEncoder AgitatorMotorEncoder;
+    private static double AgitatorOutput = 0.0;
+    private static double AgitatorRPM = 0.0;
 
     public static void init() {
 
@@ -29,6 +33,7 @@ public class AgitatorSystem {
         // init agitator motor
         // TODO: UPDATE AGITATOR MOTOR CAN ID
         AgitatorMotor = new SparkMax(70,MotorType.kBrushless);
+        AgitatorMotorEncoder = AgitatorMotor.getEncoder();
 
         // ensure agitator starts off
         cmdAgitatorOff();
@@ -38,12 +43,15 @@ public class AgitatorSystem {
 
         locNTSend.addItemBoolean("AgitatorState", AgitatorSystem::getAgitatorState);
         locNTSend.addItemDouble("AgitatorOutput", AgitatorSystem::getMotorOutput);
+        locNTSend.addItemDouble("AgitatorRPM", AgitatorSystem::getMotorRPM);
         
         locNTSend.triggerUpdate();
         
     }
 
     public static void executeLogic(double systemElapsedTimeSec) {
+
+        AgitatorRPM = AgitatorMotorEncoder.getVelocity();
 
         // if on, output 0.2
         // if off, output 0
@@ -73,6 +81,9 @@ public class AgitatorSystem {
     }
      public static double getMotorOutput() {
         return AgitatorOutput;
+    }
+     public static double getMotorRPM() {
+        return AgitatorRPM;
     }
 
 }

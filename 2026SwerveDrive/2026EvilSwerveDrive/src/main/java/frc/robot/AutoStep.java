@@ -9,32 +9,52 @@ public class AutoStep {
     // TODO: Suggest adding the following Cmd -- AutoDone -- This will do nothing forever....
     static public enum StepCmd{
 
-        DriveStraight(0),
-        DriveTurn(1),
-        FollowAbsTrajectory(2),
-        FollowRelTrajectory(3),
-        AutoWait(1),
-        FollowAbsTrajWithTimedCmd(1),
-        FollowRelTrajWithTimedComd(1), 
-        Collect(1),
-        Shoot(1),
-        Stop(1),
-        BallsToAlliance(1),
-        Climb(1),
-        Descend(1);
-
-        private final int id;
-
-        private StepCmd(int id){
-            this.id= id;
-        }
-
-        public int getId(){
-            return id;
-        }
-
+        DriveStraight,
+        DriveTurn,
+        FollowAbsTrajectory,
+        FollowRelTrajectory,
+        AutoWait,
+        FollowAbsTrajWithTimedCmd,
+        FollowRelTrajWithTimedComd, 
+        Collect,
+        Shoot,
+        Stop,
+        BallsToAlliance,
+        Climb,
+        Descend;
     }
 
+    public static StepCmd StepCommandCases(int input){
+        switch (input) {
+            case 0:
+                return StepCmd.DriveStraight;
+            case 1:
+                return StepCmd.DriveTurn;
+            case 2:
+                return StepCmd.FollowAbsTrajectory;
+            case 3:
+                return StepCmd.FollowRelTrajectory;
+            case 4:
+                return StepCmd.AutoWait;
+            case 5:
+                return StepCmd.FollowAbsTrajWithTimedCmd;
+            case 6:
+                return StepCmd.FollowRelTrajWithTimedComd;
+            case 7:
+                return StepCmd.Collect;
+            case 8:
+                return StepCmd.Shoot;
+            case 9:
+                return StepCmd.BallsToAlliance;
+            case 10:
+                return StepCmd.Climb;
+            case 11:
+                return StepCmd.Descend;
+            default:
+                return StepCmd.AutoWait;
+        
+        }
+    }
     // TODO: add some documentation....
     private StepCmd Cmd;
     private double Timeout;

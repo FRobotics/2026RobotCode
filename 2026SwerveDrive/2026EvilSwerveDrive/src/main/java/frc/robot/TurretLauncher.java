@@ -5,10 +5,13 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import Lib4150.Lib4150PositionControl;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class TurretLauncher {
 
@@ -28,6 +31,9 @@ public class TurretLauncher {
     private static double TurretDistance;
     private static Rotation2d DesiredTurretAngle;
     private static double TurretRelativeAngle;
+    private static double TurretMotorDemand;
+    private static Lib4150PositionControl TurretPositionControl;
+    private DigitalInput counterclockwiseLimitSwitch;
 
     public static void init() {
 
@@ -50,6 +56,9 @@ public class TurretLauncher {
         //TODO: get the values of the goal position based on alliance
         goalPose = new Translation2d(470, 158);
         
+        
+        private final DigitalInput clockwiseLimitSwitch = new DigitalInput(0);
+        counterclockwiseLimitSwitch = new DigitalInput(1);
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
 
@@ -74,6 +83,16 @@ public class TurretLauncher {
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()));
 
 
+        //------Position Control
+        TurretPositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 
+                            0.005, 0.35, 0.35, 1.0e-5, false, false);
+        TurretMotorDemand = TurretPositionControl.PosCtrlExec(DesiredTurretAngle); 
+
+
+
+        public static double getTurretMotorDemand() {
+        return TurretMotorDemand;
+    }
 
 
 

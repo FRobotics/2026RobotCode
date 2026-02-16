@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 
 public class TurretLauncher {
 
@@ -33,7 +34,14 @@ public class TurretLauncher {
     private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
     private static Lib4150PositionControl TurretPositionControl;
-    private DigitalInput counterclockwiseLimitSwitch;
+    private static double turretAngleEncoder;
+    private static DigitalInput clockwiseLimitSwitch;
+    private static DigitalInput counterclockwiseLimitSwitch;
+    private static boolean clockwiseLimitSwitchValue = false;
+    private static boolean counterclockwiseLimitSwitchValue = false;
+    private static Encoder turretEncoder;
+    private static double desiredTurretAngleDegrees;
+
 
     public static void init() {
 
@@ -56,11 +64,15 @@ public class TurretLauncher {
         //TODO: get the values of the goal position based on alliance
         goalPose = new Translation2d(470, 158);
         
-        
-        private final DigitalInput clockwiseLimitSwitch = new DigitalInput(0);
+        //limit switches
+        clockwiseLimitSwitch = new DigitalInput(0);
         counterclockwiseLimitSwitch = new DigitalInput(1);
+        //encoder
+        turretEncoder = new Encoder(clockwiseLimitSwitch, counterclockwiseLimitSwitch);
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
+        locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
+        locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
 
         
         
@@ -70,7 +82,12 @@ public class TurretLauncher {
 
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        locNTSend.triggerUpdate();
+        // -------- read sensors
+        clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
+        counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+        turretAngleEncoder = turretEncoder.get();
+
+        // -------- calc stuff
 
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
         TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
@@ -81,22 +98,34 @@ public class TurretLauncher {
         DesiredTurretAngle = (goalPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()));
+        desiredTurretAngleDegrees = DesiredTurretAngle.getDegrees();
 
 
         //------Position Control
-        TurretPositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 
+        TurretPositionControl = new Lib4150PositionControl(2.0, 50.0, 
                             0.005, 0.35, 0.35, 1.0e-5, false, false);
-        TurretMotorDemand = TurretPositionControl.PosCtrlExec(DesiredTurretAngle); 
+        
+        TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
 
+        // --------output to actuators (motors)
+        TurretRotationMotor.set(TurretMotorDemand); 
 
+        locNTSend.triggerUpdate();
+    }
 
-        public static double getTurretMotorDemand() {
+    private double getTurretMotorDemand() {
         return TurretMotorDemand;
     }
-
-
-
+        public static double getturretAngleEncoder() {
+        return turretAngleEncoder;
     }
+
+    private static double getturretAngleTarget(){
+        return desiredTurretAngleDegrees;
+    }
+
+
+    
 
 
 

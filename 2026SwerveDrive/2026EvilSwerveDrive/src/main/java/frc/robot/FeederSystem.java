@@ -5,11 +5,9 @@ import Lib4150.Lib4150NetTableSystemSend;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-// TODO: suggest removing unused imports
-// import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-// import com.revrobotics.spark.config.SparkMaxConfig;
-// import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class FeederSystem {
 

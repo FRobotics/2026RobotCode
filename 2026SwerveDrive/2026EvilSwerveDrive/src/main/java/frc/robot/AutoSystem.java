@@ -21,7 +21,9 @@ public class AutoSystem {
     private static boolean locExecDoNextStep = false;
     private static String AUTO_FILE_EXTENSION = ".csv";
     private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
+    // TODO: Add private static HashMap to store all trajectories <String,Trajectory<SwerveSample>
 
+    // TODO: Add doc -- call this just prior to running ANY auto... Robot.java has a place for this.  It isn't the overall just once init.
     public static void ExecuteListInit(AutoRoutine autoToRun ) {
 
         // -------get the routine to run
@@ -51,6 +53,7 @@ public class AutoSystem {
         return autos.toArray(new String[0]);
     }
 
+    // TODO: If you store the routines in the class variable containing the HashMap, then this routine doesn't need to return anything (void)
     public static ArrayList<AutoRoutine> readFiles(String[] files){
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
         for (String fileInstance : files){
@@ -77,10 +80,11 @@ public class AutoSystem {
                                         AutoStep newStep=new AutoStep(AutoStep.StepCommandCases(commandNum), timeout, param1, param2, param3, Funcname);
                                         newRoutine.add(newStep);
                                 }
-
                         }
-                        
-                        
+                        // TODO: Add your newRoutine to the arrayList routines...
+                        // TODO: Add your newRoutine to the class variable to be created containing the HashMap
+                
+                // TODO: Does not compile.   Replace with generic Exception instead of FileNotFoundException.
                 } catch (FileNotFoundException e) {
       
                         e.printStackTrace();
@@ -89,6 +93,7 @@ public class AutoSystem {
         return routines;
     }
       
+    // TODO: Add a function to return an AutoRoutine from the hashmap with a calling String parameter of the name (file name without extension)
 
     
      // TODO: This may have to change.  It looks like java wants to call the execute routine every 20ms.  The concept is the same...not a for loop though..
@@ -123,12 +128,14 @@ public class AutoSystem {
                 case DriveTurn:
                         break;
 
+                // TODO: Add call to trajectory system to follow trajectory...  Call exists..
                 case FollowAbsTrajectory:
                         break;
 
                 case FollowRelTrajectory:
                         break;
 
+                // TODO: Add AutoFunctions.java file for static functions.  Add an boolean AutoWait( ) function.  It should set drive demand to zero and return false.. 
                 case AutoWait:
                         break;
 
@@ -181,6 +188,7 @@ public class AutoSystem {
                 locExecIndex++;
         }
         
+        // TODO: add locNTSend trigger update.
 
     } 
 
@@ -192,8 +200,9 @@ public class AutoSystem {
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");
-
+        // TODO: Add items to NT tables for debugging and watching autos.   Suggest  Step, Timeout, Parm1, Parm2, Parm3, Function.  Add public getters for these.
         //locNTSend.addItemBoolean(, AutoSystem::);
+        //locNTSend.addItemDouble(, AutoSystem::);
         
         //locNTSend.triggerUpdate(, AutoSystem::);
 

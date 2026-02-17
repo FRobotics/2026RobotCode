@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
     IntakeSystem.init();
     AgitatorSystem.init();
     FeederSystem.init();
+    TrajectorySystem.TrajectoryInit();
     // Climb.init();
     // TurretLauncher.init();
     // AutoSystem.init(); 

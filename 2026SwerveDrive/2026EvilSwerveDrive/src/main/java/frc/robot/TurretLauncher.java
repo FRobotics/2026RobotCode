@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -26,6 +27,7 @@ public class TurretLauncher {
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
     private static SparkMax TurretRotationMotor; 
+    private static RelativeEncoder TurrentRotationModtorEncoder;  // sample....
     private static Translation2d robotPose;
     private static Translation2d TurretOffset;
     private static Translation2d goalPose;
@@ -35,19 +37,22 @@ public class TurretLauncher {
     private static double TurretMotorDemand;
     private static Lib4150PositionControl TurretPositionControl;
     private static double turretAngleEncoder;
+    private static double turretAngleVelRPM = 0.0;
     private static DigitalInput clockwiseLimitSwitch;
     private static DigitalInput counterclockwiseLimitSwitch;
     private static boolean clockwiseLimitSwitchValue = false;
     private static boolean counterclockwiseLimitSwitchValue = false;
+    // TODO: Use spark max built in encoder instead.  Build didn't mount through bore encoder....
     private static Encoder turretEncoder;
     private static double desiredTurretAngleDegrees;
 
 
     public static void init() {
 
-        
+        // TODO: Set CAN ID
         TurretRotationMotor = new SparkMax(5,MotorType.kBrushless);
-        
+        TurrentRotationModtorEncoder = TurretRotationMotor.getEncoder();
+
         //open motor config
         SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
         
@@ -68,11 +73,14 @@ public class TurretLauncher {
         clockwiseLimitSwitch = new DigitalInput(0);
         counterclockwiseLimitSwitch = new DigitalInput(1);
         //encoder
+        // TODO: This will not be throughbore encoder any longer.  Use built in SparkMax encoder....
         turretEncoder = new Encoder(clockwiseLimitSwitch, counterclockwiseLimitSwitch);
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
         locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
         locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
+        locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
+        locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
 
         
         
@@ -86,6 +94,7 @@ public class TurretLauncher {
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
         counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
         turretAngleEncoder = turretEncoder.get();
+        turretAngleVelRPM = TurrentRotationModtorEncoder.getVelocity();  // TODO: getPosition can be used above....
 
         // -------- calc stuff
 
@@ -113,7 +122,7 @@ public class TurretLauncher {
         locNTSend.triggerUpdate();
     }
 
-    private double getTurretMotorDemand() {
+    private static double getTurretMotorDemand() {
         return TurretMotorDemand;
     }
         public static double getturretAngleEncoder() {
@@ -124,8 +133,9 @@ public class TurretLauncher {
         return desiredTurretAngleDegrees;
     }
 
-
-    
+    public static double getTurretMotorRPM() {
+        return turretAngleVelRPM;
+    }
 
 
 

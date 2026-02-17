@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
 
 public class IntakeSystem {
 
@@ -30,6 +31,7 @@ public class IntakeSystem {
     private static SparkMax intakeMotor2;
     private static RelativeEncoder intakeMotor1Encoder;
     private static Lib4150PositionControl IntakePositionControl;
+    // TODO: Use built in spark max encoder.  We are no longer getting a through bore encoder..
     private static DutyCycleEncoder intakeEncoder;
     private static int intakeState;//1 is up off 2 is down off 3 is down on
     private static double intakeAngleTarget;
@@ -63,7 +65,7 @@ public class IntakeSystem {
         intake2Config.openLoopRampRate(0.08);
         
         //sensors
-        // TODO: This doesn't appear to be correct...
+        // TODO: Encoder definition isnt correct..  Now use spark max built in encoder .GetEncoder();  see above.
         intakeEncoder = new DutyCycleEncoder(4);
 
         //initial state
@@ -98,9 +100,10 @@ public class IntakeSystem {
     }
 
     public static void executeLogic(double systemElapsedTimeSec) {
-        // TODO: limit switch is likely wired to roboRIO... so this won't work.
+        // TODO: limit switch is new wired to roboRIO... so this won't work.  Use digital input..  Need to define object (class level), create object( in init function), read object (here).
         limitState = intakeMotor2.getForwardLimitSwitch().isPressed();
         encoderRot = intakeEncoder.get();
+
         intakeMotorRPM = intakeMotor1Encoder.getVelocity();
 
         

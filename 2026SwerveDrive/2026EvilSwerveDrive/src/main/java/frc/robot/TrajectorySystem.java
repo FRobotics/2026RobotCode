@@ -1,6 +1,7 @@
 
 package frc.robot;
 
+// TODO: Remove unused imports.
 import java.security.Timestamp;
 import java.util.Optional;
 
@@ -57,6 +58,7 @@ public class TrajectorySystem {
      locNTSend.addItemDouble("xErr", TrajectorySystem::getxErr);
      locNTSend.addItemDouble("yErr", TrajectorySystem::getyErr);
      locNTSend.addItemDouble("rotErr", TrajectorySystem::getrotErr);   
+     // TODO: add network table entries for ontarget, done, havesample, timelengthoftrajectory (rename if you don't like name)
     }
 
     @SuppressWarnings("unchecked")
@@ -101,7 +103,7 @@ public class TrajectorySystem {
             ontarget = false;
         }
 
-            
+        // TODO: add calculate of "complete" and return "complete" to user.  complete = elapsedtime >= trajectory time length AND onTarget.    
 
         return false;
 
@@ -118,4 +120,5 @@ public class TrajectorySystem {
     public static double getrotErr(){
         return rotErr;
     }
+    // TODO: add getters for new things written to network tables.  ontarget, havesample,done.
 }

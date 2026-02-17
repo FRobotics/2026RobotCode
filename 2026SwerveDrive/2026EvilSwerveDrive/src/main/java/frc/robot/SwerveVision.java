@@ -159,8 +159,7 @@ public class SwerveVision {
     
 
 
-    // TODO: Suggest creating a fast thread to check network tables for updates or use a NT subscriber function.
-    
+  
     public static void execute(double systemElapsedTimeSec){
 
         // --------camera 1

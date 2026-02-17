@@ -29,12 +29,8 @@ public class SwerveOdometry {
         
         locPoseEst = new SwerveDrivePoseEstimator( SwerveDrive.publicDriveKinematics, new Rotation2d(SwerveDrive.getYaw()),  SwerveDrive.getModulePositions(), initPose );        
 
-        
-        //TODO make sure these are the right parameters
         //set up with starting parameters
         setStartingPose(initPose.getX(),initPose.getY(),initPose.getRotation().getRadians());
-
-
 
 
         //add items to push to network tables

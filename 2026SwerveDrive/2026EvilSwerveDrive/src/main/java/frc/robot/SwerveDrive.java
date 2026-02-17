@@ -160,7 +160,6 @@ public class SwerveDrive {
         module3.ExecuteLogic( desiredModStates[2], systemElapsedTimeSec);
         module4.ExecuteLogic( desiredModStates[3], systemElapsedTimeSec);
 
-        // TODO: Calculate actual chassis speed from module states so other systems can see this!
         locSpeedActual = publicDriveKinematics.toChassisSpeeds( module1.getSwerveModuleState(), module2.getSwerveModuleState(), 
                                                                 module3.getSwerveModuleState(), module4.getSwerveModuleState() );
 

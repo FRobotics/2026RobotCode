@@ -1,12 +1,14 @@
 package frc.robot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.HashMap;
 
 import Lib4150.Lib4150NetTableSystemSend;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 public class AutoSystem {
@@ -21,6 +23,11 @@ public class AutoSystem {
     private static boolean locExecDoNextStep = false;
     private static String AUTO_FILE_EXTENSION = ".csv";
     private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
+
+    //TODO: should this be the commened out initaliser? getting conflicting instructions
+    //private static HashMap<String, Trajectory<SwerveSample>> trajectoryHashMap;
+    private static HashMap<String, AutoRoutine> trajectoryHashMap;
+
     // TODO: Add private static HashMap to store all trajectories <String,Trajectory<SwerveSample>
 
     // TODO: Add doc -- call this just prior to running ANY auto... Robot.java has a place for this.  It isn't the overall just once init.
@@ -54,11 +61,11 @@ public class AutoSystem {
     }
 
     // TODO: If you store the routines in the class variable containing the HashMap, then this routine doesn't need to return anything (void)
-    public static ArrayList<AutoRoutine> readFiles(String[] files){
+    public static void readFiles(String[] files){
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
         for (String fileInstance : files){
-                
-                try (Scanner myReader = new Scanner(fileInstance)) {
+                File file = new File(fileInstance);
+                try (Scanner myReader = new Scanner(file)) {
                         ArrayList<AutoStep> newRoutine= new ArrayList<AutoStep>();
                         while (myReader.hasNextLine()) {
                                 String data = myReader.nextLine();
@@ -76,31 +83,34 @@ public class AutoSystem {
                                         param2 = Double.parseDouble(datas[3]);
                                         param3 = Double.parseDouble(datas[4]);
                                         Funcname = datas[5];
-                                        
                                         AutoStep newStep=new AutoStep(AutoStep.StepCommandCases(commandNum), timeout, param1, param2, param3, Funcname);
                                         newRoutine.add(newStep);
                                 }
                         }
-                        // TODO: Add your newRoutine to the arrayList routines...
-                        // TODO: Add your newRoutine to the class variable to be created containing the HashMap
+                        AutoRoutine routineToAdd = new AutoRoutine(fileInstance.split(AUTO_FILE_EXTENSION)[0], newRoutine);
+                        routines.add(routineToAdd);
+                        trajectoryHashMap.put(fileInstance.split(AUTO_FILE_EXTENSION)[0], routineToAdd);
                 
-                // TODO: Does not compile.   Replace with generic Exception instead of FileNotFoundException.
-                } catch (FileNotFoundException e) {
-      
+                } catch (Exception e) {
+
                         e.printStackTrace();
                 }
         }
-        return routines;
     }
       
-    // TODO: Add a function to return an AutoRoutine from the hashmap with a calling String parameter of the name (file name without extension)
+    public AutoRoutine getTrajectory(String name)
+    {
+        return trajectoryHashMap.get(name);
+    }
 
     
      // TODO: This may have to change.  It looks like java wants to call the execute routine every 20ms.  The concept is the same...not a for loop though..
-    public static void ExecuteList(){
+    public static void ExecuteList(double SystemElapsedTime){
 
-
+            
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
+
+        TrajectorySystem.FollowTrajectory(locExecInitStep, locExecRoutine.getAutoDescription(), SystemElapsedTime);
         
         // --------is this the first time for this step
         if ( locExecIndex != locExecLastIndex ) {

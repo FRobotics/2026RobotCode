@@ -62,6 +62,7 @@ public class TrajectorySystem {
     }
 
     @SuppressWarnings("unchecked")
+    //TODO: should this be a primative???
     public static boolean FollowTrajectory(Boolean Init, String TrajectoryName, double SystemElapsedTime){
 
         if(Init) {

@@ -1,27 +1,21 @@
 package frc.robot;
 
-import java.util.ArrayList;
-// TODO: Remove unused imports.
-import java.io.File;
-import java.io.FileNotFoundException; 
-import java.util.Scanner;         
-
+import java.util.ArrayList;        
 
 public class AutoRoutine {
     private String locAutoDescription = "";
-    private ArrayList<AutoStep> locAutoSteps = new ArrayList<AutoStep>();
-    
+    private ArrayList<AutoStep> locAutoSteps = new ArrayList<AutoStep>();    
 
     public AutoRoutine(String autoDescription, AutoStep[] steps){
   
-        // TODO: set class variable with value of autoDescription parameter..
+        locAutoDescription = autoDescription;
         for (AutoStep x : steps) {
             locAutoSteps.add(x);
         }
     }
 
     public AutoRoutine(String autoDescription, ArrayList<AutoStep> routine){
-        // TODO:  set class variable with value of autoDescription parameter..
+        locAutoDescription = autoDescription;
         locAutoSteps.addAll(locAutoSteps.size(), routine);
     }
 

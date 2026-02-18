@@ -74,9 +74,9 @@ public class TrajectorySystem {
         }
 
         // --------calc elapsed time for trajectory
-        Double ElapsedTime = SystemElapsedTime - startTime;
+        Double elapsedTime = SystemElapsedTime - startTime;
 
-        Optional<SwerveSample> oursample = TrajectoryToRun.sampleAt(ElapsedTime, false);
+        Optional<SwerveSample> oursample = TrajectoryToRun.sampleAt(elapsedTime, false);
 
         SwerveSample realsample;
         if ( oursample.isPresent() ) {
@@ -103,10 +103,9 @@ public class TrajectorySystem {
             havesample = false;
             ontarget = false;
         }
-
-        // TODO: add calculate of "complete" and return "complete" to user.  complete = elapsedtime >= trajectory time length AND onTarget.    
-
-        return false;
+        
+        boolean complete = (elapsedTime >= TrajectoryToRun.getTotalTime()) && ontarget;  
+        return complete;
 
     }
     public static double getElapsedTrajTime(){

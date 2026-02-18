@@ -27,7 +27,7 @@ public class TurretLauncher {
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
     private static SparkMax TurretRotationMotor; 
-    private static RelativeEncoder TurrentRotationModtorEncoder;  // sample....
+    private static RelativeEncoder TurrentRotationMotorEncoder;  // sample....
     private static Translation2d robotPose;
     private static Translation2d TurretOffset;
     private static Translation2d goalPose;
@@ -42,8 +42,7 @@ public class TurretLauncher {
     private static DigitalInput counterclockwiseLimitSwitch;
     private static boolean clockwiseLimitSwitchValue = false;
     private static boolean counterclockwiseLimitSwitchValue = false;
-    // TODO: Use spark max built in encoder instead.  Build didn't mount through bore encoder....
-    private static Encoder turretEncoder;
+    //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
 
 
@@ -51,7 +50,7 @@ public class TurretLauncher {
 
         // TODO: Set CAN ID
         TurretRotationMotor = new SparkMax(5,MotorType.kBrushless);
-        TurrentRotationModtorEncoder = TurretRotationMotor.getEncoder();
+        TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
 
         //open motor config
         SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
@@ -66,15 +65,18 @@ public class TurretLauncher {
         
         //set initial system state
         TurretOffset = new Translation2d(4.872 , 0);
-        //TODO: get the values of the goal position based on alliance
-        goalPose = new Translation2d(470, 158);
+        //TODO: get the values of the goal position based on alliance - currently using Red values
+        //Blue: x: 11.92m y: 4.03m
+        goalPose = new Translation2d(4.63, 4.03);
         
         //limit switches
         clockwiseLimitSwitch = new DigitalInput(0);
         counterclockwiseLimitSwitch = new DigitalInput(1);
         //encoder
+
         // TODO: This will not be throughbore encoder any longer.  Use built in SparkMax encoder....
-        turretEncoder = new Encoder(clockwiseLimitSwitch, counterclockwiseLimitSwitch);
+        // - Looks like this is completed line 53-53?
+  
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
         locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
@@ -93,8 +95,8 @@ public class TurretLauncher {
         // -------- read sensors
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
         counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
-        turretAngleEncoder = turretEncoder.get();
-        turretAngleVelRPM = TurrentRotationModtorEncoder.getVelocity();  // TODO: getPosition can be used above....
+        turretAngleEncoder = TurrentRotationMotorEncoder.getPosition();
+        turretAngleVelRPM = TurrentRotationMotorEncoder.getVelocity();
 
         // -------- calc stuff
 

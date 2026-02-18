@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 
@@ -31,8 +32,7 @@ public class IntakeSystem {
     private static SparkMax intakeMotor2;
     private static RelativeEncoder intakeMotor1Encoder;
     private static Lib4150PositionControl IntakePositionControl;
-    // TODO: Use built in spark max encoder.  We are no longer getting a through bore encoder..
-    private static DutyCycleEncoder intakeEncoder;
+    private static RelativeEncoder intakeMotor2Encoder;
     private static int intakeState;//1 is up off 2 is down off 3 is down on
     private static double intakeAngleTarget;
     public static boolean limitState;
@@ -40,6 +40,7 @@ public class IntakeSystem {
     private static double intakeSpeed;
     private static double intakeMotorRPM;
     private static double intakeAngleMotorDemand;
+    private static DigitalInput limitSwitch;
   
     public static void init() {
 
@@ -48,13 +49,12 @@ public class IntakeSystem {
         intakeMotor1 = new SparkMax(1,MotorType.kBrushless);
         intakeMotor2 = new SparkMax(2,MotorType.kBrushless);
 
-        intakeMotor1Encoder = intakeMotor1.getEncoder();
-
+        
         
         //open motor config
         SparkMaxConfig intake1Config = new SparkMaxConfig();
         SparkMaxConfig intake2Config = new SparkMaxConfig();
-
+        
         //motor Config
         //TODO: config values need to be changed/tuned
         intake1Config.idleMode(IdleMode.kBrake);
@@ -65,8 +65,10 @@ public class IntakeSystem {
         intake2Config.openLoopRampRate(0.08);
         
         //sensors
-        // TODO: Encoder definition isnt correct..  Now use spark max built in encoder .GetEncoder();  see above.
-        intakeEncoder = new DutyCycleEncoder(4);
+        intakeMotor1Encoder = intakeMotor1.getEncoder();
+        intakeMotor2Encoder = intakeMotor2.getEncoder();
+        //TODO: set correct channel. This is random
+        limitSwitch = new DigitalInput(1);
 
         //initial state
         intakeAngleTarget=90;
@@ -84,8 +86,6 @@ public class IntakeSystem {
         locNTSend.addItemBoolean("IntakeLimitIsPressed", IntakeSystem::getLimitState);
 
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
-        // TODO: This appears to be redundant.
-        locNTSend.addItemBoolean("IntakeIsExtendedOn", IntakeSystem::getIntakeExtended);
         
         //encoder rotations
         // TODO: Is this intake or arm motor ????
@@ -100,9 +100,9 @@ public class IntakeSystem {
     }
 
     public static void executeLogic(double systemElapsedTimeSec) {
-        // TODO: limit switch is new wired to roboRIO... so this won't work.  Use digital input..  Need to define object (class level), create object( in init function), read object (here).
-        limitState = intakeMotor2.getForwardLimitSwitch().isPressed();
-        encoderRot = intakeEncoder.get();
+        limitState = limitSwitch.get();
+        //TODO: should this be something else???
+        encoderRot = intakeMotor2Encoder.getVelocity();
 
         intakeMotorRPM = intakeMotor1Encoder.getVelocity();
 

@@ -145,8 +145,8 @@ public class AutoSystem {
                 case FollowRelTrajectory:
                         break;
 
-                // TODO: Add AutoFunctions.java file for static functions.  Add an boolean AutoWait( ) function.  It should set drive demand to zero and return false.. 
                 case AutoWait:
+                        AutoFunctions.autoWait();
                         break;
 
                 case FollowAbsTrajWithTimedCmd:

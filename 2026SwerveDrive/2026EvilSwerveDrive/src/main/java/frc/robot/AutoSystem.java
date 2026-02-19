@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.HashMap;
 
 import Lib4150.Lib4150NetTableSystemSend;
+// TODO: Remove unused imports.
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -24,11 +25,8 @@ public class AutoSystem {
     private static String AUTO_FILE_EXTENSION = ".csv";
     private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
 
-    //TODO: should this be the commened out initaliser? getting conflicting instructions
-    //private static HashMap<String, Trajectory<SwerveSample>> trajectoryHashMap;
-    private static HashMap<String, AutoRoutine> trajectoryHashMap;
+    private static HashMap<String, AutoRoutine> autoHashMap;
 
-    // TODO: Add private static HashMap to store all trajectories <String,Trajectory<SwerveSample>
 
     // TODO: Add doc -- call this just prior to running ANY auto... Robot.java has a place for this.  It isn't the overall just once init.
     public static void ExecuteListInit(AutoRoutine autoToRun ) {
@@ -60,7 +58,6 @@ public class AutoSystem {
         return autos.toArray(new String[0]);
     }
 
-    // TODO: If you store the routines in the class variable containing the HashMap, then this routine doesn't need to return anything (void)
     public static void readFiles(String[] files){
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
         for (String fileInstance : files){
@@ -89,7 +86,7 @@ public class AutoSystem {
                         }
                         AutoRoutine routineToAdd = new AutoRoutine(fileInstance.split(AUTO_FILE_EXTENSION)[0], newRoutine);
                         routines.add(routineToAdd);
-                        trajectoryHashMap.put(fileInstance.split(AUTO_FILE_EXTENSION)[0], routineToAdd);
+                        autoHashMap.put(fileInstance.split(AUTO_FILE_EXTENSION)[0], routineToAdd);
                 
                 } catch (Exception e) {
 
@@ -98,19 +95,17 @@ public class AutoSystem {
         }
     }
       
-    public AutoRoutine getTrajectory(String name)
+    public AutoRoutine getAuto(String name)
     {
-        return trajectoryHashMap.get(name);
+        return autoHashMap.get(name);
     }
 
-    
-     // TODO: This may have to change.  It looks like java wants to call the execute routine every 20ms.  The concept is the same...not a for loop though..
+    // this gets called every 20 ms.   execlistinit needs to be called first to set things up.
     public static void ExecuteList(double SystemElapsedTime){
 
             
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
 
-        TrajectorySystem.FollowTrajectory(locExecInitStep, locExecRoutine.getAutoDescription(), SystemElapsedTime);
         
         // --------is this the first time for this step
         if ( locExecIndex != locExecLastIndex ) {
@@ -132,21 +127,22 @@ public class AutoSystem {
         // do step
         switch (ourStep.getCmd()){
                 case DriveStraight:
-                        // locExecDoNextStep = DoDriveStraight( parms )''
+                        // locExecDoNextStep = AutoFunctions.autoDriveStraight();
                         break;
                 
                 case DriveTurn:
+                        // locExecDoNextStep = AutoFunctions.autoDriveSpin();
                         break;
 
-                // TODO: Add call to trajectory system to follow trajectory...  Call exists..
                 case FollowAbsTrajectory:
+                        locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
                         break;
 
                 case FollowRelTrajectory:
                         break;
 
                 case AutoWait:
-                        AutoFunctions.autoWait();
+                        locExecDoNextStep = AutoFunctions.autoWait();
                         break;
 
                 case FollowAbsTrajWithTimedCmd:
@@ -202,11 +198,13 @@ public class AutoSystem {
 
     } 
 
-     public static void init() {
+    // one time init when robot boots up.
+    public static void init() {
 
         autoTimer.reset();
         autoTimer.start();
-        // set system state
+
+        // TODO: Read all the auto routines into cache here.
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");
@@ -215,23 +213,12 @@ public class AutoSystem {
         //locNTSend.addItemDouble(, AutoSystem::);
         
         //locNTSend.triggerUpdate(, AutoSystem::);
-
-        
-        
         
     }
 
-    public static void executeLogic() {
-
-        locNTSend.triggerUpdate();
-    }
-
-    
-    
-
-
-
-
-
+    //public static void executeLogic() {
+    //
+    //    locNTSend.triggerUpdate();
+    //}
 
 }

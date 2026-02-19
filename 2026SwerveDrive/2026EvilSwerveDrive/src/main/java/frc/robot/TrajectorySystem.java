@@ -85,6 +85,7 @@ public class TrajectorySystem {
             xErr = ( realsample.x - SwerveOdometry.getxposition());
             double xvelDmd = realsample.vx + KX * xErr;
             double yvelDmd = realsample.vy + KY * ( realsample.y - SwerveOdometry.getyposition());
+            // TODO: Make this modulo +/- PI...  There is a WPILIB function for this... MathUtil.angleModulus
             double rotvelDmd = realsample.omega + KRot * ( realsample.heading - SwerveOdometry.getrotposition());
 
             if ( Math.abs(xErr) < 2 && Math.abs(yErr) < 2 && Math.abs(rotErr) < Units.degreesToRadians(3)){

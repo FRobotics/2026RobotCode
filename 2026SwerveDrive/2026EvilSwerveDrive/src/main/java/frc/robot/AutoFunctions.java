@@ -11,4 +11,10 @@ public class AutoFunctions {
         SwerveDrive.setDesiredSpeed(new ChassisSpeeds(0, 0, 0));
         return false;
     }
+
+    // TODO: Add Drive Spin -- Copy wait and use position control (from turret...)
+
+    // TODO: Add Drive straight -- Copy Spin and use position control for straight driving..
+
+    
 }

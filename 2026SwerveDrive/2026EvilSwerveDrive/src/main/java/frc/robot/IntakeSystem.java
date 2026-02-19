@@ -18,7 +18,6 @@ public class IntakeSystem {
     private IntakeSystem(){}
 
     // contants
-    //TODO: determine up and down angles on the robot -- suggest starting with 90 is up and 0 is down...
     private static final double INTAKEUPANGLE = 90.0;
     private static final double INTAKEDOWNANGLE = 0.0;
 
@@ -28,14 +27,14 @@ public class IntakeSystem {
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
     private static boolean locIntakeExtended = false;  // false if up, true if down.
-    private static SparkMax intakeMotor1;
-    private static SparkMax intakeMotor2;
+    private static SparkMax intakeMotor1;   // intake ??
+    private static SparkMax intakeMotor2;   // arm ??
     private static RelativeEncoder intakeMotor1Encoder;
     private static Lib4150PositionControl IntakePositionControl;
     private static RelativeEncoder intakeMotor2Encoder;
     private static int intakeState;//1 is up off 2 is down off 3 is down on
     private static double intakeAngleTarget;
-    public static boolean limitState;
+    private static boolean limitState;
     private static double encoderRot; //stores current value from encoder
     private static double intakeSpeed;
     private static double intakeMotorRPM;
@@ -101,8 +100,8 @@ public class IntakeSystem {
 
     public static void executeLogic(double systemElapsedTimeSec) {
         limitState = limitSwitch.get();
-        //TODO: should this be something else???
-        encoderRot = intakeMotor2Encoder.getVelocity();
+        // TODO: scale arm position.. default is rotations.... so DEG = ROT * 360 / GEAR_RATIO + STARTING_POSITION
+        encoderRot = intakeMotor2Encoder.getPosition();     // pos of arm ??
 
         intakeMotorRPM = intakeMotor1Encoder.getVelocity();
 

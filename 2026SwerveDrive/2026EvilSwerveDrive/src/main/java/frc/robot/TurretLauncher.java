@@ -95,6 +95,7 @@ public class TurretLauncher {
         // -------- read sensors
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
         counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+        // TODO: Convert to degrees.  Think that the default is rotations.  Also take into account gear ratio...
         turretAngleEncoder = TurrentRotationMotorEncoder.getPosition();
         turretAngleVelRPM = TurrentRotationMotorEncoder.getVelocity();
 
@@ -113,6 +114,7 @@ public class TurretLauncher {
 
 
         //------Position Control
+        // TODO: Define this in init.  Not here over and over....
         TurretPositionControl = new Lib4150PositionControl(2.0, 50.0, 
                             0.005, 0.35, 0.35, 1.0e-5, false, false);
         

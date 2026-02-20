@@ -8,10 +8,10 @@ import edu.wpi.first.units.measure.Angle;
 //import edu.wpi.first.wpilibj.CAN;
 import Lib4150.Lib4150PositionControl;
 import edu.wpi.first.math.geometry.Rotation2d;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 //import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
@@ -31,10 +31,10 @@ import com.revrobotics.ResetMode;
 public class SwerveModule {
 
 
-    // max motor output = 1.0
-    // max speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
-    // Kn (normalization constant) = max motor out / max speed = 0.07645406
-    // when doing everything in meters then max speed is 3.98670783
+    // Flex motor output = 1.0
+    // Flex speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
+    // Kn (normalization constant) = Flex motor out / Flex speed = 0.07645406
+    // when doing everything in meters then Flex speed is 3.98670783
     private static double Drive_Kn = 1.0 / 3.98670783;
 
     private double xOff = 0.0;
@@ -45,8 +45,8 @@ public class SwerveModule {
     private Translation2d moduleoffset;
     //private double spinPosRad = 0.0;
     //private double driveSpeedMPS = 0.0;
-    private SparkMax driveMotor;
-    private SparkMax spinMotor;
+    private SparkFlex driveMotor;
+    private SparkFlex spinMotor;
     private Lib4150PositionControl spinPositionControl;
     private PIDController drivePID;
     private SimpleMotorFeedforward drivFeedforward;
@@ -68,12 +68,12 @@ public class SwerveModule {
         
 
         moduleoffset = new Translation2d(xOff, yOff);
-        driveMotor = new SparkMax(driveid,MotorType.kBrushless);
-        spinMotor = new SparkMax(spinid,MotorType.kBrushless);
+        driveMotor = new SparkFlex(driveid,MotorType.kBrushless);
+        spinMotor = new SparkFlex(spinid,MotorType.kBrushless);
         
 
-        SparkMaxConfig driveConfig = new SparkMaxConfig();
-        SparkMaxConfig spinConfig = new SparkMaxConfig();
+        SparkFlexConfig driveConfig = new SparkFlexConfig();
+        SparkFlexConfig spinConfig = new SparkFlexConfig();
 
         driveConfig.idleMode(IdleMode.kBrake);
         spinConfig.idleMode(IdleMode.kBrake);

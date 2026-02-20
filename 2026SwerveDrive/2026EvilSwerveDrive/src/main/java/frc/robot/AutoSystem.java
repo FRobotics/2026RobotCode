@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 import Lib4150.Lib4150NetTableSystemSend;
 // TODO: Remove unused imports.
@@ -12,6 +13,7 @@ import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.AutoStep.StepCmd;
 public class AutoSystem {
 
     private static Lib4150NetTableSystemSend locNTSend;
@@ -194,7 +196,7 @@ public class AutoSystem {
                 locExecIndex++;
         }
         
-        // TODO: add locNTSend trigger update.
+        locNTSend.triggerUpdate();
 
     } 
 
@@ -204,16 +206,41 @@ public class AutoSystem {
         autoTimer.reset();
         autoTimer.start();
 
-        // TODO: Read all the auto routines into cache here.
+        AutoSystem.readFiles(AutoSystem.availableTrajectories());
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");
-        // TODO: Add items to NT tables for debugging and watching autos.   Suggest  Step, Timeout, Parm1, Parm2, Parm3, Function.  Add public getters for these.
+
+        locNTSend.addItemDouble("Step", AutoSystem::getStep);
+        locNTSend.addItemDouble("Timeout", AutoSystem::getTimeout);
+        locNTSend.addItemDouble("Parm1", AutoSystem::getParm1);
+        locNTSend.addItemDouble("Parm2", AutoSystem::getParm2);
+        locNTSend.addItemDouble("Parm3", AutoSystem::getParm3);
+        locNTSend.addItemString("function", AutoSystem::getFunction);
         //locNTSend.addItemBoolean(, AutoSystem::);
         //locNTSend.addItemDouble(, AutoSystem::);
         
-        //locNTSend.triggerUpdate(, AutoSystem::);
+        locNTSend.triggerUpdate();
         
+    }
+
+    public static double getStep(){
+        return (double)locExecRoutine.getStep(locExecIndex).getCmd().ordinal();
+    }
+    public static double getTimeout(){
+        return locExecRoutine.getStep(locExecIndex).getTimeout();
+    }
+    public static double getParm1(){
+        return locExecRoutine.getStep(locExecIndex).getParam1();
+    }
+    public static double getParm2(){
+        return locExecRoutine.getStep(locExecIndex).getParam2();
+    }
+    public static double getParm3(){
+        return locExecRoutine.getStep(locExecIndex).getParam3();
+    }
+    public static String getFunction(){
+        return locExecRoutine.getStep(locExecIndex).getFunction();
     }
 
     //public static void executeLogic() {

@@ -32,7 +32,7 @@ public class AgitatorSystem {
 
         // init agitator motor
         // TODO: UPDATE AGITATOR MOTOR CAN ID
-        AgitatorMotor = new SparkMax(70,MotorType.kBrushless);
+        AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
         AgitatorMotorEncoder = AgitatorMotor.getEncoder();
 
         // ensure agitator starts off

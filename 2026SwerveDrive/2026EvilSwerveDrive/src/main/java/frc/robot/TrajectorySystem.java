@@ -57,7 +57,11 @@ public class TrajectorySystem {
      locNTSend.addItemDouble("ElapsedTrajTime", TrajectorySystem::getElapsedTrajTime);
      locNTSend.addItemDouble("xErr", TrajectorySystem::getxErr);
      locNTSend.addItemDouble("yErr", TrajectorySystem::getyErr);
-     locNTSend.addItemDouble("rotErr", TrajectorySystem::getrotErr);   
+     locNTSend.addItemDouble("rotErr", TrajectorySystem::getrotErr);
+     locNTSend.addItemBoolean("onTarget", TrajectorySystem::getOnTarget);
+     locNTSend.addItemBoolean("done", TrajectorySystem::getDone);
+     locNTSend.addItemBoolean("haveSample", TrajectorySystem::gethaveSample);
+     locNTSend.addItemDouble("timeLengthOfTrajectory", TrajectorySystem::getTimeLengthOfTrajectory);
      // TODO: add network table entries for ontarget, done, havesample, timelengthoftrajectory (rename if you don't like name)
     }
 
@@ -120,6 +124,18 @@ public class TrajectorySystem {
     }
     public static double getrotErr(){
         return rotErr;
+    }
+    public static boolean getOnTarget(){
+        return ontarget;
+    }
+    public static boolean getDone(){
+        return done;
+    }
+    public static boolean gethaveSample(){
+        return havesample;
+    }
+    public static double getTimeLengthOfTrajectory(){
+        return timeLengthOfTrajectory;
     }
     // TODO: add getters for new things written to network tables.  ontarget, havesample,done.
 }

@@ -44,7 +44,7 @@ public class TurretLauncher {
     private static Rotation2d DesiredTurretAngle;
     private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
-    private static double LauncherMotorDemand = 0.5;
+    private static double LauncherMotorDemand;
     private static Lib4150PositionControl TurretPositionControl;
     private static double turretAngleEncoder;
     private static double turretAngleVelRPM = 0.0;
@@ -55,6 +55,8 @@ public class TurretLauncher {
     private static PIDController launcherPID;
     private static SimpleMotorFeedforward launcherFeedforward;
     private double locLauncherSpeedActual = 0.0;
+    private static double LauncherRPM = 0.0;
+    private static double launchertargetSpeed= 0.5;
     
         private static double Launcher_Kn = 1.0 / 3.98670783;
         //private static SparkMax turretEncoder;
@@ -144,7 +146,11 @@ public class TurretLauncher {
         TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
 
 
-
+        // Set launcher motor demand
+        LauncherRPM = LauncherMotorEncoder.getVelocity();
+        double launchFeedForward = launcherFeedforward.calculate(launchertargetSpeed);
+        double launcherPIDOutput = launcherPID.calculate(LauncherRPM, launchertargetSpeed);
+        LauncherMotorDemand = MathUtil.clamp(launchFeedForward+launcherPIDOutput, -1.0, 1.0);
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
         LauncherMotor.set(LauncherMotorDemand); 

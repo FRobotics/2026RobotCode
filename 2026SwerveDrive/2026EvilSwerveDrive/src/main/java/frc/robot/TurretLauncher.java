@@ -32,9 +32,11 @@ public class TurretLauncher {
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
     private static SparkMax TurretRotationMotor;
-    private static SparkMax LauncherMotor; 
+    private static SparkMax LauncherMotor;
+    private static SparkMax LauncherMotor2; 
     private static RelativeEncoder TurrentRotationMotorEncoder;  // sample....
     private static RelativeEncoder LauncherMotorEncoder;
+    private static RelativeEncoder LauncherMotorEncoder2;
     private static Translation2d robotPose;
     private static Translation2d TurretOffset;
     private static Translation2d goalPose;
@@ -62,11 +64,12 @@ public class TurretLauncher {
         public static void init() {
     
             // TODO: Set CAN ID
-            TurretRotationMotor = new SparkMax(5,MotorType.kBrushless);
+            TurretRotationMotor = new SparkMax(10,MotorType.kBrushless);
             TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
-            LauncherMotor = new SparkMax(0,MotorType.kBrushless);
+            LauncherMotor = new SparkMax(11,MotorType.kBrushless);
             LauncherMotorEncoder = LauncherMotor.getEncoder();
-    
+            LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
+            LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
             //open motor config
             SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
             
@@ -145,6 +148,7 @@ public class TurretLauncher {
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
         LauncherMotor.set(LauncherMotorDemand); 
+        LauncherMotor2.set(LauncherMotorDemand);
 
         locNTSend.triggerUpdate();
     }

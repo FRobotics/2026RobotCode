@@ -28,7 +28,7 @@ public class FeederSystem {
 
         // init network table
         // TODO: Set feeder motor CAN ID
-        FeederMotor = new SparkMax(68,MotorType.kBrushless);
+        FeederMotor = new SparkMax(9,MotorType.kBrushless);
         FeederMotorEncoder = FeederMotor.getEncoder();
 
         // start with feeder off

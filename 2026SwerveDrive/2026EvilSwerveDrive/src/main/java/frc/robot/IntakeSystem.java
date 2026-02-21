@@ -45,8 +45,8 @@ public class IntakeSystem {
 
         //motors
         // TODO: Say which motor is arm and which is intake....  Is 1 intake, and 2 arm ??
-        intakeMotor1 = new SparkMax(1,MotorType.kBrushless);
-        intakeMotor2 = new SparkMax(2,MotorType.kBrushless);
+        intakeMotor1 = new SparkMax(6,MotorType.kBrushless);
+        intakeMotor2 = new SparkMax(5,MotorType.kBrushless);
 
         
         
@@ -67,7 +67,7 @@ public class IntakeSystem {
         intakeMotor1Encoder = intakeMotor1.getEncoder();
         intakeMotor2Encoder = intakeMotor2.getEncoder();
         //TODO: set correct channel. This is random
-        limitSwitch = new DigitalInput(1);
+        limitSwitch = new DigitalInput(0);
 
         //initial state
         intakeAngleTarget=90;

@@ -13,7 +13,6 @@ import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.AutoStep.StepCmd;
 public class AutoSystem {
 
     private static Lib4150NetTableSystemSend locNTSend;

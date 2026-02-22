@@ -1,0 +1,5 @@
+# -------- Another auto routine for testing
+#cmd, Timeout, P1,      P2,        P3,     Func
+0,    1.0,     0.0,     0.0,       0.0,    "--"
+3,    2.0,     1.0,     0.0,       0.0,    "--"
+# --------end

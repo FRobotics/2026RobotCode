@@ -66,7 +66,6 @@ public class IntakeSystem {
         //sensors
         intakeMotor1Encoder = intakeMotor1.getEncoder();
         intakeMotor2Encoder = intakeMotor2.getEncoder();
-        //TODO: set correct channel. This is random
         limitSwitch = new DigitalInput(0);
 
         //initial state

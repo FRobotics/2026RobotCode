@@ -27,7 +27,6 @@ public class FeederSystem {
 
 
         // init network table
-        // TODO: Set feeder motor CAN ID
         FeederMotor = new SparkMax(9,MotorType.kBrushless);
         FeederMotorEncoder = FeederMotor.getEncoder();
 
@@ -44,7 +43,7 @@ public class FeederSystem {
         
     }
 
-    public static void executeLogic() {
+    public static void executeLogic(double SystemElapsedTime) {
 
         FeederRPM = FeederMotorEncoder.getVelocity();
 

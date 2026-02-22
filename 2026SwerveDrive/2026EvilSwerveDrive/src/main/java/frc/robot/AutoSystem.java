@@ -59,8 +59,9 @@ public class AutoSystem {
         return autos.toArray(new String[0]);
     }
 
-    public static void readFiles(String[] files){
+    public static String[] readFiles(String[] files){
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
+        ArrayList<String> routineNames = new ArrayList<String>();
         for (String fileInstance : files){
                 File file = new File(fileInstance);
                 try (Scanner myReader = new Scanner(file)) {
@@ -89,12 +90,14 @@ public class AutoSystem {
                         routines.add(routineToAdd);
                         autoHashMap.put(fileInstance.split(AUTO_FILE_EXTENSION)[0], routineToAdd);
                         System.out.println("Auto - Added routine:"+fileInstance.split(AUTO_FILE_EXTENSION)[0]);
-                
+                        routineNames.add(fileInstance.split(AUTO_FILE_EXTENSION)[0]);
+
                 } catch (Exception e) {
 
                         e.printStackTrace();
                 }
         }
+        return routineNames.toArray(new String[0]);
     }
       
     public AutoRoutine getAuto(String name)
@@ -201,13 +204,13 @@ public class AutoSystem {
     } 
 
     // one time init when robot boots up.
-    public static void init() {
+    public static String[] init() {
 
         autoTimer.reset();
         autoTimer.start();
 
         // load all autos into cache
-        AutoSystem.readFiles(AutoSystem.availableTrajectories());
+        String[] readAutos = AutoSystem.readFiles(AutoSystem.availableTrajectories());
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");
@@ -222,6 +225,8 @@ public class AutoSystem {
         //locNTSend.addItemDouble(, AutoSystem::);
         
         locNTSend.triggerUpdate();
+
+        return readAutos;
         
     }
 

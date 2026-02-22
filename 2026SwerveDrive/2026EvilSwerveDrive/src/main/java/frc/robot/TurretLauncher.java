@@ -1,29 +1,29 @@
 package frc.robot;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.ctre.phoenix6.StatusSignal;
+//import com.ctre.phoenix6.StatusSignal;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+//import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+//import com.revrobotics.spark.config.SparkMaxConfig;
 
 import Lib4150.Lib4150PositionControl;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
+//import edu.wpi.first.units.measure.Angle;
+//import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
+//import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class TurretLauncher {
 
-    private double TURRETOFFSET;
-    private Rotation2d RobotRotation;
+    //private double TURRETOFFSET;
+    //private Rotation2d RobotRotation;
 
     private TurretLauncher(){}
 
@@ -40,10 +40,10 @@ public class TurretLauncher {
     private static Translation2d robotPose;
     private static Translation2d TurretOffset;
     private static Translation2d goalPose;
+    private static Translation2d zonePose;
     private static double TurretDistance;
     private static Rotation2d DesiredTurretAngle;
-    // TODO: Not used.
-    private static double TurretRelativeAngle;
+    //private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
     private static double LauncherMotorDemand;
     private static Lib4150PositionControl TurretPositionControl;
@@ -55,9 +55,14 @@ public class TurretLauncher {
     private static boolean counterclockwiseLimitSwitchValue = false;
     private static PIDController launcherPID;
     private static SimpleMotorFeedforward launcherFeedforward;
-    private double locLauncherSpeedActual = 0.0;
-    private static double LauncherRPM = 0.0;
-    private static double launchertargetSpeed= 0.5;
+    private static double locLauncherSpeedActual = 0.0;
+    private static double launchertargetSpeed= 100;
+    private static double turretGearRatio = 160;
+    private static double locLauncherSpeed1;
+    private static double locLauncherSpeed2;
+    private static boolean locLauncherOn=false;
+    private static boolean turretMode=false;
+
     
     private static double Launcher_Kn = 1.0 / 3.98670783;
     //private static SparkMax turretEncoder;
@@ -72,22 +77,33 @@ public class TurretLauncher {
         LauncherMotorEncoder = LauncherMotor.getEncoder();
         LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
         LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
+
+        cmdLauncherOff();
+        cmdBallsToHub();
         //open motor config
-        SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
+        //SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
         
         //motor Config
-        //TODO: config values need to be changed/tuned
-        TurretSpinConfig.idleMode(IdleMode.kBrake);
-        TurretSpinConfig.smartCurrentLimit(50);
-        TurretSpinConfig.openLoopRampRate(0.2);
+        // will  use rev hardare config stuff not this
+        //TurretSpinConfig.idleMode(IdleMode.kBrake);
+        //TurretSpinConfig.smartCurrentLimit(50);
+        //TurretSpinConfig.openLoopRampRate(0.2);
         
       
         //set initial system state
-        TurretOffset = new Translation2d(4.872 , 0);
+        // offset is 5.75 inches from the center of the robot or 0.14605 meters.
+        TurretOffset = new Translation2d( -0.14605 , 0);
+
+
         //TODO: get the values of the goal position based on alliance - currently using Red values
         //Blue: x: 11.92m y: 4.03m
         goalPose = new Translation2d(4.63, 4.03);
-
+        zonePose = new Translation2d(1.5,1.5);
+        
+        
+        //PositionControl
+        TurretPositionControl = new Lib4150PositionControl(Units.rotationsToDegrees(2.0),Units.rotationsToDegrees(50.0), 
+                            0.005, 0.35, 0.35, 1.0e-5, false, false);
         //Speed control
         launcherFeedforward = new SimpleMotorFeedforward (0.0, Launcher_Kn, 0.0);
         launcherPID = new PIDController ( Launcher_Kn *.5, 0, 0);
@@ -104,6 +120,12 @@ public class TurretLauncher {
         locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
         locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
         locNTSend.addItemDouble("LauncherMotorDmd", TurretLauncher::getLauncherMotorDemand);
+        locNTSend.addItemBoolean("TurretclockwiseLimitSwitch", TurretLauncher::getClockwiseLimitSwitch);
+        locNTSend.addItemBoolean("TurretcounterclockwiseLimitSwitch", TurretLauncher::getCounterclockwiseLimitSwitch);
+        locNTSend.addItemDouble("LauncherSpeed1",TurretLauncher::getLauncherSpeed1 );
+        locNTSend.addItemDouble("LauncherSpeed2", TurretLauncher::getLauncherSpeed2);
+        locNTSend.addItemDouble("LauncherSpeedActual", TurretLauncher::getLauncherActualSpeed);
+
 
 
         
@@ -118,51 +140,69 @@ public class TurretLauncher {
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
         counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
 
-        // TODO: Convert to degrees.  Think that the default is rotations.  Also take into account gear ratio...
-        turretAngleEncoder = TurrentRotationMotorEncoder.getPosition();
-        turretAngleVelRPM = TurrentRotationMotorEncoder.getVelocity();
+        turretAngleEncoder = TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio;
+        turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
 
         // -------- calc stuff
 
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
         TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
-        robotPose.minus(TurretOffset);
+        robotPose.minus(TurretOffset);  // TODO: Should this be add
 
-        TurretDistance=robotPose.getDistance(goalPose);
+        Translation2d targetPose = goalPose;
 
-        DesiredTurretAngle = (goalPose.minus(robotPose)).getAngle();
+        if (turretMode){
+            targetPose=zonePose;
+        }
+        else {
+            targetPose=goalPose;
+        }
+
+        TurretDistance=robotPose.getDistance(targetPose);
+
+        DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()));
         desiredTurretAngleDegrees = DesiredTurretAngle.getDegrees();
 
 
         //------Position Control
-        // TODO: Define this in init.  Not here over and over....
-        TurretPositionControl = new Lib4150PositionControl(Units.rotationsToDegrees(2.0),Units.rotationsToDegrees(50.0), 
-                            0.005, 0.35, 0.35, 1.0e-5, false, false);
-        
         TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
 
+        //Reads current motor speed //double check unit conversion
+        locLauncherSpeed1= LauncherMotorEncoder.getVelocity();
+        locLauncherSpeed2= LauncherMotorEncoder2.getVelocity();
+        locLauncherSpeedActual = (locLauncherSpeed1+locLauncherSpeed2) *0.5;
+        
+        double useSpeedTarget = launchertargetSpeed;
+        if ( !locLauncherOn ) {
+            launchertargetSpeed = 0.0;
+        }
+
+        
 
         // Set launcher motor demand
-        LauncherRPM = LauncherMotorEncoder.getVelocity();
-        double launchFeedForward = launcherFeedforward.calculate(launchertargetSpeed);
-        double launcherPIDOutput = launcherPID.calculate(LauncherRPM, launchertargetSpeed);
+        double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
+        double launcherPIDOutput = launcherPID.calculate(locLauncherSpeedActual, useSpeedTarget);
         LauncherMotorDemand = MathUtil.clamp(launchFeedForward+launcherPIDOutput, -1.0, 1.0);
+
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
+
+        if ( !locLauncherOn ) {
+            LauncherMotorDemand = 0;
+        }
         LauncherMotor.set(LauncherMotorDemand); 
         LauncherMotor2.set(LauncherMotorDemand);
+
 
         locNTSend.triggerUpdate();
     }
 
-    public void readSensors(){
-        //Reads current drive speed
-        RelativeEncoder LauncherEncoder = LauncherMotor.getEncoder(); //double check unit conversion
-        locLauncherSpeedActual = -Units.feetToMeters(LauncherEncoder.getVelocity());      //METERS      
+    
+              //METERS      
 
-    }
+
 
     private static double getTurretMotorDemand() {
         return TurretMotorDemand;
@@ -173,16 +213,38 @@ public class TurretLauncher {
         public static double getturretAngleEncoder() {
         return turretAngleEncoder;
     }
-
     private static double getturretAngleTarget(){
         return desiredTurretAngleDegrees;
     }
-
     public static double getTurretMotorRPM() {
         return turretAngleVelRPM;
     }
-
-
-
+    public static boolean getClockwiseLimitSwitch(){
+        return clockwiseLimitSwitchValue;
+    }
+    public static boolean getCounterclockwiseLimitSwitch(){
+        return counterclockwiseLimitSwitchValue;
+    }
+    public static double getLauncherSpeed1(){
+        return locLauncherSpeed1;
+    }
+    public static double getLauncherSpeed2(){
+        return locLauncherSpeed2;
+    }
+    public static double getLauncherActualSpeed(){
+        return locLauncherSpeedActual;
+    }
+    public static void cmdLauncherOn(){
+        locLauncherOn=true;
+    }
+    public static void cmdLauncherOff(){
+        locLauncherOn=false;
+    }
+    public static void cmdBallsToHub(){
+        turretMode = false;
+    }
+    public static void cmdBallsToZone(){
+        turretMode = true;
+    }
 }
 

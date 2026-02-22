@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
     AgitatorSystem.init();
     FeederSystem.init();
     TrajectorySystem.TrajectoryInit();
-    AutoSystem.init();
+    String[] ourautos = AutoSystem.init();
     TurretLauncher.init();
     // Climb.init();
  
@@ -45,8 +45,7 @@ public class Robot extends TimedRobot {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     //m_chooser.addOption("My Auto", kCustomAuto);
     //SmartDashboard.putData("Auto choices", m_chooser);
-    String[] AutoChoices = { "one", "two"}
-    SmartDashboard.putStringArray("Auto List", AutoChoices);
+    SmartDashboard.putStringArray("Auto List", ourautos);
     
 
   }

@@ -28,10 +28,6 @@ public class Robot extends TimedRobot {
    * This is the class constructor.
    */
   public Robot() {
-    // TODO: update this code after reading auto files from roborio mem card.  This might be moved to end of this method, after the system inits.
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
 
     SwerveTeleop.init();
     SwerveDrive.SwerveInit();
@@ -41,11 +37,17 @@ public class Robot extends TimedRobot {
     AgitatorSystem.init();
     FeederSystem.init();
     TrajectorySystem.TrajectoryInit();
+    AutoSystem.init();
+    TurretLauncher.init();
     // Climb.init();
-    // TurretLauncher.init();
-    // AutoSystem.init(); 
-    // todo: add feeder
-  
+ 
+    // TODO: update this code after reading auto files from roborio mem card.  This might be moved to end of this method, after the system inits.
+    //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    //m_chooser.addOption("My Auto", kCustomAuto);
+    //SmartDashboard.putData("Auto choices", m_chooser);
+    String[] AutoChoices = { "one", "two"}
+    SmartDashboard.putStringArray("Auto List", AutoChoices);
+    
 
   }
 
@@ -66,7 +68,7 @@ public class Robot extends TimedRobot {
     SwerveVision.execute(systemElapsedTimeSec);
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
-    FeederSystem.executeLogic();
+    FeederSystem.executeLogic(systemElapsedTimeSec);
     // TurretLauncher.executeLogic(systemElapsedTimeSec);
     // Climb.executeLogic(systemElapsedTimeSec);
     // TODO: add feeder
@@ -85,8 +87,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    // m_autoSelected = m_chooser.getSelected();
+    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     // TODO: Update as needed to init for running an auto routine...
   }

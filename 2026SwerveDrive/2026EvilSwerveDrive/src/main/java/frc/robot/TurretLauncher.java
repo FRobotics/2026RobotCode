@@ -42,6 +42,7 @@ public class TurretLauncher {
     private static Translation2d goalPose;
     private static double TurretDistance;
     private static Rotation2d DesiredTurretAngle;
+    // TODO: Not used.
     private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
     private static double LauncherMotorDemand;
@@ -58,48 +59,44 @@ public class TurretLauncher {
     private static double LauncherRPM = 0.0;
     private static double launchertargetSpeed= 0.5;
     
-        private static double Launcher_Kn = 1.0 / 3.98670783;
-        //private static SparkMax turretEncoder;
-        private static double desiredTurretAngleDegrees;
+    private static double Launcher_Kn = 1.0 / 3.98670783;
+    //private static SparkMax turretEncoder;
+    private static double desiredTurretAngleDegrees;
     
     
-        public static void init() {
-    
-            // TODO: Set CAN ID
-            TurretRotationMotor = new SparkMax(10,MotorType.kBrushless);
-            TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
-            LauncherMotor = new SparkMax(11,MotorType.kBrushless);
-            LauncherMotorEncoder = LauncherMotor.getEncoder();
-            LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
-            LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
-            //open motor config
-            SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
-            
-            //motor Config
-            //TODO: config values need to be changed/tuned
-            TurretSpinConfig.idleMode(IdleMode.kBrake);
-            TurretSpinConfig.smartCurrentLimit(50);
-            TurretSpinConfig.openLoopRampRate(0.2);
-           
-            // TODO: open and configure sensors
-            
-            //set initial system state
-            TurretOffset = new Translation2d(4.872 , 0);
-            //TODO: get the values of the goal position based on alliance - currently using Red values
-            //Blue: x: 11.92m y: 4.03m
-            goalPose = new Translation2d(4.63, 4.03);
-    
-            //Speed control
-            launcherFeedforward = new SimpleMotorFeedforward (0.0, Launcher_Kn, 0.0);
-            launcherPID = new PIDController ( Launcher_Kn *.5, 0, 0);
+    public static void init() {
+
+        TurretRotationMotor = new SparkMax(10,MotorType.kBrushless);
+        TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
+        LauncherMotor = new SparkMax(11,MotorType.kBrushless);
+        LauncherMotorEncoder = LauncherMotor.getEncoder();
+        LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
+        LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
+        //open motor config
+        SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
+        
+        //motor Config
+        //TODO: config values need to be changed/tuned
+        TurretSpinConfig.idleMode(IdleMode.kBrake);
+        TurretSpinConfig.smartCurrentLimit(50);
+        TurretSpinConfig.openLoopRampRate(0.2);
+        
+      
+        //set initial system state
+        TurretOffset = new Translation2d(4.872 , 0);
+        //TODO: get the values of the goal position based on alliance - currently using Red values
+        //Blue: x: 11.92m y: 4.03m
+        goalPose = new Translation2d(4.63, 4.03);
+
+        //Speed control
+        launcherFeedforward = new SimpleMotorFeedforward (0.0, Launcher_Kn, 0.0);
+        launcherPID = new PIDController ( Launcher_Kn *.5, 0, 0);
+
         //limit switches
-        clockwiseLimitSwitch = new DigitalInput(0);
-        counterclockwiseLimitSwitch = new DigitalInput(1);
+        clockwiseLimitSwitch = new DigitalInput(1);
+        counterclockwiseLimitSwitch = new DigitalInput(2);
         //encoder
 
-        // TODO: This will not be throughbore encoder any longer.  Use built in SparkMax encoder....
-        // - Looks like this is completed line 53-53?
-  
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
         locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
@@ -120,6 +117,7 @@ public class TurretLauncher {
         // -------- read sensors
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
         counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+
         // TODO: Convert to degrees.  Think that the default is rotations.  Also take into account gear ratio...
         turretAngleEncoder = TurrentRotationMotorEncoder.getPosition();
         turretAngleVelRPM = TurrentRotationMotorEncoder.getVelocity();

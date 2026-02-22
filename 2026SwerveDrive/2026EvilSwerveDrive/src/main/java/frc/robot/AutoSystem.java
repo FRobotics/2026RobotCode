@@ -89,6 +89,7 @@ public class AutoSystem {
                         AutoRoutine routineToAdd = new AutoRoutine(fileInstance.split(AUTO_FILE_EXTENSION)[0], newRoutine);
                         routines.add(routineToAdd);
                         autoHashMap.put(fileInstance.split(AUTO_FILE_EXTENSION)[0], routineToAdd);
+                        System.out.println("Auto - Added routine:"+fileInstance.split(AUTO_FILE_EXTENSION)[0]);
                 
                 } catch (Exception e) {
 
@@ -206,6 +207,7 @@ public class AutoSystem {
         autoTimer.reset();
         autoTimer.start();
 
+        // load all autos into cache
         AutoSystem.readFiles(AutoSystem.availableTrajectories());
 
         // init network table

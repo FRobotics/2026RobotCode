@@ -33,11 +33,13 @@
 		<Item Name="SystemPanels" Type="Folder">
 			<Property Name="NI.SortType" Type="Int">0</Property>
 			<Item Name="AgitatorSystem.vi" Type="VI" URL="../AgitatorSystem.vi"/>
+			<Item Name="AutoSystem.vi" Type="VI" URL="../AutoSystem.vi"/>
 			<Item Name="ClimbSystem.vi" Type="VI" URL="../ClimbSystem.vi"/>
 			<Item Name="DriveSystem.vi" Type="VI" URL="../DriveSystem.vi"/>
 			<Item Name="FeederSystem.vi" Type="VI" URL="../FeederSystem.vi"/>
 			<Item Name="IntakeSystem.vi" Type="VI" URL="../IntakeSystem.vi"/>
 			<Item Name="LauncherSystem.vi" Type="VI" URL="../LauncherSystem.vi"/>
+			<Item Name="TrajectorySystem.vi" Type="VI" URL="../TrajectorySystem.vi"/>
 			<Item Name="TurretSystem.vi" Type="VI" URL="../TurretSystem.vi"/>
 			<Item Name="VisionSystem.vi" Type="VI" URL="../VisionSystem.vi"/>
 		</Item>
@@ -59,9 +61,7 @@
 		</Item>
 		<Item Name="Dashboard Main.vi" Type="VI" URL="../Dashboard Main.vi"/>
 		<Item Name="Dashboard Main1920x1080fixed.vi" Type="VI" URL="../Dashboard Main1920x1080fixed.vi"/>
-		<Item Name="OLD_Dashboard_Main_Fixed_1280_768.vi" Type="VI" URL="../OLD_Dashboard_Main_Fixed_1280_768.vi"/>
 		<Item Name="subpanel_sizes.txt" Type="Document" URL="../subpanel_sizes.txt"/>
-		<Item Name="Dashboard Main1920x1080fixed_ALT.vi" Type="VI" URL="../Dashboard Main1920x1080fixed_ALT.vi"/>
 		<Item Name="CopyExeToFinalLocation.bat" Type="Document" URL="../CopyExeToFinalLocation.bat"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build">
@@ -126,7 +126,7 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
-				<Property Name="Bld_version.build" Type="Int">16</Property>
+				<Property Name="Bld_version.build" Type="Int">18</Property>
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>

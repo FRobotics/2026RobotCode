@@ -18,6 +18,7 @@
 			<Item Name="Decode Status Byte.vi" Type="VI" URL="../Decode Status Byte.vi"/>
 			<Item Name="Panel Resized.vi" Type="VI" URL="../Panel Resized.vi"/>
 			<Item Name="Adjust Dashboard Window.vi" Type="VI" URL="../Adjust Dashboard Window.vi"/>
+			<Item Name="DashBoardGlobals.vi" Type="VI" URL="../DashBoardGlobals.vi"/>
 		</Item>
 		<Item Name="MissingSupportVI" Type="Folder">
 			<Item Name="Prepare Joystick Data for Displays.vi" Type="VI" URL="../Prepare Joystick Data for Displays.vi"/>
@@ -126,7 +127,7 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
-				<Property Name="Bld_version.build" Type="Int">18</Property>
+				<Property Name="Bld_version.build" Type="Int">19</Property>
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>

@@ -40,6 +40,9 @@
 			<Item Name="FeederSystem.vi" Type="VI" URL="../FeederSystem.vi"/>
 			<Item Name="IntakeSystem.vi" Type="VI" URL="../IntakeSystem.vi"/>
 			<Item Name="LauncherSystem.vi" Type="VI" URL="../LauncherSystem.vi"/>
+			<Item Name="OdometrySystem.vi" Type="VI" URL="../OdometrySystem.vi"/>
+			<Item Name="SupervisorySystem.vi" Type="VI" URL="../SupervisorySystem.vi"/>
+			<Item Name="TeleopSystem.vi" Type="VI" URL="../TeleopSystem.vi"/>
 			<Item Name="TrajectorySystem.vi" Type="VI" URL="../TrajectorySystem.vi"/>
 			<Item Name="TurretSystem.vi" Type="VI" URL="../TurretSystem.vi"/>
 			<Item Name="VisionSystem.vi" Type="VI" URL="../VisionSystem.vi"/>
@@ -127,7 +130,7 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
-				<Property Name="Bld_version.build" Type="Int">20</Property>
+				<Property Name="Bld_version.build" Type="Int">25</Property>
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>

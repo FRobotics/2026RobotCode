@@ -30,7 +30,11 @@ public class AutoSystem {
 
 
     // TODO: Add doc -- call this just prior to running ANY auto... Robot.java has a place for this.  It isn't the overall just once init.
-    public static void ExecuteListInit(AutoRoutine autoToRun ) {
+    public static void ExecuteListInit(String autoRun ) {
+
+        // -------find our auto to run
+        AutoRoutine autoToRun = null;
+        autoToRun = AutoSystem.getAuto( autoRun );
 
         // -------get the routine to run
         locExecRoutine = autoToRun;
@@ -45,7 +49,7 @@ public class AutoSystem {
         
     }
 
-    public static String[] availableTrajectories() {
+    public static String[] availableAutos() {
         List<String> autos = new ArrayList<>();
         File[] files = AUTO_DIR.listFiles();
         if (files != null) {
@@ -63,7 +67,7 @@ public class AutoSystem {
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
         ArrayList<String> routineNames = new ArrayList<String>();
         for (String fileInstance : files){
-                File file = new File(fileInstance);
+                File file = new File(AUTO_DIR, fileInstance + AUTO_FILE_EXTENSION);
                 try (Scanner myReader = new Scanner(file)) {
                         ArrayList<AutoStep> newRoutine= new ArrayList<AutoStep>();
                         while (myReader.hasNextLine()) {
@@ -100,7 +104,7 @@ public class AutoSystem {
         return routineNames.toArray(new String[0]);
     }
       
-    public AutoRoutine getAuto(String name)
+    public static AutoRoutine getAuto(String name)
     {
         return autoHashMap.get(name);
     }
@@ -110,7 +114,6 @@ public class AutoSystem {
 
             
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
-
         
         // --------is this the first time for this step
         if ( locExecIndex != locExecLastIndex ) {
@@ -210,7 +213,7 @@ public class AutoSystem {
         autoTimer.start();
 
         // load all autos into cache
-        String[] readAutos = AutoSystem.readFiles(AutoSystem.availableTrajectories());
+        String[] readAutos = AutoSystem.readFiles(AutoSystem.availableAutos());
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");
@@ -231,22 +234,46 @@ public class AutoSystem {
     }
 
     public static double getStep(){
-        return (double)locExecRoutine.getStep(locExecIndex).getCmd().ordinal();
+        double returnGetStepValue = 0.0;
+        if ( locExecRoutine != null ) {
+                returnGetStepValue =  (double)locExecRoutine.getStep(locExecIndex).getCmd().ordinal();
+        }
+        return returnGetStepValue;
     }
     public static double getTimeout(){
-        return locExecRoutine.getStep(locExecIndex).getTimeout();
+        double returnGetTimeoutValue = 0.0;
+        if (locExecRoutine != null){ 
+        returnGetTimeoutValue = locExecRoutine.getStep(locExecIndex).getTimeout();
+        }
+        return returnGetTimeoutValue;
     }
     public static double getParm1(){
-        return locExecRoutine.getStep(locExecIndex).getParam1();
+        double returnGetParm1Value = 0.0;
+        if (locExecRoutine != null){
+                returnGetParm1Value = locExecRoutine.getStep(locExecIndex).getParam1();
+        }
+        return returnGetParm1Value;
     }
     public static double getParm2(){
-        return locExecRoutine.getStep(locExecIndex).getParam2();
+        double returnGetParm2Value = 0.0;
+        if (locExecRoutine != null){
+                returnGetParm2Value = locExecRoutine.getStep(locExecIndex).getParam2();
+        }
+        return returnGetParm2Value;
     }
     public static double getParm3(){
-        return locExecRoutine.getStep(locExecIndex).getParam3();
+        double returnGetParm3Value = 0.0;
+        if (locExecRoutine != null){
+                returnGetParm3Value = locExecRoutine.getStep(locExecIndex).getParam3();
+        }
+        return returnGetParm3Value;
     }
     public static String getFunction(){
-        return locExecRoutine.getStep(locExecIndex).getFunction();
+        String returnGetFunctionValue = "";
+        if (locExecRoutine != null){
+                returnGetFunctionValue = locExecRoutine.getStep(locExecIndex).getFunction();
+        }
+        return returnGetFunctionValue;
     }
 
     //public static void executeLogic() {

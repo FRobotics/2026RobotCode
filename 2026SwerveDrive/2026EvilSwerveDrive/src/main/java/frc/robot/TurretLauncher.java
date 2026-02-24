@@ -146,8 +146,8 @@ public class TurretLauncher {
         // -------- calc stuff
 
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
-        TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
-        robotPose.minus(TurretOffset);  // TODO: Should this be add
+        TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
+        robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
 
         Translation2d targetPose = goalPose;
 
@@ -162,8 +162,8 @@ public class TurretLauncher {
 
         DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
-        DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()));
-        desiredTurretAngleDegrees = DesiredTurretAngle.getDegrees();
+        DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
+        desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), -100.0, 100.0);
 
 
         //------Position Control

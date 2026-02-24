@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
     FeederSystem.executeLogic(systemElapsedTimeSec);
+    
     // TurretLauncher.executeLogic(systemElapsedTimeSec);
     // Climb.executeLogic(systemElapsedTimeSec);
     // TODO: add feeder
@@ -89,22 +90,15 @@ public class Robot extends TimedRobot {
     // m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    AutoSystem.ExecuteListInit(m_autoSelected);
     // TODO: Update as needed to init for running an auto routine...
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
-    // TODO: Add call to our auto routine.  May need to rework our auto to not be continuous.
+    double systemElapsedTimeSec = Timer.getFPGATimestamp();
+    AutoSystem.ExecuteList(systemElapsedTimeSec);
   }
 
   /** This function is called once when teleop is enabled. */

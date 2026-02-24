@@ -40,6 +40,7 @@ public class IntakeSystem {
     private static double intakeMotorRPM;
     private static double intakeAngleMotorDemand;
     private static DigitalInput limitSwitch;
+    private static double intakeGearRatio = 36.0;
   
     public static void init() {
 
@@ -99,8 +100,7 @@ public class IntakeSystem {
 
     public static void executeLogic(double systemElapsedTimeSec) {
         limitState = limitSwitch.get();
-        // TODO: scale arm position.. default is rotations.... so DEG = ROT * 360 / GEAR_RATIO + STARTING_POSITION
-        encoderRot = intakeMotor2Encoder.getPosition();     // pos of arm ??
+        encoderRot = (intakeMotor2Encoder.getPosition()*360/intakeGearRatio)+90;     // pos of arm ??
 
         intakeMotorRPM = intakeMotor1Encoder.getVelocity();
 

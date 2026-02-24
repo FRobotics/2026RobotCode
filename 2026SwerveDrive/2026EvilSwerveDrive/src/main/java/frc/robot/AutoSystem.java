@@ -212,6 +212,8 @@ public class AutoSystem {
         autoTimer.reset();
         autoTimer.start();
 
+        autoHashMap = new HashMap<String,AutoRoutine>();
+
         // load all autos into cache
         String[] readAutos = AutoSystem.readFiles(AutoSystem.availableAutos());
 

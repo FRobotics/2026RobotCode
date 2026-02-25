@@ -35,7 +35,9 @@ public class SwerveModule {
     // Flex speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
     // Kn (normalization constant) = Flex motor out / Flex speed = 0.07645406
     // when doing everything in meters then Flex speed is 3.98670783
-    private static double Drive_Kn = 1.0 / 3.98670783;
+
+    //Now 15 ft/sec -> 4.572 m/s
+    private static double Drive_Kn = 1.0 / 4.572;
 
     private double xOff = 0.0;
     private double yOff = 0.0;
@@ -84,8 +86,8 @@ public class SwerveModule {
 
         //position and velocity conversion
         //convert from rotations to feet
-        //3.705 in diameter * pi / 12 in to feet / 6.75 gear ratio
-        final double driveDistFactor = 0.143699;
+        //4.01019527 in diameter * pi / 12 in to feet / 6.75 gear ratio
+        final double driveDistFactor = 0.155535671604;
         driveConfig.encoder.positionConversionFactor(driveDistFactor);
         driveConfig.encoder.velocityConversionFactor(driveDistFactor/60.0);
 

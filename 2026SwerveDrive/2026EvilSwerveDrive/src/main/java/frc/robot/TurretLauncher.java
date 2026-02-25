@@ -57,11 +57,13 @@ public class TurretLauncher {
     private static SimpleMotorFeedforward launcherFeedforward;
     private static double locLauncherSpeedActual = 0.0;
     private static double launchertargetSpeed= 100;
+    private static boolean launcherSpeedOnTarget = false;
     private static double turretGearRatio = 160;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
     private static boolean turretMode=false;
+    private static boolean isRed;
 
     
     private static double Launcher_Kn = 1.0 / 3.98670783;
@@ -70,6 +72,10 @@ public class TurretLauncher {
     
     
     public static void init() {
+
+        //TODO: is this the right spot for this (will this be run after the value in MatchSystem is created?)
+        //get team side from MatchSystem
+        isRed = MatchSystem.isRed();
 
         TurretRotationMotor = new SparkMax(10,MotorType.kBrushless);
         TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
@@ -125,6 +131,8 @@ public class TurretLauncher {
         locNTSend.addItemDouble("LauncherSpeed1",TurretLauncher::getLauncherSpeed1 );
         locNTSend.addItemDouble("LauncherSpeed2", TurretLauncher::getLauncherSpeed2);
         locNTSend.addItemDouble("LauncherSpeedActual", TurretLauncher::getLauncherActualSpeed);
+        locNTSend.addItemDouble("LauncherTargetSpeed", TurretLauncher::getLauncherTargetSpeed);
+        locNTSend.addItemBoolean("LauncherSpeedOnTarget", TurretLauncher::getLauncherSpeedOnTarget);
 
 
 
@@ -143,7 +151,11 @@ public class TurretLauncher {
         turretAngleEncoder = TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio;
         turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
 
+
+        
+        
         // -------- calc stuff
+        launchertargetSpeed  = 1000.0 + TurretDistance * 200.0;
 
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
         TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
@@ -176,15 +188,34 @@ public class TurretLauncher {
         
         double useSpeedTarget = launchertargetSpeed;
         if ( !locLauncherOn ) {
-            launchertargetSpeed = 0.0;
+            useSpeedTarget = 0.0;
         }
 
-        
+        //check if within 75 RPM of target speed
+        if (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75)
+        {
+            launcherSpeedOnTarget = true;
+        }
+        else
+        {
+            launcherSpeedOnTarget = false;
+        }
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
         double launcherPIDOutput = launcherPID.calculate(locLauncherSpeedActual, useSpeedTarget);
         LauncherMotorDemand = MathUtil.clamp(launchFeedForward+launcherPIDOutput, -1.0, 1.0);
+
+        //TODO: this needs to actually do something (Task #34)
+        //use limit switches to stop travel
+        if (clockwiseLimitSwitchValue)
+        {
+
+        }
+        else if (counterclockwiseLimitSwitchValue)
+        {
+
+        }
 
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
@@ -216,6 +247,9 @@ public class TurretLauncher {
     private static double getturretAngleTarget(){
         return desiredTurretAngleDegrees;
     }
+    private static boolean getLauncherSpeedOnTarget() {
+        return launcherSpeedOnTarget;
+    }
     public static double getTurretMotorRPM() {
         return turretAngleVelRPM;
     }
@@ -233,6 +267,9 @@ public class TurretLauncher {
     }
     public static double getLauncherActualSpeed(){
         return locLauncherSpeedActual;
+    }
+        public static double getLauncherTargetSpeed(){
+        return launchertargetSpeed;
     }
     public static void cmdLauncherOn(){
         locLauncherOn=true;

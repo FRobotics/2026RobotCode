@@ -73,7 +73,7 @@ public class TurretLauncher {
     
     public static void init() {
 
-        //TODO: is this the right spot for this (will this be run after the value in MatchSystem is created?)
+        //TODO: is this the right spot for this (will this be run after the value in MatchSystem is created?) --- NO - it might not be set yet...   Call during execute
         //get team side from MatchSystem
         isRed = MatchSystem.isRed();
 
@@ -151,11 +151,12 @@ public class TurretLauncher {
         turretAngleEncoder = TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio;
         turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
 
+        //get team side from MatchSystem
+        isRed = MatchSystem.isRed();
 
         
         
         // -------- calc stuff
-        launchertargetSpeed  = 1000.0 + TurretDistance * 200.0;
 
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
         TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
@@ -176,6 +177,10 @@ public class TurretLauncher {
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
         desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), -100.0, 100.0);
+
+        // -------calculate launcher speed demand from distance to target....
+        // -------move after the calculation for turret distance...
+        launchertargetSpeed  = 1000.0 + TurretDistance * 200.0;
 
 
         //------Position Control

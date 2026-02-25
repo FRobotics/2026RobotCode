@@ -52,8 +52,8 @@ public class IntakeSystem {
         
         
         //open motor config
-        SparkMaxConfig intake1Config = new SparkMaxConfig();
-        SparkMaxConfig intake2Config = new SparkMaxConfig();
+        //SparkMaxConfig intake1Config = new SparkMaxConfig();
+        //SparkMaxConfig intake2Config = new SparkMaxConfig();
         
         //motor Config
         //TODO: config values need to be changed/tuned

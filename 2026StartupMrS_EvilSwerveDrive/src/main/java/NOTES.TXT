@@ -1,0 +1,15 @@
+Notes on changes from Robot as of 2/24/2026 after workshop.
+
+Match System.
+    - Added init method - init NT tables
+    - Added NT sender
+    - added code for disabledExec
+    - updated setRed, setBlue, added setUnknown
+
+Robot.java
+    - added call to Match init
+    - Added call to Match disabled exec.
+
+TurretLauncher
+    - Turret - added manual mode.  
+

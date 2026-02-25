@@ -10,6 +10,7 @@ import choreo.Choreo;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -53,6 +54,8 @@ public class TrajectorySystem {
 
         }
     
+
+    
      locNTSend = new Lib4150NetTableSystemSend("TrajectorySystem");
      locNTSend.addItemDouble("ElapsedTrajTime", TrajectorySystem::getElapsedTrajTime);
      locNTSend.addItemDouble("xErr", TrajectorySystem::getxErr);
@@ -62,7 +65,6 @@ public class TrajectorySystem {
      locNTSend.addItemBoolean("done", TrajectorySystem::getDone);
      locNTSend.addItemBoolean("haveSample", TrajectorySystem::gethaveSample);
      locNTSend.addItemDouble("timeLengthOfTrajectory", TrajectorySystem::getTimeLengthOfTrajectory);
-     // TODO: add network table entries for ontarget, done, havesample, timelengthoftrajectory (rename if you don't like name)
     }
 
     @SuppressWarnings("unchecked")
@@ -74,11 +76,14 @@ public class TrajectorySystem {
             var tryToLoadTrajectory = TrajectoryStorage.loadTrajectory(TrajectoryName);
             if ( tryToLoadTrajectory.isPresent()) {
                 TrajectoryToRun = (Trajectory<SwerveSample>)tryToLoadTrajectory.get();
+                timeLengthOfTrajectory = TrajectoryToRun.getTotalTime();
             }
         }
 
         // --------calc elapsed time for trajectory
         Double elapsedTime = SystemElapsedTime - startTime;
+
+        elapsedTrajTime = elapsedTime;
 
         Optional<SwerveSample> oursample = TrajectoryToRun.sampleAt(elapsedTime, false);
 
@@ -87,10 +92,11 @@ public class TrajectorySystem {
             realsample = oursample.get();
             havesample = true;
             xErr = ( realsample.x - SwerveOdometry.getxposition());
+            yErr = ( realsample.y - SwerveOdometry.getyposition());
+            rotErr = ( realsample.heading - SwerveOdometry.getrotposition());
             double xvelDmd = realsample.vx + KX * xErr;
-            double yvelDmd = realsample.vy + KY * ( realsample.y - SwerveOdometry.getyposition());
-            // TODO: Make this modulo +/- PI...  There is a WPILIB function for this... MathUtil.angleModulus
-            double rotvelDmd = realsample.omega + KRot * ( realsample.heading - SwerveOdometry.getrotposition());
+            double yvelDmd = realsample.vy + KY * yErr;
+            double rotvelDmd = MathUtil.angleModulus(realsample.omega + KRot * rotErr);
 
             if ( Math.abs(xErr) < 2 && Math.abs(yErr) < 2 && Math.abs(rotErr) < Units.degreesToRadians(3)){
                 ontarget = true;
@@ -99,7 +105,7 @@ public class TrajectorySystem {
                 ontarget = false;
             }        
             
-            
+        
 
             SwerveDrive.setDesiredSpeed(new ChassisSpeeds( xvelDmd, yvelDmd, rotvelDmd));
         }
@@ -110,6 +116,10 @@ public class TrajectorySystem {
         }
         
         boolean complete = (elapsedTime >= TrajectoryToRun.getTotalTime()) && ontarget;  
+        done = complete;
+
+        locNTSend.triggerUpdate();
+
         return complete;
 
     }

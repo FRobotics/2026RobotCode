@@ -57,12 +57,12 @@ public class IntakeSystem {
         
         //motor Config
         //TODO: config values need to be changed/tuned
-        intake1Config.idleMode(IdleMode.kBrake);
+        /*intake1Config.idleMode(IdleMode.kBrake);
         intake2Config.idleMode(IdleMode.kBrake);
         intake1Config.smartCurrentLimit(50);
         intake2Config.smartCurrentLimit(20);
         intake1Config.openLoopRampRate(0.2);
-        intake2Config.openLoopRampRate(0.08);
+        intake2Config.openLoopRampRate(0.08);*/
         
         //sensors
         intakeMotor1Encoder = intakeMotor1.getEncoder();

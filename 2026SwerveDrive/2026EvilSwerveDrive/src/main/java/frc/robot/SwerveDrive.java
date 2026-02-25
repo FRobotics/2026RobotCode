@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj.SPI;
 public class SwerveDrive {
 
     //measured in inches
-    private static final double motorOffsetX=11.5; 
-    private static final double motorOffsetY=10.5;
+    private static final double motorOffsetX=9.875; 
+    private static final double motorOffsetY=13.375;
 
-    public static final double maxLinearSpeed = 13.0; // measured in fps
+    public static final double maxLinearSpeed = 15.0; // measured in fps
     public static final double maxRotSpeed = 360.0; //measured in degrees
 
     static private SwerveModule module1;

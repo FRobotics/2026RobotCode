@@ -48,6 +48,7 @@ public class SwerveTeleop {
         locNTsend.addItemDouble("DriveSpeedTarg_X", SwerveTeleop::getDriveSpeedTargX);
         locNTsend.addItemDouble("DriveSpeedTarg_Y", SwerveTeleop::getDriveSpeedTargY);
         locNTsend.addItemDouble("DriveSpeedTarg_Rot", SwerveTeleop::getDriveSpeedTargRot);
+        locNTsend.addItemBoolean("FieldOriented", SwerveTeleop::getFieldOrientedDriving); 
         locNTsend.triggerUpdate();
         
     }

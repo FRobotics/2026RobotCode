@@ -25,6 +25,7 @@ public class AutoSystem {
     private static boolean locExecDoNextStep = false;
     private static String AUTO_FILE_EXTENSION = ".csv";
     private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
+    private static double locStepTime = 0.0;
 
     private static HashMap<String, AutoRoutine> autoHashMap;
 
@@ -85,7 +86,7 @@ public class AutoSystem {
                                         param1 = Double.parseDouble(datas[2]);
                                         param2 = Double.parseDouble(datas[3]);
                                         param3 = Double.parseDouble(datas[4]);
-                                        Funcname = datas[5];
+                                        Funcname = datas[5].trim();
                                         AutoStep newStep=new AutoStep(AutoStep.StepCommandCases(commandNum), timeout, param1, param2, param3, Funcname);
                                         newRoutine.add(newStep);
                                 }
@@ -114,7 +115,9 @@ public class AutoSystem {
 
             
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
-        
+
+
+        locStepTime = autoTimer.get();
         // --------is this the first time for this step
         if ( locExecIndex != locExecLastIndex ) {
                 locExecInitStep = true;
@@ -226,6 +229,7 @@ public class AutoSystem {
         locNTSend.addItemDouble("Parm2", AutoSystem::getParm2);
         locNTSend.addItemDouble("Parm3", AutoSystem::getParm3);
         locNTSend.addItemString("function", AutoSystem::getFunction);
+        locNTSend.addItemDouble("StepTime", AutoSystem::getLocStepTime);
         //locNTSend.addItemBoolean(, AutoSystem::);
         //locNTSend.addItemDouble(, AutoSystem::);
         
@@ -276,6 +280,9 @@ public class AutoSystem {
                 returnGetFunctionValue = locExecRoutine.getStep(locExecIndex).getFunction();
         }
         return returnGetFunctionValue;
+    }
+    public static double getLocStepTime(){
+        return locStepTime;
     }
 
     //public static void executeLogic() {

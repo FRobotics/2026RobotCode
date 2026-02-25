@@ -86,7 +86,12 @@ public class AutoSystem {
                                         param1 = Double.parseDouble(datas[2]);
                                         param2 = Double.parseDouble(datas[3]);
                                         param3 = Double.parseDouble(datas[4]);
-                                        Funcname = datas[5].trim();
+                                        // Regex explanation:
+                                        // ^\" : Matches a double quote at the start of the string.
+                                        // (.*) : Captures any character (0 or more times) as group 1.
+                                        // \"$ : Matches a double quote at the end of the string.
+                                        // If the pattern matches, it is replaced by the content of group 1 ($1).
+                                        Funcname = datas[5].trim().replaceAll("^\"(.*)\"$", "$1");
                                         AutoStep newStep=new AutoStep(AutoStep.StepCommandCases(commandNum), timeout, param1, param2, param3, Funcname);
                                         newRoutine.add(newStep);
                                 }
@@ -117,7 +122,6 @@ public class AutoSystem {
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
 
 
-        locStepTime = autoTimer.get();
         // --------is this the first time for this step
         if ( locExecIndex != locExecLastIndex ) {
                 locExecInitStep = true;
@@ -132,6 +136,8 @@ public class AutoSystem {
                 autoTimer.reset();
                 autoTimer.start();
         }
+
+        locStepTime = autoTimer.get();
 
         locExecDoNextStep = false;
 

@@ -26,6 +26,9 @@ public class TurretLauncher {
     private static final double MIN_ALLOWED_TURRET_ANGLE = -100.0;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 100.0;
 
+    // private static final double Launcher_Kn = 1.0 / 3.98670783;
+    private static final double Launcher_Kn = 1.0 / 5000.0; // max RPM guess.
+
     //private double TURRETOFFSET;
     //private Rotation2d RobotRotation;
 
@@ -78,7 +81,6 @@ public class TurretLauncher {
     private static double locLauncherCmdSetpoint = 0.0;
 
     
-    private static double Launcher_Kn = 1.0 / 3.98670783;
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
     

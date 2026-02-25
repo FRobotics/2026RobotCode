@@ -12,4 +12,8 @@ Robot.java
 
 TurretLauncher
     - Turret - added manual mode.  
+    - Launcher - added manual mode
 
+Teleop
+    - added turret manual mode toggle (back), and inc/dec axis (right x)
+    - added launcher manual mode toggle (start), and inc/dec axis (right y)

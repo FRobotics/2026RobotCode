@@ -292,6 +292,7 @@ public class TurretLauncher {
 
         if ( !locLauncherOn ) {
             LauncherMotorDemand = 0;
+            launcherPID.reset();
         }
         LauncherMotor.set(LauncherMotorDemand); 
         LauncherMotor2.set(LauncherMotorDemand);

@@ -93,10 +93,12 @@ public class TrajectorySystem {
             havesample = true;
             xErr = ( realsample.x - SwerveOdometry.getxposition());
             yErr = ( realsample.y - SwerveOdometry.getyposition());
-            rotErr = ( realsample.heading - SwerveOdometry.getrotposition());
+            // rotErr = ( realsample.heading - SwerveOdometry.getrotposition());
+            rotErr = MathUtil.angleModulus( realsample.heading - SwerveOdometry.getrotposition());
             double xvelDmd = realsample.vx + KX * xErr;
             double yvelDmd = realsample.vy + KY * yErr;
-            double rotvelDmd = MathUtil.angleModulus(realsample.omega + KRot * rotErr);
+            // double rotvelDmd = MathUtil.angleModulus(realsample.omega + KRot * rotErr);
+            double rotvelDmd = realsample.omega + KRot * rotErr;
 
             if ( Math.abs(xErr) < 2 && Math.abs(yErr) < 2 && Math.abs(rotErr) < Units.degreesToRadians(3)){
                 ontarget = true;

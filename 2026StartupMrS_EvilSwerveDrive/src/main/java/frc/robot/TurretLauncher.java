@@ -173,9 +173,9 @@ public class TurretLauncher {
 
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        // -------- read sensors
-        clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
-        counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+        // -------- read sensors ---- note limit switch engated returns false, so negate.
+        clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get();
+        counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get();
 
         turretAngleEncoder = TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio;
         turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;

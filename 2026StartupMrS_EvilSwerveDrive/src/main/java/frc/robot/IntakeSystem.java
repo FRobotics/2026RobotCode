@@ -9,7 +9,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 //import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 //import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.util.Units;
+//import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 //import edu.wpi.first.wpilibj.DutyCycleEncoder;
 //import edu.wpi.first.wpilibj.Encoder;
@@ -29,19 +29,19 @@ public class IntakeSystem {
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
     private static boolean locIntakeExtended = false;  // false if up, true if down.
-    private static SparkMax intakeMotor1;   // intake ??
-    private static SparkMax intakeMotor2;   // arm ??
-    private static RelativeEncoder intakeMotor1Encoder;
+    private static SparkMax IntakeBallMotor;   // intake ??
+    private static SparkMax IntakeArmMotor;   // arm ??
+    private static RelativeEncoder IntakeBallMotorEncoder;
     private static Lib4150PositionControl IntakePositionControl;
-    private static RelativeEncoder intakeMotor2Encoder;
+    private static RelativeEncoder IntakeArmMotorEncoder;
     private static int intakeState;//1 is up off, 2 is down off, 3 is down on,
     private static double intakeAngleTarget;
-    private static boolean limitState;
-    private static double encoderRot; //stores current value from encoder
+    private static boolean IntakeArmLowLimitSwitchState;
+    private static double IntakeArmAngleActual; //stores current value from encoder
     private static double intakeSpeed;
     private static double intakeMotorRPM;
     private static double intakeAngleMotorDemand;
-    private static DigitalInput limitSwitch;
+    private static DigitalInput IntakeArmLowLimitSwitch;
     // private static double intakeGearRatio = 36.0;
     private static double intakeGearRatio = 32.2;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
@@ -49,9 +49,8 @@ public class IntakeSystem {
     public static void init() {
 
         //motors
-        // TODO: Say which motor is arm and which is intake....  Is 1 intake, and 2 arm ??
-        intakeMotor1 = new SparkMax(6,MotorType.kBrushless);
-        intakeMotor2 = new SparkMax(5,MotorType.kBrushless);
+        IntakeBallMotor = new SparkMax(6,MotorType.kBrushless);
+        IntakeArmMotor = new SparkMax(5,MotorType.kBrushless);
 
         
         
@@ -69,22 +68,24 @@ public class IntakeSystem {
         intake2Config.openLoopRampRate(0.08);*/
         
         //sensors
-        intakeMotor1Encoder = intakeMotor1.getEncoder();
-        intakeMotor2Encoder = intakeMotor2.getEncoder();
-        limitSwitch = new DigitalInput(0);
+        IntakeBallMotorEncoder = IntakeBallMotor.getEncoder();
+        IntakeArmMotorEncoder = IntakeArmMotor.getEncoder();
+        // -------limit switch is false when engaged.
+        IntakeArmLowLimitSwitch = new DigitalInput(0);
 
         //initial state
-        intakeAngleTarget=90.0;
+        intakeAngleTarget=INTAKEUPANGLE;
         intakeSpeed=0.0;
         intakeState=1;
 
-        limitState = false;
-        encoderRot = 0.0;
+        IntakeArmLowLimitSwitchState = false;
+        IntakeArmAngleActual = 0.0;
 
         IntakeArmLowLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
 
-        IntakePositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 
-                            0.005, 0.35, 0.35, 1.0e-5, false, false);
+        // position units are degrees.
+        IntakePositionControl = new Lib4150PositionControl(2.0, 50.0, 
+                            0.005, 0.35, 0.20, 1.0e-5, false, false);
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
@@ -92,10 +93,9 @@ public class IntakeSystem {
 
         // --------intake arm        
         //encoder rotations
-        locNTSend.addItemBoolean("IntakeLimitIsPressed", IntakeSystem::getLimitState);
+        locNTSend.addItemBoolean("IntakeLimitIsPressed", IntakeSystem::getIntakeArmLowLimitSwitchState);
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
-        // TODO: Is this intake or arm motor ????
-        locNTSend.addItemDouble("EncoderRotation", IntakeSystem::getEncoderRot);
+        locNTSend.addItemDouble("EncoderRotation", IntakeSystem::getIntakeArmAngleActual);
         locNTSend.addItemDouble("IntakeAngleTarget", IntakeSystem::getIntakeAngleTarget);
         locNTSend.addItemDouble("IntakeAngleMotorOut",IntakeSystem::getIntakeAngleMotorOut);
         // -------intake ball collector
@@ -112,21 +112,20 @@ public class IntakeSystem {
 
         // --------read the arm down limit switch..
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
-        // --------Add a little hysteresis of 2.0 degrees for the encoderRot position.
-        // --------This depends on the previous value of limitState and encoderRot
-        limitState = limitSwitch.get() || ( limitState && ( encoderRot <= (INTAKEDOWNLIMITSWITCHANGLE+2.0)));
+        // --------Add a little hysteresis of 2.0 degrees for the IntakeArmAngleActual position.
+        // --------This depends on the previous value of IntakeArmLowLimitSwitchState and IntakeArmAngleActual
+        IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get() || ( IntakeArmLowLimitSwitchState && ( IntakeArmAngleActual <= (INTAKEDOWNLIMITSWITCHANGLE+2.0)));
 
         // ---------if we just hit the limit switch, set the value of the encoder position.
-        if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn(limitState) ) {
-            // TODO: remove comment when limit switch is wired.
-            //intakeMotor2Encoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
+        if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn(IntakeArmLowLimitSwitchState) ) {
+            IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
         }
         
         // --------read the arm position in degrees.
-        encoderRot = calcArmDegFromRawEncoder( intakeMotor2Encoder.getPosition() );     // pos of arm ??
+        IntakeArmAngleActual = calcArmDegFromRawEncoder( IntakeArmMotorEncoder.getPosition() );     // pos of arm ??
 
         // --------read the RPM of the ball intake.  This is to help determine what motor output is desired.
-        intakeMotorRPM = intakeMotor1Encoder.getVelocity(); // ball intake rpm
+        intakeMotorRPM = IntakeBallMotorEncoder.getVelocity(); // ball intake rpm
 
         
         //1 is up off 2 is down off 3 is down on
@@ -149,14 +148,14 @@ public class IntakeSystem {
             intakeSpeed=PICKUP_MOTOR_OFF;
         }
 
-        // do arm position control
-        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, encoderRot);
-        intakeMotor2.set(intakeAngleMotorDemand);
+        // do arm position control - values in degrees
+        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
+        IntakeArmMotor.set(intakeAngleMotorDemand);
         
         // set output for ball intake motor.
-        intakeMotor1.set(intakeSpeed);
+        IntakeBallMotor.set(intakeSpeed);
         
-        // TODO: what is this for?  Maybe check the actual angle -- encoderRot -- instead.  
+        // TODO: what is this for?  Maybe check the actual angle -- IntakeArmAngleActual -- instead.  
         if (intakeState==1){
             locIntakeExtended=false;
         }else{
@@ -210,11 +209,11 @@ public class IntakeSystem {
     public static boolean getIntakeExtended() {
         return locIntakeExtended;
     }
-    public static boolean getLimitState() {
-        return limitState;
+    public static boolean getIntakeArmLowLimitSwitchState() {
+        return IntakeArmLowLimitSwitchState;
     }
-    public static double getEncoderRot() {
-        return encoderRot;
+    public static double getIntakeArmAngleActual() {
+        return IntakeArmAngleActual;
     }
     public static double getIntakeAngleMotorOut() {
         return intakeAngleMotorDemand;

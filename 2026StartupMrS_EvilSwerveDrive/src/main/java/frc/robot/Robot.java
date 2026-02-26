@@ -7,7 +7,7 @@ package frc.robot;
 // import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+//import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "--NONE--";
   // private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  //private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -30,10 +30,11 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
 
+    MatchSystem.init();   // match system has to be first because of robotphase....
     SwerveTeleop.init();
     SwerveDrive.SwerveInit();
     SwerveOdometry.init();
-    SwerveVision.init();
+    // SwerveVision.init(); -- not enough mem on roborio 1
     IntakeSystem.init();
     AgitatorSystem.init();
     FeederSystem.init();
@@ -41,12 +42,15 @@ public class Robot extends TimedRobot {
     String[] ourautos = AutoSystem.init();
     TurretLauncher.init();
     // Climb.init();
-    MatchSystem.init();
+    SupervisoryCmds.init();
  
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     //m_chooser.addOption("My Auto", kCustomAuto);
     //SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putStringArray("Auto List", ourautos);
+
+    // --------indicate startup is done.
+    MatchSystem.setRobotPhaseStartupComplete();
 
   }
 
@@ -64,7 +68,7 @@ public class Robot extends TimedRobot {
 
     SwerveDrive.SwerveExec(systemElapsedTimeSec);
     SwerveOdometry.execute(systemElapsedTimeSec);
-    SwerveVision.execute(systemElapsedTimeSec);
+    // SwerveVision.execute(systemElapsedTimeSec); -- not enough mem on roborio 1
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
     FeederSystem.executeLogic(systemElapsedTimeSec);

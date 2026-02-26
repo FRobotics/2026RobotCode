@@ -11,7 +11,7 @@ import Lib4150.Lib4150PositionControl;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
+//import edu.wpi.first.math.util.Units;
 //import edu.wpi.first.units.measure.Angle;
 //import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -46,8 +46,10 @@ public class TurretLauncher {
     private static RelativeEncoder LauncherMotorEncoder2;
     private static Translation2d robotPose;
     private static Translation2d TurretOffset;
-    private static Translation2d goalPose;
-    private static Translation2d zonePose;
+    private static Translation2d goalPoseRED;
+    private static Translation2d zonePoseRED;
+    private static Translation2d goalPoseBLUE;
+    private static Translation2d zonePoseBLUE;
     private static double TurretDistance;
     private static Rotation2d DesiredTurretAngle;
     //private static double TurretRelativeAngle;
@@ -69,8 +71,9 @@ public class TurretLauncher {
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
-    private static boolean turretMode=false;
+    private static boolean turretMode=false;    // false = hub, true = zone
     private static boolean isRed;
+    private static boolean turretPositionOnTarget = false;
 
     private static boolean locTurretManualMode = false;
     private static boolean locTurretCmdManualMode = false;
@@ -118,9 +121,12 @@ public class TurretLauncher {
 
 
         //TODO: get the values of the goal position based on alliance - currently using Red values
-        //Blue: x: 11.92m y: 4.03m
-        goalPose = new Translation2d(4.63, 4.03);
-        zonePose = new Translation2d(1.5,1.5);
+        //Blue: x: 11.92m y: 4.03m  (is this really red??)
+        goalPoseRED = new Translation2d(11.92, 4.03);
+        zonePoseRED = new Translation2d(15.0,6.6);
+
+        goalPoseBLUE = new Translation2d(4.63, 4.03);
+        zonePoseBLUE = new Translation2d(1.5,1.5);
         
         
         //PositionControl -- Turret -- everything is in degrees.
@@ -143,6 +149,8 @@ public class TurretLauncher {
         locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
         locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
         locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
+        locNTSend.addItemBoolean("TurretPositionOnTarget", TurretLauncher::getTurretPositionOnTarget);
+
         locNTSend.addItemDouble("LauncherMotorDmd", TurretLauncher::getLauncherMotorDemand);
         locNTSend.addItemBoolean("TurretclockwiseLimitSwitch", TurretLauncher::getClockwiseLimitSwitch);
         locNTSend.addItemBoolean("TurretcounterclockwiseLimitSwitch", TurretLauncher::getCounterclockwiseLimitSwitch);
@@ -183,22 +191,22 @@ public class TurretLauncher {
         TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
         robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
 
-        Translation2d targetPose = goalPose;
+        Translation2d targetPose = goalPoseRED;
 
         if (turretMode){
             if ( isRed ) {
-            targetPose=zonePose;
+                targetPose=zonePoseRED;
             }
             else {
-
+                targetPose=zonePoseBLUE;
             }
         }
         else {
             if ( isRed ) {
-                targetPose=goalPose;
+                targetPose=goalPoseRED;
             }
             else {
-                targetPose=goalPose;
+                targetPose=goalPoseBLUE;
             }
         }
 
@@ -207,13 +215,15 @@ public class TurretLauncher {
         DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-        desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
+        double desiredTurretAngleDegRaw = DesiredTurretAngle.getDegrees();
+        desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
         launchertargetSpeed  = 1000.0 + TurretDistance * 200.0;
 
 
+        // --------TURRET CONTROL
         // --------process turrent manual mode setpoint.
         if ( locTurretCmdManualMode ) {         // we want manual mode
             if ( !locTurretManualMode ) {       // just changed to manual mode.
@@ -221,6 +231,7 @@ public class TurretLauncher {
                 locTurretManualMode = true;
             }
             else {                              // has been manual mode for a while.
+                desiredTurretAngleDegRaw = locTurretCmdSetpoint;
                 desiredTurretAngleDegrees = MathUtil.clamp( locTurretCmdSetpoint, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
             }
         }
@@ -235,11 +246,29 @@ public class TurretLauncher {
         //------Position Control
         TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
 
+        //use limit switches to stop travel
+        double turretMotorMin = -1.0;
+        double turretMotorMax = 1.0;
+        if (clockwiseLimitSwitchValue)
+        {
+            turretMotorMin = 0.0;
+        }
+        else if (counterclockwiseLimitSwitchValue)
+        {
+            turretMotorMax = 0.0;
+        }
+        TurretMotorDemand = MathUtil.clamp( TurretMotorDemand, turretMotorMin, turretMotorMax);
+
+        // --------calculate if we on target ... use raw position before clamping to get accurate result.
+        double turretRawError = desiredTurretAngleDegRaw - turretAngleEncoder;
+        turretPositionOnTarget = ( Math.abs(turretRawError ) <= 2.0 );
+
+
+        // --------LAUNCHER CONTROL
         //Reads current motor speed //double check unit conversion
         locLauncherSpeed1= LauncherMotorEncoder.getVelocity();
         locLauncherSpeed2= LauncherMotorEncoder2.getVelocity();
         locLauncherSpeedActual = (locLauncherSpeed1+locLauncherSpeed2) *0.5;
-
 
         // --------process launcher manual mode setpoint.
         if ( locLauncherCmdManualMode ) {         // we want manual mode
@@ -276,26 +305,23 @@ public class TurretLauncher {
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
         double launcherPIDOutput = launcherPID.calculate(locLauncherSpeedActual, useSpeedTarget);
+        // --------special case for 0.0  -- don't control just coast.
+        if ( useSpeedTarget == 0.0 ) {
+            launcherPID.reset();      // reset integral.
+            launcherPIDOutput = 0.0;
+        }
+
         LauncherMotorDemand = MathUtil.clamp(launchFeedForward+launcherPIDOutput, -1.0, 1.0);
-
-        //TODO: this needs to actually do something (Task #34)
-        //use limit switches to stop travel
-        if (clockwiseLimitSwitchValue)
-        {
-
-        }
-        else if (counterclockwiseLimitSwitchValue)
-        {
-
-        }
-
-        // --------output to actuators (motors)
-        TurretRotationMotor.set(TurretMotorDemand);
-
+        // --------this could be redundant.
         if ( !locLauncherOn ) {
             LauncherMotorDemand = 0;
             launcherPID.reset();
         }
+
+
+        // --------output to actuators (motors)
+        TurretRotationMotor.set(TurretMotorDemand);
+
         LauncherMotor.set(LauncherMotorDemand); 
         LauncherMotor2.set(LauncherMotorDemand);
 
@@ -400,6 +426,11 @@ public class TurretLauncher {
     // --------get Launcher manual mode.
     public static boolean getLauncherManualMode() {
         return locLauncherManualMode;
+    }
+
+    // --------get Turret Position on Target
+    public static boolean getTurretPositionOnTarget() {
+        return turretPositionOnTarget;
     }
 
 }

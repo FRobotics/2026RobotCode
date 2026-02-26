@@ -53,10 +53,18 @@ public class SwerveOdometry {
         //currTimeSecs, gyroangle(Rotation2D), wheelPosition(serveModukePosition{})
 
         locPoseEst.updateWithTime(systemElapsedTime, new Rotation2d(Units.degreesToRadians(SwerveDrive.getYaw())), SwerveDrive.getModulePositions());
-        xpos = locPoseEst.getEstimatedPosition().getX();
-        ypos = locPoseEst.getEstimatedPosition().getY();
-        rotpos = locPoseEst.getEstimatedPosition().getRotation().getRadians();
 
+        // --------this should only be needed for testing without motor controllers !!!!
+        if ( !Double.isNaN( locPoseEst.getEstimatedPosition().getX() ) ) {
+            xpos = locPoseEst.getEstimatedPosition().getX();
+        }
+        if ( !Double.isNaN( locPoseEst.getEstimatedPosition().getY() ) ) {
+            ypos = locPoseEst.getEstimatedPosition().getY();
+        }
+        if ( !Double.isNaN( locPoseEst.getEstimatedPosition().getRotation().getRadians() ) ) {
+            rotpos = locPoseEst.getEstimatedPosition().getRotation().getRadians();
+        }
+        
         execElapsedTime = Timer.getFPGATimestamp() - startTime;
 
         sender.triggerUpdate();

@@ -2,7 +2,7 @@
 package frc.robot;
 
 // TODO: Remove unused imports.
-import java.security.Timestamp;
+//import java.security.Timestamp;
 import java.util.Optional;
 
 import Lib4150.Lib4150NetTableSystemSend;
@@ -12,7 +12,7 @@ import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectorySystem {
 
@@ -53,18 +53,18 @@ public class TrajectorySystem {
             TrajectoryStorage.loadTrajectory(oneTraj);
 
         }
+        // --------tell match system trajectories are read
+        MatchSystem.setRobotPhaseTrajectoriesRead();
     
-
-    
-     locNTSend = new Lib4150NetTableSystemSend("TrajectorySystem");
-     locNTSend.addItemDouble("ElapsedTrajTime", TrajectorySystem::getElapsedTrajTime);
-     locNTSend.addItemDouble("xErr", TrajectorySystem::getxErr);
-     locNTSend.addItemDouble("yErr", TrajectorySystem::getyErr);
-     locNTSend.addItemDouble("rotErr", TrajectorySystem::getrotErr);
-     locNTSend.addItemBoolean("onTarget", TrajectorySystem::getOnTarget);
-     locNTSend.addItemBoolean("done", TrajectorySystem::getDone);
-     locNTSend.addItemBoolean("haveSample", TrajectorySystem::gethaveSample);
-     locNTSend.addItemDouble("timeLengthOfTrajectory", TrajectorySystem::getTimeLengthOfTrajectory);
+        locNTSend = new Lib4150NetTableSystemSend("TrajectorySystem");
+        locNTSend.addItemDouble("ElapsedTrajTime", TrajectorySystem::getElapsedTrajTime);
+        locNTSend.addItemDouble("xErr", TrajectorySystem::getxErr);
+        locNTSend.addItemDouble("yErr", TrajectorySystem::getyErr);
+        locNTSend.addItemDouble("rotErr", TrajectorySystem::getrotErr);
+        locNTSend.addItemBoolean("onTarget", TrajectorySystem::getOnTarget);
+        locNTSend.addItemBoolean("done", TrajectorySystem::getDone);
+        locNTSend.addItemBoolean("haveSample", TrajectorySystem::gethaveSample);
+        locNTSend.addItemDouble("timeLengthOfTrajectory", TrajectorySystem::getTimeLengthOfTrajectory);
     }
 
     @SuppressWarnings("unchecked")

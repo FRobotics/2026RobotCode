@@ -5,15 +5,55 @@ Match System.
     - Added NT sender
     - added code for disabledExec
     - updated setRed, setBlue, added setUnknown
+    - added RobotState class variable, NT value, and accompanying functions:
+            0 - initial startup, 
+            1 - gyro calibrated, 
+            2 - trajectories read, 
+            3 - autos read, 
+            4 - startup complete, 
+            5 - auto init complete, 
+            6 - disabled, 
+            7 - auto init complete
+            8 - running auto
+            9 - running teleop
 
 Robot.java
     - added call to Match init
     - Added call to Match disabled exec.
+    - added call to Supervisory.init
+    - for RoboRIO1 testing commented out vision code because of memory issues.
 
 TurretLauncher
     - Turret - added manual mode.  
+    - Turret - added Blue/Red locations for auto aim.
+    - Turret - added on Target calc and NT variable.
+    - ??? Does a turret_off_set_to_0 mode need to exist for when intake arm is up???
     - Launcher - added manual mode
+    - Launcher - added integral output limits, and integral error zone limits
+
+Intake 
+    - changed gear ratio based on testing.  This may change again due to slippage.
+    - ?? Does making intake go up require a permissive of Turret Position within +/-x of zero ??
 
 Teleop
     - added turret manual mode toggle (back), and inc/dec axis (right x)
     - added launcher manual mode toggle (start), and inc/dec axis (right y)
+
+Supervisory
+    - added init function for NT sender
+    - added getMode to get string for NT
+    - added mode update for each command
+
+Agitator
+    - IS A BACKWARDS MODE NEEDED ????  (Doesn't exist)
+    - Added Speed control
+
+Feeder
+    - added speed control.
+
+SwerveDrive
+    - changed gyro axis based on RoboRIO position on real robot.
+
+
+
+

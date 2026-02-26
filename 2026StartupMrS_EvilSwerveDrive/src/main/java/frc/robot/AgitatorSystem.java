@@ -1,6 +1,9 @@
 package frc.robot;
 
 import Lib4150.Lib4150NetTableSystemSend;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -27,12 +30,35 @@ public class AgitatorSystem {
     private static double AgitatorOutput = 0.0;
     private static double AgitatorRPM = 0.0;
 
+    private static double locAgitatorSetpointRPM = 0.0;
+    private static double locAgitatorFFoutput = 0.0;
+    private static double locAgitatorPIDoutput = 0.0;
+    private static SimpleMotorFeedforward AgitatorFeedFwd;
+    private static PIDController AgitatorPID;
+    private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
+    private static final double Agitator_Ks = 0.0;
+    private static final double Agitator_Kv = Agitator_Kn;
+    private static final double Agitator_Ka = 0.0;
+    private static final double Agitator_Kp = Agitator_Kn * 0.5;
+    private static final double Agitator_Ki = Agitator_Kn * 2.0;
+    private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
+    private static final double Agitator_Izone = 120.0;  // Error RPM where I is used.
+    private static final double Agitator_Imax = 0.30;    // Max output of integral term.
+
+
     public static void init() {
 
 
         // init agitator motor
         AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
         AgitatorMotorEncoder = AgitatorMotor.getEncoder();
+
+        //Speed control
+        AgitatorFeedFwd = new SimpleMotorFeedforward(Agitator_Ks, Agitator_Kv, Agitator_Ka);
+        AgitatorPID = new PIDController( Agitator_Kp, Agitator_Ki, Agitator_Kd);
+        AgitatorPID.setIntegratorRange(-Agitator_Imax, Agitator_Imax);  // only allow integral to add +/- this amount to output.
+        AgitatorPID.setIZone(Agitator_Izone);        // only do integration when within this many RPMs.
+
 
         // ensure agitator starts off
         cmdAgitatorOff();
@@ -56,11 +82,24 @@ public class AgitatorSystem {
         // if off, output 0
 
         if (locAgitatorOn){
-            AgitatorOutput=0.2;
+            // AgitatorOutput=0.2;
+            locAgitatorSetpointRPM = 0.2 / Agitator_Kn;
         }
         else {
-            AgitatorOutput=0;
+            // AgitatorOutput=0;
+            locAgitatorSetpointRPM = 0.0;
         };
+
+
+        // --------do speed control
+        locAgitatorFFoutput = AgitatorFeedFwd.calculate( locAgitatorSetpointRPM );
+        locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, locAgitatorSetpointRPM);
+        // --------special case for 0.0  -- don't control just coast.
+        if ( locAgitatorSetpointRPM == 0.0 ) {
+            AgitatorPID.reset();      // reset integral.
+            locAgitatorPIDoutput = 0.0;
+        }
+        AgitatorOutput = MathUtil.clamp( locAgitatorFFoutput+locAgitatorPIDoutput, -1.0, 1.0 );
 
         AgitatorMotor.set(AgitatorOutput);
 

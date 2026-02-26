@@ -158,7 +158,12 @@ public class SwerveTeleop {
         endTime = Timer.getFPGATimestamp();
         exeTime = (endTime-startTime)*1000;
 
+        // --------Tell system teleop is running
+        MatchSystem.setRobotPhaseTeleopRunning();
+        
         locNTsend.triggerUpdate();
+
+        return;
     }
 
     public static boolean getFieldOrientedDriving(){

@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 
 import Lib4150.Lib4150NetTableSystemSend;
 // TODO: Remove unused imports.
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
+//import choreo.trajectory.SwerveSample;
+//import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 public class AutoSystem {
@@ -47,6 +47,9 @@ public class AutoSystem {
 
         // -------we should init this step...
         locExecInitStep = true;
+
+        // -------tell system auto init is done.
+        MatchSystem.setRobotPhaseAutoInitComplete();
         
     }
 
@@ -210,6 +213,8 @@ public class AutoSystem {
         if ( locExecDoNextStep ) {
                 locExecIndex++;
         }
+        // --------tell system we are running autos
+        MatchSystem.setRobotPhaseAutoRunning();
         
         locNTSend.triggerUpdate();
 
@@ -225,6 +230,8 @@ public class AutoSystem {
 
         // load all autos into cache
         String[] readAutos = AutoSystem.readFiles(AutoSystem.availableAutos());
+        // --------tell match system trajectories are read
+        MatchSystem.setRobotPhaseAutosRead();
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");

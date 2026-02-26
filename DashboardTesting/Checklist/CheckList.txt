@@ -1,0 +1,9 @@
+1. Position Robot On Field so it can see AprilTags
+2. Put Intake bin at exactly 90 degrees
+3. Put turret at exactly 0 degrees
+4. Fill robot will balls
+5. Power Robot on.  Don't touch until Gyro Calibrarion done.
+6. Select desired auto
+7. Check Dashboard status for each system
+8. Check to see that Red/Blue has been chosen.
+9. Ensure driver station is plugged in!

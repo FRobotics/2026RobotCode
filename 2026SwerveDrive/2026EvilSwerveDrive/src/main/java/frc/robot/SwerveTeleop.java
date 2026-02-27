@@ -115,7 +115,9 @@ public class SwerveTeleop {
         if (myXboxController2.getXButtonPressed()){
             SupervisoryCmds.Climb();
         }
-        
+        if (myXboxController2.getRightStickButtonPressed()){
+            SupervisoryCmds.Defense();
+        }
         
 
 

@@ -7,6 +7,9 @@ import Lib4150.Lib4150PositionControl;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 //import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 //import com.revrobotics.spark.config.SparkMaxConfig;
 //import edu.wpi.first.math.util.Units;
@@ -21,9 +24,9 @@ public class IntakeSystem {
     // contants
     private static final double INTAKEUPANGLE = 90.0;
     private static final double INTAKEDOWNANGLE = 0.0;
-    private static final double INTAKEDOWNLIMITSWITCHANGLE = 2.0;
+    private static final double INTAKEDOWNLIMITSWITCHANGLE = 0.9;
 
-    private static final double PICKUP_MOTOR_ON = 0.25;
+    private static final double PICKUP_MOTOR_ON = 0.75;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     // class/object variables
@@ -84,18 +87,20 @@ public class IntakeSystem {
         IntakeArmLowLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
 
         // position units are degrees.
-        IntakePositionControl = new Lib4150PositionControl(2.0, 50.0, 
-                            0.005, 0.35, 0.20, 1.0e-5, false, false);
+        IntakePositionControl = new Lib4150PositionControl( 2.0, 30.0, 
+                            0.005, 0.25, 0.25, 1.0e-5, false, false);
+
+        IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
 
 
         // --------intake arm        
-        //encoder rotations
+        // --------Intake Arm
         locNTSend.addItemBoolean("IntakeLimitIsPressed", IntakeSystem::getIntakeArmLowLimitSwitchState);
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
-        locNTSend.addItemDouble("EncoderRotation", IntakeSystem::getIntakeArmAngleActual);
+        locNTSend.addItemDouble("IntakeAngleActual", IntakeSystem::getIntakeArmAngleActual);
         locNTSend.addItemDouble("IntakeAngleTarget", IntakeSystem::getIntakeAngleTarget);
         locNTSend.addItemDouble("IntakeAngleMotorOut",IntakeSystem::getIntakeAngleMotorOut);
         // -------intake ball collector
@@ -150,6 +155,12 @@ public class IntakeSystem {
 
         // do arm position control - values in degrees
         intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
+        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.10;
+        // --------gently remove the gravity constant
+        if ( IntakeArmAngleActual <= 8.0 ) {
+            intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 8.0;
+        }
+        intakeAngleMotorDemand = MathUtil.clamp( intakeAngleMotorDemand + intakeAngleGravityConstant, -1.0, 1.0 );
         IntakeArmMotor.set(intakeAngleMotorDemand);
         
         // set output for ball intake motor.
@@ -175,7 +186,7 @@ public class IntakeSystem {
 
     // ---------calculate the raw encoder value in rotations given the arm position in degrees
     private static double calcEncoderRawValueFromArmDeg( double armDeg ) {
-        return armDeg/360.0*intakeGearRatio-90.0;
+        return ( armDeg - 90.0 ) /360.0*intakeGearRatio;
     }
 
 

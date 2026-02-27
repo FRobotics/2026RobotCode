@@ -1,5 +1,6 @@
 package frc.robot;
 
+import Lib4150.Lib4150DigEdgeOn;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -25,6 +26,7 @@ public class AgitatorSystem {
 
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
     private static boolean locAgitatorOn = false; 
+    private static boolean locAgitatorOnRev = false; 
     private static SparkMax AgitatorMotor;
     private static RelativeEncoder AgitatorMotorEncoder;
     private static double AgitatorOutput = 0.0;
@@ -35,14 +37,15 @@ public class AgitatorSystem {
     private static double locAgitatorPIDoutput = 0.0;
     private static SimpleMotorFeedforward AgitatorFeedFwd;
     private static PIDController AgitatorPID;
+    private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
     private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
     private static final double Agitator_Kp = Agitator_Kn * 0.5;
-    private static final double Agitator_Ki = Agitator_Kn * 2.0;
+    private static final double Agitator_Ki = Agitator_Kn * 4.0;
     private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
-    private static final double Agitator_Izone = 120.0;  // Error RPM where I is used.
+    private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
 
 
@@ -58,6 +61,7 @@ public class AgitatorSystem {
         AgitatorPID = new PIDController( Agitator_Kp, Agitator_Ki, Agitator_Kd);
         AgitatorPID.setIntegratorRange(-Agitator_Imax, Agitator_Imax);  // only allow integral to add +/- this amount to output.
         AgitatorPID.setIZone(Agitator_Izone);        // only do integration when within this many RPMs.
+        AgitatorZeroEdgeOn = new Lib4150DigEdgeOn();
 
 
         // ensure agitator starts off
@@ -69,6 +73,7 @@ public class AgitatorSystem {
         locNTSend.addItemBoolean("AgitatorState", AgitatorSystem::getAgitatorState);
         locNTSend.addItemDouble("AgitatorOutput", AgitatorSystem::getMotorOutput);
         locNTSend.addItemDouble("AgitatorRPM", AgitatorSystem::getMotorRPM);
+        locNTSend.addItemDouble("AgitatorRPMTarget", AgitatorSystem::getMotorRPMTarget);
         
         locNTSend.triggerUpdate();
         
@@ -82,11 +87,12 @@ public class AgitatorSystem {
         // if off, output 0
 
         if (locAgitatorOn){
-            // AgitatorOutput=0.2;
             locAgitatorSetpointRPM = 0.2 / Agitator_Kn;
         }
+        else if ( locAgitatorOnRev ) {
+            locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
+        }
         else {
-            // AgitatorOutput=0;
             locAgitatorSetpointRPM = 0.0;
         };
 
@@ -95,8 +101,10 @@ public class AgitatorSystem {
         locAgitatorFFoutput = AgitatorFeedFwd.calculate( locAgitatorSetpointRPM );
         locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, locAgitatorSetpointRPM);
         // --------special case for 0.0  -- don't control just coast.
-        if ( locAgitatorSetpointRPM == 0.0 ) {
+        if ( AgitatorZeroEdgeOn.execEdgeOn( locAgitatorSetpointRPM == 0.0 ) ) {
             AgitatorPID.reset();      // reset integral.
+        }
+        if ( locAgitatorSetpointRPM == 0.0 ) {
             locAgitatorPIDoutput = 0.0;
         }
         AgitatorOutput = MathUtil.clamp( locAgitatorFFoutput+locAgitatorPIDoutput, -1.0, 1.0 );
@@ -112,16 +120,24 @@ public class AgitatorSystem {
 
     public static void cmdAgitatorOn() {
         locAgitatorOn=true;
+        locAgitatorOnRev=false;
     }
-
+    public static void cmdAgitatorOnRev() {
+        locAgitatorOnRev=true;
+        locAgitatorOn=false;
+    }
     public static void cmdAgitatorOff() {
         locAgitatorOn=false;
+        locAgitatorOnRev=false;
     }
      public static double getMotorOutput() {
         return AgitatorOutput;
     }
      public static double getMotorRPM() {
         return AgitatorRPM;
+    }
+     public static double getMotorRPMTarget() {
+        return locAgitatorSetpointRPM;
     }
 
 }

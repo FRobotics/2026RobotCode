@@ -27,12 +27,17 @@ TurretLauncher
     - Turret - added manual mode.  
     - Turret - added Blue/Red locations for auto aim.
     - Turret - added on Target calc and NT variable.
+    - Turret - inverted limit switches.
     - ??? Does a turret_off_set_to_0 mode need to exist for when intake arm is up???
     - Launcher - added manual mode
     - Launcher - added integral output limits, and integral error zone limits
 
 Intake 
-    - changed gear ratio based on testing.  This may change again due to slippage.
+    - intake arm - changed gear ratio based on testing.  This may change again due to slippage.  This seems to work okay,.
+    - intake arm - added gravity constant
+    - intake arm - did some tuning of pos control
+    - intake arm - inverted limits switch
+    - intake balls - tuned motor output.
     - ?? Does making intake go up require a permissive of Turret Position within +/-x of zero ??
 
 Teleop

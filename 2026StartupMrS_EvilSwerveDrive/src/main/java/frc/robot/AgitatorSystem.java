@@ -42,8 +42,8 @@ public class AgitatorSystem {
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
-    private static final double Agitator_Kp = Agitator_Kn * 0.5;
-    private static final double Agitator_Ki = Agitator_Kn * 4.0;
+    private static final double Agitator_Kp = Agitator_Kn * 0.0;
+    private static final double Agitator_Ki = Agitator_Kn * 0.0;
     private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
     private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
@@ -87,7 +87,7 @@ public class AgitatorSystem {
         // if off, output 0
 
         if (locAgitatorOn){
-            locAgitatorSetpointRPM = 0.2 / Agitator_Kn;
+            locAgitatorSetpointRPM = 0.5 / Agitator_Kn;
         }
         else if ( locAgitatorOnRev ) {
             locAgitatorSetpointRPM = -0.1 / Agitator_Kn;

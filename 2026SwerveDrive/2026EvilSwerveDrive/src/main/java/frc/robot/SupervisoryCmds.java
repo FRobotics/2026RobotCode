@@ -47,6 +47,12 @@ public class SupervisoryCmds {
         IntakeSystem.setUpOffState();
         TurretLauncher.cmdLauncherOff();
     }
+    public static void Defense(){
+        AgitatorSystem.cmdAgitatorOff();
+        FeederSystem.cmdFeederOff();
+        IntakeSystem.setUpOffState();
+        TurretLauncher.cmdLauncherOff();
+    }
 
 
 }

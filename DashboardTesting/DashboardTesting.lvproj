@@ -58,6 +58,8 @@
 			<Item Name="DriveModuleTrend.vi" Type="VI" URL="../DriveModuleTrend.vi"/>
 			<Item Name="FieldDisplaySmall.vi" Type="VI" URL="../FieldDisplaySmall.vi"/>
 			<Item Name="TrajectoryTrend.vi" Type="VI" URL="../TrajectoryTrend.vi"/>
+			<Item Name="LauncherTrend.vi" Type="VI" URL="../LauncherTrend.vi"/>
+			<Item Name="FeederTrend.vi" Type="VI" URL="../FeederTrend.vi"/>
 		</Item>
 		<Item Name="EnhancedWPI" Type="Folder" URL="../EnhancedWPI">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
@@ -87,7 +89,7 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
-				<Property Name="Bld_version.build" Type="Int">48</Property>
+				<Property Name="Bld_version.build" Type="Int">53</Property>
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>

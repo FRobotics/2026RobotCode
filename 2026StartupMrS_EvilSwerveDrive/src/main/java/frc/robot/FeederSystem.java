@@ -27,18 +27,20 @@ public class FeederSystem {
     private static double FeederRPM = 0.0;
 
     private static double locFeederSetpointRPM = 0.0;
+    private static double locCmdFeederSetpointRPM = 0.0;
     private static double locFeederFFoutput = 0.0;
     private static double locFeederPIDoutput = 0.0;
     private static SimpleMotorFeedforward FeederFeedFwd;
     private static PIDController FeederPID;
-    private static final double Feeder_Kn = 1.0 / 5000.0; // max RPM guess.
-    private static final double Feeder_Ks = 0.0;
-    private static final double Feeder_Kv = Feeder_Kn;
+
+    private static final double Feeder_Kn = 0.00018611195378468; // max RPM guess.
+    private static final double Feeder_Ks = 0.0293729230897304;
+    private static final double Feeder_Kv = 0.000180658924510184;
     private static final double Feeder_Ka = 0.0;
-    private static final double Feeder_Kp = Feeder_Kn * 0.5;
-    private static final double Feeder_Ki = Feeder_Kn * 2.0;
+    private static final double Feeder_Kp = Feeder_Kn * 0.7;
+    private static final double Feeder_Ki = Feeder_Kn * 4.0;
     private static final double Feeder_Kd = Feeder_Kn * 1.0E-6;
-    private static final double Feeder_Izone = 120.0;  // Error RPM where I is used.
+    private static final double Feeder_Izone = 80.0;  // Error RPM where I is used.
     private static final double Feeder_Imax = 0.30;    // Max output of integral term.
 
 
@@ -63,6 +65,7 @@ public class FeederSystem {
 
         locNTSend.addItemBoolean("FeederState", FeederSystem::getFeederState);
         locNTSend.addItemDouble("FeederOutput", FeederSystem::getMotorOutput);
+        locNTSend.addItemDouble("FeederTargetRPM", FeederSystem::getMotorTargetRPM);
         locNTSend.addItemDouble("FeederRPM", FeederSystem::getMotorRPM);
         
         locNTSend.triggerUpdate();
@@ -78,7 +81,8 @@ public class FeederSystem {
         // if off, output 0
         if (locFeederOn){
             //FeederOutput=0.2;
-            locFeederSetpointRPM = 0.2 / Feeder_Kn;
+            //locFeederSetpointRPM = 0.2 / Feeder_Kn;
+            locFeederSetpointRPM = locCmdFeederSetpointRPM;
             // ----could use something like this...
             // locFeederSetpointRPM = MathUtil.clamp( TurretLauncher.getLauncherTargetSpeed() - 100.0, 0.0, 5000.0) ;
         }
@@ -120,6 +124,13 @@ public class FeederSystem {
 
     public static double getMotorRPM() {
         return FeederRPM;
+    }
+    public static double getMotorTargetRPM() {
+        return locFeederSetpointRPM;
+    }
+
+    public static void setMotorRPMTarget( double parmRPM) {
+        locCmdFeederSetpointRPM = parmRPM;
     }
 
 }

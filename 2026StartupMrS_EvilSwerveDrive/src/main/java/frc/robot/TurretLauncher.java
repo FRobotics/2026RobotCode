@@ -26,8 +26,30 @@ public class TurretLauncher {
     private static final double MIN_ALLOWED_TURRET_ANGLE = -100.0;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 100.0;
 
-    // private static final double Launcher_Kn = 1.0 / 3.98670783;
-    private static final double Launcher_Kn = 1.0 / 5000.0; // max RPM guess.
+    // --------LAUNCHER TUNING CONSTANTS
+    // --------overall normalization
+    // --------normalization is usually = Max motor output / max device RPM
+    private static final double Launcher_Kn = 0.000183705242146656;
+    // --------feedforward
+    // --------Ks - static feedforward is the amount of motor output to get started moving
+    private static final double Launcher_Ks = 0.0120480016499597;
+    // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
+    private static final double Launcher_Kv = 0.000181491957288762;
+    // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
+    private static final double Launcher_Ka = 0.0;
+    // --------PID
+    // --------Kp - proportional constant    output =  error * Kp
+    private static final double Launcher_Kp = 0.8 * Launcher_Kn;
+    // --------Ki - integral constant   output  = Ki x integral( error )
+    private static final double Launcher_Ki = 4.0 * Launcher_Kn;
+    // --------kd = derivative constant     output = Kd * derivative( error )
+    private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
+    // --------integral zone ( in sp/pv units )
+    // --------Izone -- Error has to be within this amount to be used.
+    private static final double Launcher_Izone = 80.0;
+    // --------Irange - -min/max value that the integral PID term can have.
+    private static final double Launcher_Irange = 0.3;
+
 
     //private double TURRETOFFSET;
     //private Rotation2d RobotRotation;
@@ -133,10 +155,10 @@ public class TurretLauncher {
         TurretPositionControl = new Lib4150PositionControl(2.0,50.0, 
                             0.005, 0.35, 0.35, 1.0e-5, false, false);
         //Speed control
-        launcherFeedforward = new SimpleMotorFeedforward (0.0, Launcher_Kn, 0.0);
-        launcherPID = new PIDController ( Launcher_Kn *.5, Launcher_Kn * 2.0, 0);
-        launcherPID.setIntegratorRange(-0.3, 0.3);  // only allow integral to addd +/- this amount to output.
-        launcherPID.setIZone(120.0);        // only do integration when within this many RPMs.
+        launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
+        launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);
+        launcherPID.setIntegratorRange(-Launcher_Irange, Launcher_Irange);  // only allow integral to addd +/- this amount to output.
+        launcherPID.setIZone(Launcher_Izone);        // only do integration when within this many RPMs.
 
         //limit switches
         clockwiseLimitSwitch = new DigitalInput(1);
@@ -291,6 +313,11 @@ public class TurretLauncher {
         if ( !locLauncherOn ) {
             useSpeedTarget = 0.0;
         }
+
+
+        // --------tell feeder how fast to go.
+        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0);
+
 
         //check if within 75 RPM of target speed
         if (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75)

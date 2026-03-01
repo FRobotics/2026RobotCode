@@ -170,8 +170,8 @@ public class TurretLauncher {
         //PositionControl -- Turret -- everything is in degrees.
         // TurretPositionControl = new Lib4150PositionControl(2.0,50.0, 
         //                    0.005, 0.35, 0.35, 1.0e-5, false, false);
-        TurretPositionControl = new Lib4150PositionControl(2.0,30.0, 
-                            0.10, 0.3, 0.30, 1.0e-5, false, false);
+        TurretPositionControl = new Lib4150PositionControl(1.0,40.0, 
+                            0.07, 0.30, 0.40, 1.0e-5, false, false);
         //Speed control
         launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
         launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);

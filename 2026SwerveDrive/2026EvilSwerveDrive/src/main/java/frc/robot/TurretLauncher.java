@@ -64,9 +64,30 @@ public class TurretLauncher {
     private static boolean locLauncherOn=false;
     private static boolean turretMode=false;
     private static boolean isRed;
-
+    private static Translation2d goalPoseRed;
+    private static Translation2d goalPoseBlue;
+    private static Translation2d zonePoseRed;
+    private static Translation2d zonePoseBlue;
+    // Launcher Tunning Constants
+    // Max motor output/ max device rpm
+    private static final double Launcher_Kn = 0.000183705242146656;
+    // static feedforward (amount of motor output to get started moving)
+    private static final double Launcher_Ks = 0.0120480016499597;
+    // velocity feedforward (slope of the motor output to get a particular RPM ( + Ks ))
+    private static final double Launcher_Kv = 0.000181491957288762;
+    // acceleration constant (Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now))
+    private static final double Launcher_Ka = 0.0;
+    // proportional constant (output =  error * Kp)
+    private static final double Launcher_Kp = 0.8 * Launcher_Kn;
+    // integral constant  (output  = Ki x integral( error ))
+    private static final double Launcher_Ki = 4.0 * Launcher_Kn;
+    // derivative constant  (output = Kd * derivative( error ))
+    private static final double Launcher_Kd = 1.0E-6 * Launcher_Kn;
+    // integral zone ( in sp/pv units (Error has to be within this amount to be used.))
+    private static final double Launcher_Izone = 300.0;
+    // -min/max value that the integral PID term can have
+    private static final double Launcher_Imax = 0.3;
     
-    private static double Launcher_Kn = 1.0 / 3.98670783;
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
     
@@ -103,16 +124,21 @@ public class TurretLauncher {
 
         //TODO: get the values of the goal position based on alliance - currently using Red values
         //Blue: x: 11.92m y: 4.03m
-        goalPose = new Translation2d(4.63, 4.03);
-        zonePose = new Translation2d(1.5,1.5);
+        goalPoseRed = new Translation2d(4.63,4.03);
+        zonePoseRed = new Translation2d(1.5,1.5);
+        
+        goalPoseBlue = new Translation2d(11.92, 4.03);
+        zonePoseBlue = new Translation2d(15.0,6.6);
         
         
         //PositionControl
         TurretPositionControl = new Lib4150PositionControl(Units.rotationsToDegrees(2.0),Units.rotationsToDegrees(50.0), 
                             0.005, 0.35, 0.35, 1.0e-5, false, false);
         //Speed control
-        launcherFeedforward = new SimpleMotorFeedforward (0.0, Launcher_Kn, 0.0);
-        launcherPID = new PIDController ( Launcher_Kn *.5, 0, 0);
+        launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
+        launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);
+        launcherPID.setIntegratorRange(-Launcher_Imax, Launcher_Imax);
+        launcherPID.setIZone(Launcher_Izone);
 
         //limit switches
         clockwiseLimitSwitch = new DigitalInput(1);
@@ -148,12 +174,32 @@ public class TurretLauncher {
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
         counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
 
-        turretAngleEncoder = TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio;
+        turretAngleEncoder = (TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio) + 180;
         turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
 
         //get team side from MatchSystem
         isRed = MatchSystem.isRed();
+        
+        Translation2d targetPose = goalPoseRed;
 
+        if (turretMode) {
+            if (isRed){
+                targetPose = zonePoseRed;
+
+            }
+            else {
+                targetPose = zonePoseBlue;
+            }
+
+        }
+        else {
+            if (isRed){
+                targetPose = goalPoseRed;
+            }
+            else{
+                targetPose = goalPoseBlue;
+            }
+        }
         
         
         // -------- calc stuff
@@ -162,14 +208,7 @@ public class TurretLauncher {
         TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
         robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
 
-        Translation2d targetPose = goalPose;
 
-        if (turretMode){
-            targetPose=zonePose;
-        }
-        else {
-            targetPose=goalPose;
-        }
 
         TurretDistance=robotPose.getDistance(targetPose);
 

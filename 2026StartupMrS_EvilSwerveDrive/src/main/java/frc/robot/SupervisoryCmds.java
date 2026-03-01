@@ -83,6 +83,13 @@ public class SupervisoryCmds {
         locNTSend.triggerUpdate();
     }
 
+    public static void Defense(){
+        AgitatorSystem.cmdAgitatorOff();
+        FeederSystem.cmdFeederOff();
+        IntakeSystem.setUpOffState();
+        TurretLauncher.cmdLauncherOff();
+    }
+
     // --------get the string describing our mode.
     public static String getMode() {
         return locMode;

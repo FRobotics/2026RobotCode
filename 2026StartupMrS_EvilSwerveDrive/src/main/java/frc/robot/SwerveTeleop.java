@@ -116,6 +116,9 @@ public class SwerveTeleop {
         if (myXboxController2.getXButtonPressed()){
             SupervisoryCmds.Climb();
         }
+        if (myXboxController2.getRightStickButtonPressed()){
+            SupervisoryCmds.Defense();
+        }
 
         // --------toggle turret manual mode.
         if ( myXboxController2.getBackButtonPressed()) {
@@ -132,7 +135,7 @@ public class SwerveTeleop {
         // --------turret manual inc/dec
         // --------This is approx 50 deg/second at maximum joystick value.
         if ( TurretLauncher.getTurretManualMode()) {
-            TurretLauncher.cmdTurretIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightX(),0.10) );
+            TurretLauncher.cmdTurretIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightX(),0.10) * 3.0 );
         }
 
 

@@ -28,9 +28,10 @@ public class TurretLauncher {
     // --------CONSTANTS
 
     // --------THESE WILL NEED TO BE TUNED...
-    private static final double MIN_ALLOWED_TURRET_ANGLE = -100.0;
+    // --------Turret angle range is 0.0 - 360.0 degrees.
+    private static final double MIN_ALLOWED_TURRET_ANGLE = 60.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
-    private static final double MAX_ALLOWED_TURRET_ANGLE = 100.0;
+    private static final double MAX_ALLOWED_TURRET_ANGLE = 304.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
 
     // --------LAUNCHER TUNING CONSTANTS
@@ -86,7 +87,7 @@ public class TurretLauncher {
     private static double LauncherMotorDemand;
     private static Lib4150PositionControl TurretPositionControl;
     private static double turretAngleEncoder;
-    private static double turretAngleVelRPM = 0.0;
+    private static double turretAngleVelDegSec = 0.0;
     private static DigitalInput clockwiseLimitSwitch;
     private static DigitalInput counterclockwiseLimitSwitch;
     private static Lib4150DigEdgeOn TurretCWLimitSwitchEdgeOn;
@@ -96,9 +97,10 @@ public class TurretLauncher {
     private static PIDController launcherPID;
     private static SimpleMotorFeedforward launcherFeedforward;
     private static double locLauncherSpeedActual = 0.0;
-    private static double launchertargetSpeed= 100;
+    private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
-    private static double turretGearRatio = 160;
+    // private static double turretGearRatio = 160.0;
+    private static double turretGearRatio = 40.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
@@ -106,9 +108,9 @@ public class TurretLauncher {
     private static boolean isRed;
     private static boolean turretPositionOnTarget = false;
 
-    private static boolean locTurretManualMode = false;
-    private static boolean locTurretCmdManualMode = false;
-    private static double locTurretCmdSetpoint = 0.0;
+    private static boolean locTurretManualMode = true;
+    private static boolean locTurretCmdManualMode = true;
+    private static double locTurretCmdSetpoint = 180.0;
 
     private static boolean locLauncherManualMode = false;
     private static boolean locLauncherCmdManualMode = false;
@@ -116,6 +118,8 @@ public class TurretLauncher {
 
     private static Lib4150RateOfChange3 locTargetAngleROC = new Lib4150RateOfChange3();
     private static double locTargetAngleRotVel = 0.0;
+    // private static Lib4150RateOfChange3 locTurretAngleROC = new Lib4150RateOfChange3();
+    // private static double locTurretAngleRotVel = 0.0;
 
     
     //private static SparkMax turretEncoder;
@@ -164,8 +168,10 @@ public class TurretLauncher {
         
         
         //PositionControl -- Turret -- everything is in degrees.
-        TurretPositionControl = new Lib4150PositionControl(2.0,50.0, 
-                            0.005, 0.35, 0.35, 1.0e-5, false, false);
+        // TurretPositionControl = new Lib4150PositionControl(2.0,50.0, 
+        //                    0.005, 0.35, 0.35, 1.0e-5, false, false);
+        TurretPositionControl = new Lib4150PositionControl(2.0,30.0, 
+                            0.10, 0.3, 0.30, 1.0e-5, false, false);
         //Speed control
         launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
         launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);
@@ -186,6 +192,7 @@ public class TurretLauncher {
         // --------auto target calc info
         locNTSend.addItemDouble("TargetAngle", TurretLauncher::getTargetAngle);
         locNTSend.addItemDouble("TargetDistance", TurretLauncher::getTargetDistance);
+        locNTSend.addItemDouble("TurretDesiredAngleVel", TurretLauncher::getTurretAngleTargetVel);
         
         // --------turret control
         locNTSend.addItemBoolean("TurretclockwiseLimitSwitch", TurretLauncher::getClockwiseLimitSwitch);
@@ -194,8 +201,7 @@ public class TurretLauncher {
         locNTSend.addItemBoolean("TurretManualMode", TurretLauncher::getTurretManualMode);
         locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
         locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
-        locNTSend.addItemDouble("TurretDesiredAngleVel", TurretLauncher::getTurretAngleTargetVel);
-        locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
+        locNTSend.addItemDouble("TurretAngleVelocityDegSec", TurretLauncher::getTurretMotorDegSec);
         locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
         // --------launcher control
         locNTSend.addItemDouble("LauncherMotorDmd", TurretLauncher::getLauncherMotorDemand);
@@ -223,27 +229,27 @@ public class TurretLauncher {
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
         // --------Add a little hysteresis of 2.0 degrees for the Turret actual position.
         // --------This depends on the previous value of clockwiseLimitSwitchValue and turretAngleEncoder
-        clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get() || ( clockwiseLimitSwitchValue && ( turretAngleEncoder <= (MIN_LIMIT_SWITCH_TURRET_ANGLE+2.0)));
+        clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get() || ( clockwiseLimitSwitchValue && ( turretAngleEncoder <= (MIN_LIMIT_SWITCH_TURRET_ANGLE+3.0)));
 
         // --------read the counter clock wise limit switch.... (This is the high value)
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
         // --------Add a little hysteresis of 2.0 degrees for the Turret actual position.
         // --------This depends on the previous value of clockwiseLimitSwitchValue and turretAngleEncoder
-        counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get() || ( counterclockwiseLimitSwitchValue && ( turretAngleEncoder >= (MAX_LIMIT_SWITCH_TURRET_ANGLE-2.0)));
+        counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get() || ( counterclockwiseLimitSwitchValue && ( turretAngleEncoder >= (MAX_LIMIT_SWITCH_TURRET_ANGLE-3.0)));
 
         // ---------if we just hit the high limit switch, set the value of the encoder position.
         if ( TurretCCWLimitSwitchEdgeOn.execEdgeOn(counterclockwiseLimitSwitchValue) ) {
-            TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MAX_LIMIT_SWITCH_TURRET_ANGLE));
+            //TODO: after char -- TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MAX_LIMIT_SWITCH_TURRET_ANGLE));
         }
 
         // ---------if we just hit the low limit switch, set the value of the encoder position.
         if ( TurretCWLimitSwitchEdgeOn.execEdgeOn(clockwiseLimitSwitchValue) ) {
-            TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MIN_LIMIT_SWITCH_TURRET_ANGLE));
+            //TODO: after char -- TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MIN_LIMIT_SWITCH_TURRET_ANGLE));
         }
 
         // --------read the turret position and velocity
         turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() );
-        turretAngleVelRPM = calcTurretDegFromRawEncoder(TurrentRotationMotorEncoder.getVelocity()) / 60.0;
+        turretAngleVelDegSec = calcTurretDegFromRawEncoder(TurrentRotationMotorEncoder.getVelocity()) / 60.0;
 
         // --------get team side from MatchSystem
         isRed = MatchSystem.isRed();
@@ -285,8 +291,11 @@ public class TurretLauncher {
         DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-        desiredTurretAngleDegRaw = DesiredTurretAngle.getDegrees();
+        desiredTurretAngleDegRaw = MathUtil.inputModulus( DesiredTurretAngle.getDegrees(), 0.0, 360.0);
         desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
+
+        // --------for testing
+        desiredTurretAngleDegrees = 180.0;
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
@@ -335,7 +344,18 @@ public class TurretLauncher {
         {
             turretMotorMax = 0.0;
         }
-        TurretMotorDemand = MathUtil.clamp( TurretMotorDemand, turretMotorMin, turretMotorMax);
+        double tmpTurretMotorDemand = MathUtil.clamp( TurretMotorDemand, turretMotorMin, turretMotorMax);
+
+        // --------now clamp output based on limit switches...
+        double tmpLow = -1.0;
+        double tmpHigh = 1.0;
+        if ( clockwiseLimitSwitchValue ) {
+            tmpLow = 0.0;
+        }
+        if ( counterclockwiseLimitSwitchValue ) {
+            tmpHigh = 0.0;
+        }
+        TurretMotorDemand = MathUtil.clamp( tmpTurretMotorDemand, tmpLow, tmpHigh );
 
         // --------calculate if we on target ... use raw position before clamping to get accurate result.
         double turretRawError = desiredTurretAngleDegRaw - turretAngleEncoder;
@@ -417,14 +437,18 @@ public class TurretLauncher {
     
     // --------internal calculation routines
     
-    // ---------calculate turret position in degrees given the raw encoder value in rotations.
+    // --------calculate turret position in degrees given the raw encoder value in rotations.
+    // --------allow angle value to go 0 360.0
     private static double calcTurretDegFromRawEncoder( double parmEncoderRotations ) {
-        return parmEncoderRotations*360/turretGearRatio;
+        return 180.0+parmEncoderRotations*360/turretGearRatio;
     }
 
     // ---------calculate the raw encoder value in rotations given the arm position in degrees
+    // --------allow angle value to go 0 360.0
     private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
-        return turretDeg /360.0*turretGearRatio;
+        double tmpTurretDeg = MathUtil.inputModulus(turretDeg, 0.0, 360.0);
+
+        return (tmpTurretDeg-180.0) / 360.0 * turretGearRatio;
     }
 
 
@@ -449,8 +473,8 @@ public class TurretLauncher {
     private static boolean getLauncherOn() {
         return locLauncherOn;
     }
-    public static double getTurretMotorRPM() {
-        return turretAngleVelRPM;
+    public static double getTurretMotorDegSec() {
+        return turretAngleVelDegSec;
     }
     public static boolean getClockwiseLimitSwitch(){
         return clockwiseLimitSwitchValue;

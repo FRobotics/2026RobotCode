@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkMax;
 //import com.revrobotics.spark.config.SparkMaxConfig;
 
 import Lib4150.Lib4150PositionControl;
+import Lib4150.Lib4150RateOfChange3;
+import Lib4150.Lib4150DigEdgeOn;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,8 +25,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 public class TurretLauncher {
 
 
+    // --------CONSTANTS
+
+    // --------THESE WILL NEED TO BE TUNED...
     private static final double MIN_ALLOWED_TURRET_ANGLE = -100.0;
+    private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 100.0;
+    private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
 
     // --------LAUNCHER TUNING CONSTANTS
     // --------overall normalization
@@ -46,7 +53,7 @@ public class TurretLauncher {
     private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
-    private static final double Launcher_Izone = 80.0;
+    private static final double Launcher_Izone = 300.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
 
@@ -72,7 +79,7 @@ public class TurretLauncher {
     private static Translation2d zonePoseRED;
     private static Translation2d goalPoseBLUE;
     private static Translation2d zonePoseBLUE;
-    private static double TurretDistance;
+    private static double TargetDistance;
     private static Rotation2d DesiredTurretAngle;
     //private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
@@ -82,6 +89,8 @@ public class TurretLauncher {
     private static double turretAngleVelRPM = 0.0;
     private static DigitalInput clockwiseLimitSwitch;
     private static DigitalInput counterclockwiseLimitSwitch;
+    private static Lib4150DigEdgeOn TurretCWLimitSwitchEdgeOn;
+    private static Lib4150DigEdgeOn TurretCCWLimitSwitchEdgeOn;
     private static boolean clockwiseLimitSwitchValue = false;
     private static boolean counterclockwiseLimitSwitchValue = false;
     private static PIDController launcherPID;
@@ -105,10 +114,13 @@ public class TurretLauncher {
     private static boolean locLauncherCmdManualMode = false;
     private static double locLauncherCmdSetpoint = 0.0;
 
+    private static Lib4150RateOfChange3 locTargetAngleROC = new Lib4150RateOfChange3();
+    private static double locTargetAngleRotVel = 0.0;
+
     
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
-    
+    private static double desiredTurretAngleDegRaw;    
     
     public static void init() {
 
@@ -163,20 +175,30 @@ public class TurretLauncher {
         //limit switches
         clockwiseLimitSwitch = new DigitalInput(1);
         counterclockwiseLimitSwitch = new DigitalInput(2);
+        TurretCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+
         //encoder
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
-        locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
-        locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
-        locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
-        locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
-        locNTSend.addItemBoolean("TurretPositionOnTarget", TurretLauncher::getTurretPositionOnTarget);
 
-        locNTSend.addItemDouble("LauncherMotorDmd", TurretLauncher::getLauncherMotorDemand);
+        // --------auto target calc info
+        locNTSend.addItemDouble("TargetAngle", TurretLauncher::getTargetAngle);
+        locNTSend.addItemDouble("TargetDistance", TurretLauncher::getTargetDistance);
+        
+        // --------turret control
         locNTSend.addItemBoolean("TurretclockwiseLimitSwitch", TurretLauncher::getClockwiseLimitSwitch);
         locNTSend.addItemBoolean("TurretcounterclockwiseLimitSwitch", TurretLauncher::getCounterclockwiseLimitSwitch);
+        locNTSend.addItemBoolean("TurretPositionOnTarget", TurretLauncher::getTurretPositionOnTarget);
         locNTSend.addItemBoolean("TurretManualMode", TurretLauncher::getTurretManualMode);
+        locNTSend.addItemDouble("TurretEncoderRotation", TurretLauncher::getturretAngleEncoder);
+        locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
+        locNTSend.addItemDouble("TurretDesiredAngleVel", TurretLauncher::getTurretAngleTargetVel);
+        locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
+        locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
+        // --------launcher control
+        locNTSend.addItemDouble("LauncherMotorDmd", TurretLauncher::getLauncherMotorDemand);
         locNTSend.addItemDouble("LauncherSpeed1",TurretLauncher::getLauncherSpeed1 );
         locNTSend.addItemDouble("LauncherSpeed2", TurretLauncher::getLauncherSpeed2);
         locNTSend.addItemDouble("LauncherSpeedActual", TurretLauncher::getLauncherActualSpeed);
@@ -196,23 +218,48 @@ public class TurretLauncher {
     public static void executeLogic(double systemElapsedTimeSec) {
 
         // -------- read sensors ---- note limit switch engated returns false, so negate.
-        clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get();
-        counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get();
 
-        turretAngleEncoder = TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio;
-        turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
+        // --------read the clock wise limit switch.... (This is the low value)
+        // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
+        // --------Add a little hysteresis of 2.0 degrees for the Turret actual position.
+        // --------This depends on the previous value of clockwiseLimitSwitchValue and turretAngleEncoder
+        clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get() || ( clockwiseLimitSwitchValue && ( turretAngleEncoder <= (MIN_LIMIT_SWITCH_TURRET_ANGLE+2.0)));
 
-        //get team side from MatchSystem
+        // --------read the counter clock wise limit switch.... (This is the high value)
+        // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
+        // --------Add a little hysteresis of 2.0 degrees for the Turret actual position.
+        // --------This depends on the previous value of clockwiseLimitSwitchValue and turretAngleEncoder
+        counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get() || ( counterclockwiseLimitSwitchValue && ( turretAngleEncoder >= (MAX_LIMIT_SWITCH_TURRET_ANGLE-2.0)));
+
+        // ---------if we just hit the high limit switch, set the value of the encoder position.
+        if ( TurretCCWLimitSwitchEdgeOn.execEdgeOn(counterclockwiseLimitSwitchValue) ) {
+            TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MAX_LIMIT_SWITCH_TURRET_ANGLE));
+        }
+
+        // ---------if we just hit the low limit switch, set the value of the encoder position.
+        if ( TurretCWLimitSwitchEdgeOn.execEdgeOn(clockwiseLimitSwitchValue) ) {
+            TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MIN_LIMIT_SWITCH_TURRET_ANGLE));
+        }
+
+        // --------read the turret position and velocity
+        turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() );
+        turretAngleVelRPM = calcTurretDegFromRawEncoder(TurrentRotationMotorEncoder.getVelocity()) / 60.0;
+
+        // --------get team side from MatchSystem
         isRed = MatchSystem.isRed();
 
         
         
-        // -------- calc stuff
+        // -------- calc distance to target, and turret angle to setpoint based on absolute odometry..
 
+        // --------where the center of the robot is on the field.
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
+        // --------turret relative position to center of robot.
         TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
+        // --------turret absolute field position.
         robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
 
+        // --------get the position of our target..  Alliance or goal, red or blue...
         Translation2d targetPose = goalPoseRED;
 
         if (turretMode){
@@ -232,17 +279,19 @@ public class TurretLauncher {
             }
         }
 
-        TurretDistance=robotPose.getDistance(targetPose);
+        // --------calculate distance to target.
+        TargetDistance=robotPose.getDistance(targetPose);
 
         DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-        double desiredTurretAngleDegRaw = DesiredTurretAngle.getDegrees();
+        desiredTurretAngleDegRaw = DesiredTurretAngle.getDegrees();
         desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
-        launchertargetSpeed  = 1000.0 + TurretDistance * 200.0;
+        // TODO: Need to get data and create this curve....
+        launchertargetSpeed  = 700.0 + TargetDistance * 200.0;
 
 
         // --------TURRET CONTROL
@@ -264,6 +313,13 @@ public class TurretLauncher {
             }
         }
 
+        // --------calculate the first derivative (rate of change) of the turret deg setpoint, giving us Deg/Sec.
+        // --------Smooth it a little.
+        // --------Once we know how fast the turret moves, we can create a feedforward to add to the position
+        // --------control.  This will allow us to better track the target as we are moving, rather to
+        // --------wait for the position control to catch up..
+        // TODO: After characterizing turret rotation speed, use this as a feedforward...
+        locTargetAngleRotVel = locTargetAngleROC.ExecROC3( desiredTurretAngleDegrees, systemElapsedTimeSec );
 
         //------Position Control
         TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
@@ -354,12 +410,26 @@ public class TurretLauncher {
 
 
         locNTSend.triggerUpdate();
+        return;
     }
+
+
+    
+    // --------internal calculation routines
+    
+    // ---------calculate turret position in degrees given the raw encoder value in rotations.
+    private static double calcTurretDegFromRawEncoder( double parmEncoderRotations ) {
+        return parmEncoderRotations*360/turretGearRatio;
+    }
+
+    // ---------calculate the raw encoder value in rotations given the arm position in degrees
+    private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
+        return turretDeg /360.0*turretGearRatio;
+    }
+
 
     
               //METERS      
-
-
 
     private static double getTurretMotorDemand() {
         return TurretMotorDemand;
@@ -460,5 +530,23 @@ public class TurretLauncher {
         return turretPositionOnTarget;
     }
 
+    // --------target
+
+    // --------get target angle rate of change  (This is rate of change of turret setpoint...including manual mode.)
+    public static double getTurretAngleTargetVel() {
+        return locTargetAngleRotVel;    // deg/sec
+    }
+
+    // --------get target angle -- actual target, not manual or clampled
+    public static double getTargetAngle() {
+        return desiredTurretAngleDegRaw; 
+    }
+
+    // --------get target distance - actual target, not manual or clamped.
+    public static double getTargetDistance() {
+        return TargetDistance;    
+    }
+
+    
 }
 

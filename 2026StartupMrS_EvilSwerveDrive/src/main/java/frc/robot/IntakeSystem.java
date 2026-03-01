@@ -10,12 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-//import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-//import com.revrobotics.spark.config.SparkMaxConfig;
-//import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
-//import edu.wpi.first.wpilibj.DutyCycleEncoder;
-//import edu.wpi.first.wpilibj.Encoder;
 
 public class IntakeSystem {
 
@@ -87,7 +82,8 @@ public class IntakeSystem {
         IntakeArmLowLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
 
         // position units are degrees.
-        IntakePositionControl = new Lib4150PositionControl( 2.0, 30.0, 
+        // was 30, now 35...
+        IntakePositionControl = new Lib4150PositionControl( 2.0, 35.0, 
                             0.005, 0.25, 0.25, 1.0e-5, false, false);
 
         IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
@@ -154,8 +150,9 @@ public class IntakeSystem {
         }
 
         // do arm position control - values in degrees
+        // grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
-        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.10;
+        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 8.0 ) {
             intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 8.0;

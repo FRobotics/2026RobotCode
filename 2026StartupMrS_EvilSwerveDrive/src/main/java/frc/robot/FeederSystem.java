@@ -15,6 +15,29 @@ public class FeederSystem {
     private FeederSystem(){}
 
     // contants
+    // --------FEEDER TUNING CONSTANTS
+    // --------overall normalization
+    // --------normalization is usually = Max motor output / max device RPM
+    private static final double Feeder_Kn = 0.00018611195378468; 
+    // --------feedforward
+    // --------Ks - static feedforward is the amount of motor output to get started moving
+    private static final double Feeder_Ks = 0.0293729230897304;
+    // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
+    private static final double Feeder_Kv = 0.000180658924510184;
+    // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
+    private static final double Feeder_Ka = 0.0;
+    // --------PID
+    // --------Kp - proportional constant    output =  error * Kp
+    private static final double Feeder_Kp = Feeder_Kn * 0.6;
+    // --------Ki - integral constant   output  = Ki x integral( error )
+    private static final double Feeder_Ki = Feeder_Kn * 4.0;
+    // --------kd = derivative constant     output = Kd * derivative( error )
+    private static final double Feeder_Kd = Feeder_Kn * 1.0E-6;
+    // --------integral zone ( in sp/pv units )
+    // --------Izone -- Error has to be within this amount to be used.
+    private static final double Feeder_Izone = 400.0;  // Error RPM where I is used.
+    // --------Irange - -min/max value that the integral PID term can have.
+    private static final double Feeder_Imax = 0.30;    // Max output of integral term.
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -33,15 +56,6 @@ public class FeederSystem {
     private static SimpleMotorFeedforward FeederFeedFwd;
     private static PIDController FeederPID;
 
-    private static final double Feeder_Kn = 0.00018611195378468; // max RPM guess.
-    private static final double Feeder_Ks = 0.0293729230897304;
-    private static final double Feeder_Kv = 0.000180658924510184;
-    private static final double Feeder_Ka = 0.0;
-    private static final double Feeder_Kp = Feeder_Kn * 0.7;
-    private static final double Feeder_Ki = Feeder_Kn * 4.0;
-    private static final double Feeder_Kd = Feeder_Kn * 1.0E-6;
-    private static final double Feeder_Izone = 80.0;  // Error RPM where I is used.
-    private static final double Feeder_Imax = 0.30;    // Max output of integral term.
 
 
     public static void init() {
@@ -83,8 +97,6 @@ public class FeederSystem {
             //FeederOutput=0.2;
             //locFeederSetpointRPM = 0.2 / Feeder_Kn;
             locFeederSetpointRPM = locCmdFeederSetpointRPM;
-            // ----could use something like this...
-            // locFeederSetpointRPM = MathUtil.clamp( TurretLauncher.getLauncherTargetSpeed() - 100.0, 0.0, 5000.0) ;
         }
         else {
             // FeederOutput=0;

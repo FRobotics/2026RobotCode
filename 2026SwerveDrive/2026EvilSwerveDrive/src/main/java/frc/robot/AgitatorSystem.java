@@ -46,6 +46,9 @@ public class AgitatorSystem {
 
 
 
+    /**
+     * One time initialization for the agitator system.  This should be called when the robot boots.
+     */
     public static void init() {
 
 
@@ -74,6 +77,11 @@ public class AgitatorSystem {
         
     }
 
+    /**
+     * Execute the logic for agitator.  This should be called every 20 millseconds
+     * 
+     * @param systemElapsedTimeSec - double - Operating system elapsed time in seconds.
+     */
     public static void executeLogic(double systemElapsedTimeSec) {
 
         AgitatorRPM = AgitatorMotorEncoder.getVelocity();
@@ -101,20 +109,39 @@ public class AgitatorSystem {
         locNTSend.triggerUpdate();
     }
 
+    /**
+     * Get the current agitator state,  false = off, true = on
+     * 
+     * @return - Current state - boolean - false = off, true = on
+     */
     public static boolean getAgitatorState() {
         return locAgitatorOn;
     }
 
+    /**
+     * turn the agitator on
+     */
     public static void cmdAgitatorOn() {
         locAgitatorOn=true;
     }
 
+    /**
+     * Turn the agitator off
+     */
     public static void cmdAgitatorOff() {
         locAgitatorOn=false;
     }
+    /**
+     * Get the current motor demand output
+     * @return - double - motor demand +/- 1.0
+     */
      public static double getMotorOutput() {
         return AgitatorOutput;
     }
+    /**
+     * Get the current motor RPM (revolutions per minute)
+     * @return - double - current motor RPM
+     */
      public static double getMotorRPM() {
         return AgitatorRPM;
     }

@@ -18,10 +18,7 @@ public class SwerveTeleop {
     private static double YIn=0.0;
     private static double XIn=0.0;
     private static double RotIn=0.0;
-    //measured in feet
-   // private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
-    //private static final double circumfrence=2*Math.PI*motorOffsetTotal;
-    //private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
+    
     // true is field orient false is robot orient
     private static boolean orient = true; //true is field false is robot oriented
     private static double exeTime=0.0;
@@ -150,25 +147,6 @@ public class SwerveTeleop {
         return myChassisSpeeds.omegaRadiansPerSecond; 
     }
 
-    /*   public static double TeleopCalc(double input) {
-
-        double joyval = input;
-        if ((joyval <= 0.05) && (joyval >= -0.05)) {
-            joyval = 0.0;
-        }
-        if (joyval < -1) {
-            joyval = -1;
-        }
-        if (joyval > 1) {
-            joyval = 1;
-        }
-        if (joyval >= 0) {
-            joyval = joyval * joyval;
-        } else {
-            joyval = joyval * -joyval;
-        }
-        return joyval;
-    }
-*/
+    
 
 }

@@ -2,7 +2,7 @@
 package frc.robot;
 
 // TODO: Remove unused imports.
-import java.security.Timestamp;
+
 import java.util.Optional;
 
 import Lib4150.Lib4150NetTableSystemSend;
@@ -12,7 +12,10 @@ import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
+//Unused
+//import edu.wpi.first.wpilibj.Timer;
+//import java.security.Timestamp;
+
 
 public class TrajectorySystem {
 

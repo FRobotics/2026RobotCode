@@ -1,6 +1,8 @@
 package frc.robot;
 
 import Lib4150.Lib4150NetTableSystemSend;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Climb {
 
@@ -15,6 +17,8 @@ public class Climb {
 
     public static void init() {
 
+        
+        
         // TODO: open and configure motors
         // TODO: open and configure sensors.
         // TODO: set initial system state

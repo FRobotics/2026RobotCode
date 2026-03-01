@@ -23,7 +23,7 @@ public class AutoSystem {
     private static AutoRoutine locExecRoutine;
     private static Timer autoTimer = new Timer();
     private static boolean locExecDoNextStep = false;
-    private static String AUTO_FILE_EXTENSION = ".csv";
+    private static final String AUTO_FILE_EXTENSION = ".csv";
     private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
     private static double locStepTime = 0.0;
 
@@ -49,7 +49,10 @@ public class AutoSystem {
         locExecInitStep = true;
         
     }
-
+    /**
+     * If a file ends in AUTO_FILE_EXTENSION it removes AUTO_FILE_EXTENSION from its name and adds it to autos
+     * @return
+     */
     public static String[] availableAutos() {
         List<String> autos = new ArrayList<>();
         File[] files = AUTO_DIR.listFiles();
@@ -63,7 +66,11 @@ public class AutoSystem {
         }
         return autos.toArray(new String[0]);
     }
-
+    /**
+     * Adds a new file
+     * @param files
+     * @return
+     */
     public static String[] readFiles(String[] files){
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
         ArrayList<String> routineNames = new ArrayList<String>();

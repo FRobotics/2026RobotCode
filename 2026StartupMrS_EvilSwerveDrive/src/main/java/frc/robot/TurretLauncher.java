@@ -344,7 +344,7 @@ public class TurretLauncher {
         {
             turretMotorMax = 0.0;
         }
-        double tmpTurretMotorDemand = MathUtil.clamp( TurretMotorDemand, turretMotorMin, turretMotorMax);
+        double tmpTurretMotorDemand = MathUtil.clamp(TurretMotorDemand, turretMotorMin, turretMotorMax);
 
         // --------now clamp output based on limit switches...
         double tmpLow = -1.0;
@@ -355,7 +355,7 @@ public class TurretLauncher {
         if ( counterclockwiseLimitSwitchValue ) {
             tmpHigh = 0.0;
         }
-        TurretMotorDemand = MathUtil.clamp( tmpTurretMotorDemand, tmpLow, tmpHigh );
+        TurretMotorDemand = MathUtil.clamp(tmpTurretMotorDemand, tmpLow, tmpHigh );
 
         // --------calculate if we on target ... use raw position before clamping to get accurate result.
         double turretRawError = desiredTurretAngleDegRaw - turretAngleEncoder;

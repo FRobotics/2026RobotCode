@@ -252,15 +252,28 @@ public class TurretLauncher {
 
         //TODO: this needs to actually do something (Task #34)
         //use limit switches to stop travel
+        double turretMax = 1.0;
+        double turretMin = -1.0;
         if (clockwiseLimitSwitchValue)
         {
-
+            turretMax = 0.0;
         }
-        else if (counterclockwiseLimitSwitchValue)
+        if (counterclockwiseLimitSwitchValue)
         {
-
+            turretMin = 0.0;
         }
+        double tmpMotorDemand = MathUtil.clamp(TurretMotorDemand, turretMin, turretMax);
 
+        // clamp output based on limit switches.
+        double turretHigh = 1.0;
+        double turretLow = -1.0;
+        if (clockwiseLimitSwitchValue){
+            turretHigh = 0.0;
+        }
+        if (counterclockwiseLimitSwitchValue){
+            turretLow = 0.0;
+        }
+        TurretMotorDemand = MathUtil.clamp(tmpMotorDemand, turretLow, turretHigh);
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
 

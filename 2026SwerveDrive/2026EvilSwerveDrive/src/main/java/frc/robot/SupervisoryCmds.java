@@ -2,6 +2,10 @@ package frc.robot;
 
 
 public class SupervisoryCmds {
+
+
+    private SupervisoryCmds(){
+    }
     
     public static void Collecting(){
         AgitatorSystem.cmdAgitatorOn();

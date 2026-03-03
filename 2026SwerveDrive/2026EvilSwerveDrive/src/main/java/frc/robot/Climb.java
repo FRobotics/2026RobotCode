@@ -11,9 +11,8 @@ public class Climb {
 
     
     private static SparkMax ClimbMotor1;
-    private static SparkMax ClimbMotor2;
     private static RelativeEncoder ClimbEncoder1;
-    private static RelativeEncoder climbEncoder2;
+
 
     // contants
 
@@ -25,9 +24,8 @@ public class Climb {
     public static void init() {
 
         ClimbMotor1 = new SparkMax(0, MotorType.kBrushless);
-        ClimbMotor2 = new SparkMax(1, MotorType.kBrushless);
         ClimbEncoder1 = ClimbMotor1.getEncoder();
-        climbEncoder2 = ClimbMotor2.getEncoder();
+
         
         // TODO: set initial system state
         // TODO: register command names with auto (so they can be called by name.)

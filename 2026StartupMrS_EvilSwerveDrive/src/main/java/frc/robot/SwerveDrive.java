@@ -1,10 +1,5 @@
 package frc.robot;
 
-//TODO: remove unused imports?
-// import java.util.function.DoubleSupplier;
-// import java.util.function.Supplier; 
-// import java.util.function.BooleanSupplier;
-
 import Lib4150.Lib4150NetTableSystemSend;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -95,6 +90,11 @@ public class SwerveDrive {
         return gyroPitchDeg;
     }
 
+    /**
+     *  get current gyro yaw value in degrees
+     * 
+     * @return YawDeg - double - Yaw value in degrees.
+     */
     static public double getYaw(){
         return gyroYawDeg;
     }

@@ -1,18 +1,17 @@
 
 package frc.robot;
 
-// TODO: Remove unused imports.
-//import java.security.Timestamp;
 import java.util.Optional;
 
 import Lib4150.Lib4150NetTableSystemSend;
+
 import choreo.Choreo;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-//import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectorySystem {
 

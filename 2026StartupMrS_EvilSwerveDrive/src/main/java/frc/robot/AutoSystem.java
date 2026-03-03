@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
-//import edu.wpi.first.wpilibj.DigitalInput;
 
 import Lib4150.Lib4150NetTableSystemSend;
-// TODO: Remove unused imports.
-//import choreo.trajectory.SwerveSample;
-//import choreo.trajectory.Trajectory;
+
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+
 public class AutoSystem {
 
     private static Lib4150NetTableSystemSend locNTSend;
@@ -29,8 +27,11 @@ public class AutoSystem {
 
     private static HashMap<String, AutoRoutine> autoHashMap;
 
-
-    // TODO: Add doc -- call this just prior to running ANY auto... Robot.java has a place for this.  It isn't the overall just once init.
+    /**
+     * ExecuteListInit - call this prior to running any and each auto routine.  
+     * 
+     * @param autoRun -String - The name of the auto routine to run.
+     */
     public static void ExecuteListInit(String autoRun ) {
 
         // -------find our auto to run
@@ -146,12 +147,15 @@ public class AutoSystem {
 
         // do step
         switch (ourStep.getCmd()){
+
                 case DriveStraight:
-                        // locExecDoNextStep = AutoFunctions.autoDriveStraight();
+                        // -- p1 - how far m, p2 - how fast m/sec, p3 angle deg
+                        locExecDoNextStep = AutoFunctions.autoDriveStraight(locExecInitStep, ourStep.getParam1(),ourStep.getParam2(),ourStep.getParam3());
                         break;
                 
                 case DriveTurn:
-                        // locExecDoNextStep = AutoFunctions.autoDriveSpin();
+                        // -- p1 - how far - deg, p2 - how fast deg/sec
+                        locExecDoNextStep = AutoFunctions.autoDriveSpin(locExecInitStep, ourStep.getParam1(),ourStep.getParam2());
                         break;
 
                 case FollowAbsTrajectory:
@@ -198,6 +202,11 @@ public class AutoSystem {
                 
                 case Descend:
                         SupervisoryCmds.Descend();
+                        locExecDoNextStep = true;
+                        break;
+                
+                case Defense:
+                        SupervisoryCmds.Defense();
                         locExecDoNextStep = true;
                         break;
         }

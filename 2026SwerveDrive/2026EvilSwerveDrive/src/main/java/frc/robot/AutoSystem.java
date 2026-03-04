@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 
 import Lib4150.Lib4150NetTableSystemSend;
-// TODO: Remove unused imports.
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
+
+///import choreo.trajectory.SwerveSample;
+//import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 public class AutoSystem {

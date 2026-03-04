@@ -39,8 +39,6 @@ public class TurretLauncher {
     private static RelativeEncoder LauncherMotorEncoder2;
     private static Translation2d robotPose;
     private static Translation2d TurretOffset;
-    private static Translation2d goalPose;
-    private static Translation2d zonePose;
     private static double TurretDistance;
     private static Rotation2d DesiredTurretAngle;
     //private static double TurretRelativeAngle;
@@ -94,7 +92,6 @@ public class TurretLauncher {
     
     public static void init() {
 
-        //TODO: is this the right spot for this (will this be run after the value in MatchSystem is created?) --- NO - it might not be set yet...   Call during execute
         //get team side from MatchSystem
         isRed = MatchSystem.isRed();
 
@@ -122,7 +119,6 @@ public class TurretLauncher {
         TurretOffset = new Translation2d( -0.14605 , 0);
 
 
-        //TODO: get the values of the goal position based on alliance - currently using Red values
         //Blue: x: 11.92m y: 4.03m
         goalPoseRed = new Translation2d(4.63,4.03);
         zonePoseRed = new Translation2d(1.5,1.5);
@@ -206,7 +202,7 @@ public class TurretLauncher {
 
         robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
         TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
-        robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
+        robotPose = robotPose.minus(TurretOffset);
 
 
 
@@ -250,7 +246,7 @@ public class TurretLauncher {
         double launcherPIDOutput = launcherPID.calculate(locLauncherSpeedActual, useSpeedTarget);
         LauncherMotorDemand = MathUtil.clamp(launchFeedForward+launcherPIDOutput, -1.0, 1.0);
 
-        //TODO: this needs to actually do something (Task #34)
+
         //use limit switches to stop travel
         double turretMax = 1.0;
         double turretMin = -1.0;

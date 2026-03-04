@@ -159,6 +159,7 @@ public class AutoSystem {
                         break;
 
                 case FollowAbsTrajectory:
+                        // --------this will also issue events.
                         locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
                         break;
 
@@ -170,6 +171,7 @@ public class AutoSystem {
                         break;
 
                 case FollowAbsTrajWithTimedCmd:
+                        locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
                         break;
 
                 case FollowRelTrajWithTimedComd:

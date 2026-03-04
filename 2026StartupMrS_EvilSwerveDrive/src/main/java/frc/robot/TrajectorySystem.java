@@ -1,11 +1,14 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
+import Lib4150.Lib4150MessageUtil;
 import Lib4150.Lib4150NetTableSystemSend;
 
 import choreo.Choreo;
+import choreo.trajectory.EventMarker;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 
@@ -36,6 +39,7 @@ public class TrajectorySystem {
     private static boolean done = false;
     private static boolean havesample = false;
     private static double timeLengthOfTrajectory = 0.0;
+    private static ArrayList<TrajectoryEvent> events;
 
     private TrajectorySystem(){
 
@@ -44,12 +48,24 @@ public class TrajectorySystem {
     public static void TrajectoryInit() {
 
         TrajectoryStorage = new Choreo.TrajectoryCache();
+        
 
         String[] TrajectoryNames = Choreo.availableTrajectories();
 
         for ( String oneTraj : TrajectoryNames     )  {
 
             TrajectoryStorage.loadTrajectory(oneTraj);
+
+            // --------some debug...for event markers...
+            // var tryToLoadTrajectory = TrajectoryStorage.loadTrajectory(oneTraj);
+            // Trajectory<SwerveSample> junk;
+            // if ( tryToLoadTrajectory.isPresent()) {
+            //     junk = (Trajectory<SwerveSample>)tryToLoadTrajectory.get();
+            //     // --------loop over events.
+            //     for ( EventMarker myEvent : junk.events()) {
+            //         Lib4150MessageUtil.SendInfo("Event marker :"+myEvent.timestamp+"--"+myEvent.event);
+            //     }
+            // }
 
         }
         // --------tell match system trajectories are read
@@ -76,6 +92,11 @@ public class TrajectorySystem {
             if ( tryToLoadTrajectory.isPresent()) {
                 TrajectoryToRun = (Trajectory<SwerveSample>)tryToLoadTrajectory.get();
                 timeLengthOfTrajectory = TrajectoryToRun.getTotalTime();
+                // --------create list of events..
+                events = new ArrayList<TrajectoryEvent>();
+                for ( EventMarker oneEvent : TrajectoryToRun.events() ) {
+                    events.add( new TrajectoryEvent( oneEvent.timestamp, oneEvent.event));
+                }
             }
         }
 
@@ -105,10 +126,20 @@ public class TrajectorySystem {
             else {
                 ontarget = false;
             }        
-            
-        
-
             SwerveDrive.setDesiredSpeed(new ChassisSpeeds( xvelDmd, yvelDmd, rotvelDmd));
+            // -------- is it time to run an event
+            // -------- we have some events.
+            if ( events.size() > 0 ) {
+                // --------is is time to run an event?  (for now assume events are at least 20ms apart., if not we need a loop).
+                if ( events.get(0).hasTimeElapsed(elapsedTime) ) {
+                    // --------run the event.
+                    SupervisoryCmds.executeString(events.get(0).getEventName());
+                    // --------some debug.
+                    Lib4150MessageUtil.SendInfo("Trajectory running event:"+events.get(0).getEventName()+" @ "+events.get(0).getTimeOffsetSec());
+                    // --------remove the event so we don't run it twice.
+                    events.remove(0);
+                }
+            }
         }
         else {
             SwerveDrive.setDesiredSpeed(new ChassisSpeeds( 0, 0, 0));

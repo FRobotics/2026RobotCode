@@ -119,7 +119,7 @@ public class IntakeSystem {
 
         // ---------if we just hit the limit switch, set the value of the encoder position.
         if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn(IntakeArmLowLimitSwitchState) ) {
-            IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
+            // TODO: It needs to settle first.  Need onDelay IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
         }
         
         // --------read the arm position in degrees.

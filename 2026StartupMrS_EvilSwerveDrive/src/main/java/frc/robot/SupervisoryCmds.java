@@ -60,8 +60,6 @@ public class SupervisoryCmds {
         locNTSend.triggerUpdate();
     }
 
-    // --------Do you want a "Defend" mode?
-
     // --------do climb.   BE CAREFULL - IF INTAKE NEEDS TO BE FULLY UP FIRST THIS WONT WORK.
     // --------            DOES THE TURRET NEED TO BE AT ZERO FIRST!
     public static void Climb(){
@@ -93,6 +91,34 @@ public class SupervisoryCmds {
     // --------get the string describing our mode.
     public static String getMode() {
         return locMode;
+    }
+
+    // --------execute a supervisory command based on its name.
+    public static void executeString( String cmdName ) {
+
+        // --------collecting
+        if ( cmdName.equalsIgnoreCase("collecting")) {
+            Collecting();
+        }
+        else if ( cmdName.equalsIgnoreCase("shooting")) {
+            Shooting();
+        }
+        else if ( cmdName.equalsIgnoreCase("stopaction")) {
+            StopAction();
+        }
+        else if ( cmdName.equalsIgnoreCase("ballstoalliance")) {
+            BallsToAlliance();
+        }
+        else if ( cmdName.equalsIgnoreCase("climb")) {
+            Climb();
+        }
+        else if ( cmdName.equalsIgnoreCase("descend")) {
+            Descend();
+        }
+        else if ( cmdName.equalsIgnoreCase("defense")) {
+            Defense();
+        }
+        return;
     }
 
 }

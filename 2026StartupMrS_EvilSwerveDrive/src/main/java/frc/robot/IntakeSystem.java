@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class IntakeSystem {
 
@@ -43,7 +44,12 @@ public class IntakeSystem {
     // private static double intakeGearRatio = 36.0;
     private static double intakeGearRatio = 32.2;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
-  
+    // --------rev through bore encoder - abs mode
+    private static DigitalInput IntakeArmABSEncDI;
+    private static DutyCycleEncoder IntakeArmABSEnc;
+    private static double IntakeArmABSEncPos = 0.0;
+
+    
     public static void init() {
 
         //motors
@@ -71,6 +77,10 @@ public class IntakeSystem {
         // -------limit switch is false when engaged.
         IntakeArmLowLimitSwitch = new DigitalInput(0);
 
+        // --------rev absolute encoder.
+        IntakeArmABSEncDI = new DigitalInput(4);
+        IntakeArmABSEnc = new DutyCycleEncoder(IntakeArmABSEncDI);
+
         //initial state
         intakeAngleTarget=INTAKEUPANGLE;
         intakeSpeed=0.0;
@@ -97,6 +107,7 @@ public class IntakeSystem {
         locNTSend.addItemBoolean("IntakeLimitIsPressed", IntakeSystem::getIntakeArmLowLimitSwitchState);
         locNTSend.addItemBoolean("IntakeIsExtended", IntakeSystem::getIntakeExtended);
         locNTSend.addItemDouble("IntakeAngleActual", IntakeSystem::getIntakeArmAngleActual);
+        locNTSend.addItemDouble("IntakeAngleActualABS", IntakeSystem::getIntakeArmAngleActualABS);
         locNTSend.addItemDouble("IntakeAngleTarget", IntakeSystem::getIntakeAngleTarget);
         locNTSend.addItemDouble("IntakeAngleMotorOut",IntakeSystem::getIntakeAngleMotorOut);
         // -------intake ball collector
@@ -110,6 +121,9 @@ public class IntakeSystem {
     }
 
     public static void executeLogic(double systemElapsedTimeSec) {
+
+        // --------rev through bore encoder in absolute mode.
+        IntakeArmABSEncPos = IntakeArmABSEnc.get() * 360.0;
 
         // --------read the arm down limit switch..
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
@@ -222,6 +236,9 @@ public class IntakeSystem {
     }
     public static double getIntakeArmAngleActual() {
         return IntakeArmAngleActual;
+    }
+    public static double getIntakeArmAngleActualABS() {
+        return IntakeArmABSEncPos;
     }
     public static double getIntakeAngleMotorOut() {
         return intakeAngleMotorDemand;

@@ -295,7 +295,7 @@ public class TurretLauncher {
         desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
 
         // --------for testing
-        desiredTurretAngleDegrees = 180.0;
+        // desiredTurretAngleDegrees = 180.0;
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...

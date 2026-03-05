@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
 
     SwerveDrive.SwerveExec(systemElapsedTimeSec);
     SwerveOdometry.execute(systemElapsedTimeSec);
-    SwerveVision.execute(systemElapsedTimeSec);
+    //SwerveVision.execute(systemElapsedTimeSec);
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
     FeederSystem.executeLogic(systemElapsedTimeSec);
@@ -91,6 +91,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     AutoSystem.ExecuteListInit(m_autoSelected);
+    return; 
     // TODO: Update as needed to init for running an auto routine...
   }
 
@@ -99,11 +100,13 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     double systemElapsedTimeSec = Timer.getFPGATimestamp();
     AutoSystem.ExecuteList(systemElapsedTimeSec);
+    return;
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    return;
 
   }
 
@@ -111,30 +114,43 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     SwerveTeleop.SwerveExecute();
+    return;
 
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    return;
+  }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    return;
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+    return;
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    return;
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    return;
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    return;
+  }
 }

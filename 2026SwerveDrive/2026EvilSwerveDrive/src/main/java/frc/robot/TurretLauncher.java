@@ -66,6 +66,7 @@ public class TurretLauncher {
     private static Translation2d goalPoseBlue;
     private static Translation2d zonePoseRed;
     private static Translation2d zonePoseBlue;
+    private static double intakeAngle;
     // Launcher Tunning Constants
     // Max motor output/ max device rpm
     private static final double Launcher_Kn = 0.000183705242146656;
@@ -101,7 +102,7 @@ public class TurretLauncher {
         LauncherMotorEncoder = LauncherMotor.getEncoder();
         LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
         LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
-
+        
         cmdLauncherOff();
         cmdBallsToHub();
         //open motor config
@@ -220,6 +221,11 @@ public class TurretLauncher {
 
         //------Position Control
         TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
+
+        //-------------------------------
+        if (IntakeSystem.intakeAngleTarget < 45){
+            TurretMotorDemand = 180;
+        }
 
         //Reads current motor speed //double check unit conversion
         locLauncherSpeed1= LauncherMotorEncoder.getVelocity();

@@ -29,7 +29,9 @@ public class AutoSystem {
 
     private static HashMap<String, AutoRoutine> autoHashMap;
 
-
+        /**
+        @param autoRun
+        */
     // TODO: Add doc -- call this just prior to running ANY auto... Robot.java has a place for this.  It isn't the overall just once init.
     public static void ExecuteListInit(String autoRun ) {
 
@@ -47,6 +49,8 @@ public class AutoSystem {
 
         // -------we should init this step...
         locExecInitStep = true;
+
+        MatchSystem.setRobotPhaseAutoInitComplete();
         
     }
     /**

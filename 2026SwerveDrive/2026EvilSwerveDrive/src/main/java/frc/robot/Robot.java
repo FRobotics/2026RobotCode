@@ -41,7 +41,6 @@ public class Robot extends TimedRobot {
     TurretLauncher.init();
     // Climb.init();
  
-    // TODO: update this code after reading auto files from roborio mem card.  This might be moved to end of this method, after the system inits.
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     //m_chooser.addOption("My Auto", kCustomAuto);
     //SmartDashboard.putData("Auto choices", m_chooser);
@@ -71,7 +70,6 @@ public class Robot extends TimedRobot {
     
     // TurretLauncher.executeLogic(systemElapsedTimeSec);
     // Climb.executeLogic(systemElapsedTimeSec);
-    // TODO: add feeder
 
   }
 
@@ -91,8 +89,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     AutoSystem.ExecuteListInit(m_autoSelected);
-    return; 
-    // TODO: Update as needed to init for running an auto routine...
+    return;
   }
 
   /** This function is called periodically during autonomous. */

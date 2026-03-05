@@ -3,11 +3,15 @@ package frc.robot;
 import Lib4150.Lib4150NetTableSystemSend;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 public class Climb {
 
     private Climb(){}
 
+    
+    private static SparkMax ClimbMotor1;
+    private static RelativeEncoder ClimbEncoder1;
     // contants
 
     // class/object variables
@@ -17,6 +21,11 @@ public class Climb {
 
     public static void init() {
 
+        ClimbMotor1 = new SparkMax(0, MotorType.kBrushless);
+        ClimbEncoder1 = ClimbMotor1.getEncoder();
+        
+        
+        
         
         
         // TODO: open and configure motors

@@ -51,9 +51,9 @@ public class FeederSystem {
 
     private static double locFeederSetpointRPM = 0.0;
     private static double locCmdFeederSetpointRPM = 0.0;
-    private static double locFeederFFoutput = 0.0;
-    private static double locFeederPIDoutput = 0.0;
-    private static SimpleMotorFeedforward FeederFeedFwd;
+    private static double locFeederFFOutput = 0.0;
+    private static double locFeederPIDOutput = 0.0;
+    private static SimpleMotorFeedforward FeederFeedForward;
     private static PIDController FeederPID;
 
 
@@ -66,8 +66,8 @@ public class FeederSystem {
         FeederMotorEncoder = FeederMotor.getEncoder();
 
         //Speed control
-        FeederFeedFwd = new SimpleMotorFeedforward(Feeder_Ks, Feeder_Kv, Feeder_Ka);
-        FeederPID = new PIDController( Feeder_Kp, Feeder_Ki, Feeder_Kd);
+        FeederFeedForward = new SimpleMotorFeedforward(Feeder_Ks, Feeder_Kv, Feeder_Ka);
+        FeederPID = new PIDController(Feeder_Kp, Feeder_Ki, Feeder_Kd);
         FeederPID.setIntegratorRange(-Feeder_Imax, Feeder_Imax);  // only allow integral to add +/- this amount to output.
         FeederPID.setIZone(Feeder_Izone);        // only do integration when within this many RPMs.
 
@@ -103,15 +103,15 @@ public class FeederSystem {
             locFeederSetpointRPM = 0.0;
         };
 
-        // --------do speed control
-        locFeederFFoutput = FeederFeedFwd.calculate( locFeederSetpointRPM );
-        locFeederPIDoutput = FeederPID.calculate(FeederRPM, locFeederSetpointRPM);
+        //-----Speed Control
+        locFeederFFOutput = FeederFeedForward.calculate(locFeederSetpointRPM);
+        locFeederPIDOutput = FeederPID.calculate(FeederRPM, locFeederSetpointRPM);
         // --------special case for 0.0  -- don't control just coast.
-        if ( locFeederSetpointRPM == 0.0 ) {
+        if (locFeederSetpointRPM == 0.0) {
             FeederPID.reset();      // reset integral.
-            locFeederPIDoutput = 0.0;
+            locFeederPIDOutput = 0.0;
         }
-        FeederOutput = MathUtil.clamp( locFeederFFoutput+locFeederPIDoutput, -1.0, 1.0 );
+        FeederOutput = MathUtil.clamp(locFeederFFOutput+locFeederPIDOutput, -1.0, 1.0);
 
         FeederMotor.set(FeederOutput);
 

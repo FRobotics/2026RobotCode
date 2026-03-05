@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-// import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-//import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -34,7 +32,7 @@ public class Robot extends TimedRobot {
     SwerveTeleop.init();
     SwerveDrive.SwerveInit();
     SwerveOdometry.init();
-    // SwerveVision.init(); -- not enough mem on roborio 1
+    SwerveVision.init();
     IntakeSystem.init();
     AgitatorSystem.init();
     FeederSystem.init();
@@ -68,7 +66,7 @@ public class Robot extends TimedRobot {
 
     SwerveDrive.SwerveExec(systemElapsedTimeSec);
     SwerveOdometry.execute(systemElapsedTimeSec);
-    // SwerveVision.execute(systemElapsedTimeSec); -- not enough mem on roborio 1
+    SwerveVision.execute(systemElapsedTimeSec);
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
     FeederSystem.executeLogic(systemElapsedTimeSec);

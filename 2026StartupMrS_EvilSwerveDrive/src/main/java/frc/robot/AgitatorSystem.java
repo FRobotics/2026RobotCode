@@ -21,7 +21,7 @@ public class AgitatorSystem {
     private static Lib4150NetTableSystemSend locNTSend;
 
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
-    private static boolean locAgitatorOn = false; 
+    private static boolean locAgitatorOn = false;
     private static boolean locAgitatorOnRev = false; 
     private static SparkMax AgitatorMotor;
     private static RelativeEncoder AgitatorMotorEncoder;
@@ -31,7 +31,7 @@ public class AgitatorSystem {
     private static double locAgitatorSetpointRPM = 0.0;
     private static double locAgitatorFFoutput = 0.0;
     private static double locAgitatorPIDoutput = 0.0;
-    private static SimpleMotorFeedforward AgitatorFeedFwd;
+    private static SimpleMotorFeedforward AgitatorFeedForward;
     private static PIDController AgitatorPID;
     private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
     private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
@@ -45,6 +45,10 @@ public class AgitatorSystem {
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
 
 
+
+    /**
+     * One time initialization for the agitator system.  This should be called when the robot boots.
+     */
     public static void init() {
 
 
@@ -53,8 +57,8 @@ public class AgitatorSystem {
         AgitatorMotorEncoder = AgitatorMotor.getEncoder();
 
         //Speed control
-        AgitatorFeedFwd = new SimpleMotorFeedforward(Agitator_Ks, Agitator_Kv, Agitator_Ka);
-        AgitatorPID = new PIDController( Agitator_Kp, Agitator_Ki, Agitator_Kd);
+        AgitatorFeedForward = new SimpleMotorFeedforward(Agitator_Ks, Agitator_Kv, Agitator_Ka);
+        AgitatorPID = new PIDController(Agitator_Kp, Agitator_Ki, Agitator_Kd);
         AgitatorPID.setIntegratorRange(-Agitator_Imax, Agitator_Imax);  // only allow integral to add +/- this amount to output.
         AgitatorPID.setIZone(Agitator_Izone);        // only do integration when within this many RPMs.
         AgitatorZeroEdgeOn = new Lib4150DigEdgeOn();
@@ -75,6 +79,11 @@ public class AgitatorSystem {
         
     }
 
+    /**
+     * Execute the logic for agitator.  This should be called every 20 millseconds
+     * 
+     * @param systemElapsedTimeSec - double - Operating system elapsed time in seconds.
+     */
     public static void executeLogic(double systemElapsedTimeSec) {
 
         AgitatorRPM = AgitatorMotorEncoder.getVelocity();
@@ -85,16 +94,15 @@ public class AgitatorSystem {
         if (locAgitatorOn){
             locAgitatorSetpointRPM = 0.5 / Agitator_Kn;
         }
-        else if ( locAgitatorOnRev ) {
+        else if ( locAgitatorOnRev){
             locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
         }
         else {
             locAgitatorSetpointRPM = 0.0;
         };
 
-
-        // --------do speed control
-        locAgitatorFFoutput = AgitatorFeedFwd.calculate( locAgitatorSetpointRPM );
+        // Agitator Speed Control
+        locAgitatorFFoutput = AgitatorFeedForward.calculate(locAgitatorSetpointRPM);
         locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, locAgitatorSetpointRPM);
         // --------special case for 0.0  -- don't control just coast.
         if ( AgitatorZeroEdgeOn.execEdgeOn( locAgitatorSetpointRPM == 0.0 ) ) {
@@ -110,28 +118,55 @@ public class AgitatorSystem {
         locNTSend.triggerUpdate();
     }
 
+    /**
+     * Get the current agitator state,  false = off, true = on
+     * 
+     * @return - Current state - boolean - false = off, true = on
+     */
     public static boolean getAgitatorState() {
         return locAgitatorOn;
     }
 
+    /**
+     * turn the agitator on
+     */
     public static void cmdAgitatorOn() {
         locAgitatorOn=true;
         locAgitatorOnRev=false;
     }
+    /**
+     * turn the agitator on in reverse
+     */
     public static void cmdAgitatorOnRev() {
         locAgitatorOnRev=true;
         locAgitatorOn=false;
     }
+
+    /**
+     * Turn the agitator off
+     */
     public static void cmdAgitatorOff() {
         locAgitatorOn=false;
         locAgitatorOnRev=false;
     }
+    /**
+     * Get the current motor demand output
+     * @return - double - motor demand +/- 1.0
+     */
      public static double getMotorOutput() {
         return AgitatorOutput;
     }
+    /**
+     * Get the current motor RPM (revolutions per minute)
+     * @return - double - current motor RPM
+     */
      public static double getMotorRPM() {
         return AgitatorRPM;
     }
+    /**
+     * Get the current motor RPM target (revolutions per minute)
+     * @return - double - current motor RPM target
+     */
      public static double getMotorRPMTarget() {
         return locAgitatorSetpointRPM;
     }

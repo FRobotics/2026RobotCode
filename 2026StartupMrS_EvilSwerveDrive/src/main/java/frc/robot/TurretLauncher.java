@@ -322,6 +322,11 @@ public class TurretLauncher {
             }
         }
 
+        // --------
+        if ( IntakeSystem.getIntakeArmAngleActual() > 45.0 ) {
+            desiredTurretAngleDegrees = 180.0;
+        }
+
         // --------calculate the first derivative (rate of change) of the turret deg setpoint, giving us Deg/Sec.
         // --------Smooth it a little.
         // --------Once we know how fast the turret moves, we can create a feedforward to add to the position

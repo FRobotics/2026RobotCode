@@ -18,24 +18,24 @@ public class FeederSystem {
     // --------FEEDER TUNING CONSTANTS
     // --------overall normalization
     // --------normalization is usually = Max motor output / max device RPM
-    private static final double Feeder_Kn = 0.00018611195378468; 
+    private static final double Feeder_Kn = 1.0 / 5734.6; 
     // --------feedforward
     // --------Ks - static feedforward is the amount of motor output to get started moving
-    private static final double Feeder_Ks = 0.0293729230897304;
+    private static final double Feeder_Ks = 0.0173712037501424;
     // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
-    private static final double Feeder_Kv = 0.000180658924510184;
+    private static final double Feeder_Kv = 0.000171352226013573;
     // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
     private static final double Feeder_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Feeder_Kp = Feeder_Kn * 0.3;
+    private static final double Feeder_Kp = Feeder_Kn * 0.4;
     // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Feeder_Ki = Feeder_Kn * 2.0;
+    private static final double Feeder_Ki = Feeder_Kn * 3.0;
     // --------kd = derivative constant     output = Kd * derivative( error )
     private static final double Feeder_Kd = Feeder_Kn * 1.0E-6;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
-    private static final double Feeder_Izone = 400.0;  // Error RPM where I is used.
+    private static final double Feeder_Izone = 100.0;  // Error RPM where I is used.
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Feeder_Imax = 0.30;    // Max output of integral term.
 

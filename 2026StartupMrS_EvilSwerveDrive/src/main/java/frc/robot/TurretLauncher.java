@@ -37,24 +37,24 @@ public class TurretLauncher {
     // --------LAUNCHER TUNING CONSTANTS
     // --------overall normalization
     // --------normalization is usually = Max motor output / max device RPM
-    private static final double Launcher_Kn = 0.000183705242146656;
+    private static final double Launcher_Kn = 1.0 / 5721.6;
     // --------feedforward
     // --------Ks - static feedforward is the amount of motor output to get started moving
-    private static final double Launcher_Ks = 0.0120480016499597;
+    private static final double Launcher_Ks = 0.0149140408235032;
     // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
-    private static final double Launcher_Kv = 0.000181491957288762;
+    private static final double Launcher_Kv = 0.000172170358450721;
     // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = 0.8 * Launcher_Kn;
+    private static final double Launcher_Kp = 0.4 * Launcher_Kn;
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Launcher_Ki = 4.0 * Launcher_Kn;
     // --------kd = derivative constant     output = Kd * derivative( error )
     private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
-    private static final double Launcher_Izone = 300.0;
+    private static final double Launcher_Izone = 100.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
 

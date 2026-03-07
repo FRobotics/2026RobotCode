@@ -21,6 +21,7 @@ public class SwerveOdometry {
     static private double ypos = 0.0;
     static private double rotpos = 0.0;
     static private double execElapsedTime = 0.0;
+    static private int locVisionUpdateCount = 0;
     
     public static void init(){
 
@@ -32,6 +33,9 @@ public class SwerveOdometry {
         //set up with starting parameters
         setStartingPose(initPose.getX(),initPose.getY(),initPose.getRotation().getRadians());
 
+        // --------init vision update count
+        locVisionUpdateCount = 0;
+
 
         //add items to push to network tables
         sender = new Lib4150NetTableSystemSend("Odometry");
@@ -39,8 +43,9 @@ public class SwerveOdometry {
         sender.addItemDouble("Y_position", SwerveOdometry::getyposition);
         sender.addItemDouble("Rotation_position", SwerveOdometry::getrotposition);
         sender.addItemDouble("execElapsedTime", SwerveOdometry::getExecCycleTime);
+        sender.addItemBoolean("OdometryValid", SwerveOdometry::isOdometryValid);
 
-
+        return;
     }
     
     
@@ -69,6 +74,7 @@ public class SwerveOdometry {
 
         sender.triggerUpdate();
         
+        return;
     }
 
     public static double getExecCycleTime(){
@@ -104,17 +110,22 @@ public class SwerveOdometry {
         //Pose2D is object that stores x,y,and rotation in radians. 
         locPoseEst.resetPose(newPose);
         locPoseEst.resetPosition(rot, SwerveDrive.getModulePositions(), newPose);
-    
+        return;
     }
 
     public static void addVisionMeasurement(Pose2d visionPose, double visionTimestamp){
         locPoseEst.addVisionMeasurement(visionPose, visionTimestamp);
+        locVisionUpdateCount++;
+        return;
     }
     public static void addVisionMeasurementDevs(Pose2d visionPose, double visionTimestamp, Matrix<N3,N1> visionStdDev){
         locPoseEst.addVisionMeasurement(visionPose, visionTimestamp, visionStdDev);
+        locVisionUpdateCount++;
+        return;
     }
 
-
+    public static boolean isOdometryValid() {
+        return ( Math.abs(locVisionUpdateCount) > 200 );
+    }
     
 }
-

@@ -32,7 +32,8 @@ public class SupervisoryCmds {
     public static void Shooting(){
         AgitatorSystem.cmdAgitatorOn();
         FeederSystem.cmdFeederOn();
-        IntakeSystem.setDownOffState();
+        // IntakeSystem.setDownOffState();
+        IntakeSystem.setRockOffState();
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToHub();
         locMode = "Shooting";
@@ -53,7 +54,8 @@ public class SupervisoryCmds {
     public static void BallsToAlliance(){
         AgitatorSystem.cmdAgitatorOn(); 
         FeederSystem.cmdFeederOn();
-        IntakeSystem.setDownOffState();
+        // IntakeSystem.setDownOffState();
+        IntakeSystem.setDownOnState();
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToZone();
         locMode = "BallsToAlliance";

@@ -1,5 +1,16 @@
 Notes on changes from Robot as of 2/24/2026 after workshop.
 
+AutoFunctions
+    - Added spin function  
+    - Added drive straight function
+
+AutoSystem
+    - Added spin call
+    - Added drive straight call
+
+AutoStep
+    - Added defense command.
+
 Match System.
     - Added init method - init NT tables
     - Added NT sender
@@ -31,12 +42,17 @@ TurretLauncher
     - ??? Does a turret_off_set_to_0 mode need to exist for when intake arm is up???
     - Launcher - added manual mode
     - Launcher - added integral output limits, and integral error zone limits
+    - Turret - dont move until intake is < 50 degrees
+    - Turret / Launcher - only auto calc if odometry is valid.
+    - Launcher - set feeder speed from launcher speed demand.
 
 Intake 
     - intake arm - changed gear ratio based on testing.  This may change again due to slippage.  This seems to work okay,.
     - intake arm - added gravity constant
     - intake arm - did some tuning of pos control
     - intake arm - inverted limits switch
+    - intake arm - added rate limiting in code.
+    - intake arm - added rocking.
     - intake balls - tuned motor output.
     - ?? Does making intake go up require a permissive of Turret Position within +/-x of zero ??
 
@@ -48,6 +64,8 @@ Supervisory
     - added init function for NT sender
     - added getMode to get string for NT
     - added mode update for each command
+    - changed shoot to rock.
+    - changed alliance to intake too.
 
 Agitator
     - IS A BACKWARDS MODE NEEDED ????  (Doesn't exist)
@@ -58,6 +76,9 @@ Feeder
 
 SwerveDrive
     - changed gyro axis based on RoboRIO position on real robot.
+
+SwerveOdometry
+    - added count of vision updates, used this to indicate odometry is valid.
 
 
 

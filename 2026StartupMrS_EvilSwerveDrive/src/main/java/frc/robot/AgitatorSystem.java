@@ -6,6 +6,7 @@ import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +17,15 @@ public class AgitatorSystem {
     private AgitatorSystem(){}
 
     // contants
+    private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
+    private static final double Agitator_Ks = 0.0;
+    private static final double Agitator_Kv = Agitator_Kn;
+    private static final double Agitator_Ka = 0.0;
+    private static final double Agitator_Kp = Agitator_Kn * 0.5;
+    private static final double Agitator_Ki = Agitator_Kn * 0.0;
+    private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
+    private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
+    private static final double Agitator_Imax = 0.30;    // Max output of integral term.
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -34,15 +44,6 @@ public class AgitatorSystem {
     private static SimpleMotorFeedforward AgitatorFeedForward;
     private static PIDController AgitatorPID;
     private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
-    private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
-    private static final double Agitator_Ks = 0.0;
-    private static final double Agitator_Kv = Agitator_Kn;
-    private static final double Agitator_Ka = 0.0;
-    private static final double Agitator_Kp = Agitator_Kn * 0.0;
-    private static final double Agitator_Ki = Agitator_Kn * 0.0;
-    private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
-    private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
-    private static final double Agitator_Imax = 0.30;    // Max output of integral term.
 
 
 
@@ -76,7 +77,7 @@ public class AgitatorSystem {
         locNTSend.addItemDouble("AgitatorRPMTarget", AgitatorSystem::getMotorRPMTarget);
         
         locNTSend.triggerUpdate();
-        
+        return;        
     }
 
     /**
@@ -92,7 +93,12 @@ public class AgitatorSystem {
         // if off, output 0
 
         if (locAgitatorOn){
-            locAgitatorSetpointRPM = 0.5 / Agitator_Kn;
+            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 0.5);
+            locAgitatorSetpointRPM = pctDmdFromDash / Agitator_Kn;
+            // --------if launcher not up to speed set demand at zero.
+            if ( !TurretLauncher.getAgitatorStartPermissive() ) {
+                locAgitatorSetpointRPM = 0.0;
+            }
         }
         else if ( locAgitatorOnRev){
             locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
@@ -100,6 +106,7 @@ public class AgitatorSystem {
         else {
             locAgitatorSetpointRPM = 0.0;
         };
+
 
         // Agitator Speed Control
         locAgitatorFFoutput = AgitatorFeedForward.calculate(locAgitatorSetpointRPM);
@@ -116,6 +123,7 @@ public class AgitatorSystem {
         AgitatorMotor.set(AgitatorOutput);
 
         locNTSend.triggerUpdate();
+        return;
     }
 
     /**
@@ -133,6 +141,7 @@ public class AgitatorSystem {
     public static void cmdAgitatorOn() {
         locAgitatorOn=true;
         locAgitatorOnRev=false;
+        return;
     }
     /**
      * turn the agitator on in reverse
@@ -140,6 +149,7 @@ public class AgitatorSystem {
     public static void cmdAgitatorOnRev() {
         locAgitatorOnRev=true;
         locAgitatorOn=false;
+        return;
     }
 
     /**
@@ -148,6 +158,7 @@ public class AgitatorSystem {
     public static void cmdAgitatorOff() {
         locAgitatorOn=false;
         locAgitatorOnRev=false;
+        return;
     }
     /**
      * Get the current motor demand output

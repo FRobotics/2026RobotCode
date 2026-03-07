@@ -107,7 +107,7 @@ public class TurretLauncher {
     private static boolean turretMode=false;    // false = hub, true = zone
     private static boolean isRed;
     private static boolean turretPositionOnTarget = false;
-
+    private static boolean launcherAgitatorPermissive = false;
     private static boolean locTurretManualMode = true;
     private static boolean locTurretCmdManualMode = true;
     private static double locTurretCmdSetpoint = 180.0;
@@ -254,53 +254,60 @@ public class TurretLauncher {
         // --------get team side from MatchSystem
         isRed = MatchSystem.isRed();
 
+
+        // --------if odometry is valid then calculate desired turret angle and distance to target.
+        if ( SwerveOdometry.isOdometryValid() ) {
         
-        
-        // -------- calc distance to target, and turret angle to setpoint based on absolute odometry..
+            // -------- calc distance to target, and turret angle to setpoint based on absolute odometry..
 
-        // --------where the center of the robot is on the field.
-        robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
-        // --------turret relative position to center of robot.
-        TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
-        // --------turret absolute field position.
-        robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
+            // --------where the center of the robot is on the field.
+            robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
+            // --------turret relative position to center of robot.
+            TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
+            // --------turret absolute field position.
+            robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
 
-        // --------get the position of our target..  Alliance or goal, red or blue...
-        Translation2d targetPose = goalPoseRED;
+            // --------get the position of our target..  Alliance or goal, red or blue...
+            Translation2d targetPose = goalPoseRED;
 
-        if (turretMode){
-            if ( isRed ) {
-                targetPose=zonePoseRED;
+            if (turretMode){
+                if ( isRed ) {
+                    targetPose=zonePoseRED;
+                }
+                else {
+                    targetPose=zonePoseBLUE;
+                }
             }
             else {
-                targetPose=zonePoseBLUE;
+                if ( isRed ) {
+                    targetPose=goalPoseRED;
+                }
+                else {
+                    targetPose=goalPoseBLUE;
+                }
             }
+
+            // --------calculate distance to target.
+            TargetDistance=robotPose.getDistance(targetPose);
+
+            DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
+
+            DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
+            desiredTurretAngleDegRaw = MathUtil.inputModulus( DesiredTurretAngle.getDegrees(), 0.0, 360.0);
+            desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
+
         }
+        // --------no valid odometry, set default turret position and distance to target.
         else {
-            if ( isRed ) {
-                targetPose=goalPoseRED;
-            }
-            else {
-                targetPose=goalPoseBLUE;
-            }
+            desiredTurretAngleDegRaw = 180.0;   // degrees
+            desiredTurretAngleDegrees = 180.0;  // degrees
+            TargetDistance = 2.0;   // meters
         }
-
-        // --------calculate distance to target.
-        TargetDistance=robotPose.getDistance(targetPose);
-
-        DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
-
-        DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-        desiredTurretAngleDegRaw = MathUtil.inputModulus( DesiredTurretAngle.getDegrees(), 0.0, 360.0);
-        desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
-
-        // --------for testing
-        // desiredTurretAngleDegrees = 180.0;
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
         // TODO: Need to get data and create this curve....
-        launchertargetSpeed  = 700.0 + TargetDistance * 200.0;
+        launchertargetSpeed  = 800.0 + TargetDistance * 250.0;
 
 
         // --------TURRET CONTROL
@@ -322,8 +329,8 @@ public class TurretLauncher {
             }
         }
 
-        // --------
-        if ( IntakeSystem.getIntakeArmAngleActual() > 45.0 ) {
+        // --------if intake arm is still up, don't move turret!!
+        if ( IntakeSystem.getIntakeArmAngleActual() > 50.0 ) {
             desiredTurretAngleDegrees = 180.0;
         }
 
@@ -396,19 +403,13 @@ public class TurretLauncher {
         }
 
 
-        // --------tell feeder how fast to go.
-        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0);
+        // --------tell feeder how fast to go.   For now approx 80%
+        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.8);
 
 
         //check if within 75 RPM of target speed
-        if (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75)
-        {
-            launcherSpeedOnTarget = true;
-        }
-        else
-        {
-            launcherSpeedOnTarget = false;
-        }
+        launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
@@ -474,6 +475,9 @@ public class TurretLauncher {
     }
     private static boolean getLauncherSpeedOnTarget() {
         return launcherSpeedOnTarget;
+    }
+    public static boolean getAgitatorStartPermissive() {
+        return launcherAgitatorPermissive;
     }
     private static boolean getLauncherOn() {
         return locLauncherOn;

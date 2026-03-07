@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -34,6 +35,7 @@ public class IntakeSystem {
     private static Lib4150PositionControl IntakePositionControl;
     private static RelativeEncoder IntakeArmMotorEncoder;
     private static int intakeState;//1 is up off, 2 is down off, 3 is down on,
+    private static boolean intakeRockState = false;
     private static double intakeAngleTarget;
     private static boolean IntakeArmLowLimitSwitchState;
     private static double IntakeArmAngleActual; //stores current value from encoder
@@ -48,6 +50,11 @@ public class IntakeSystem {
     private static DigitalInput IntakeArmABSEncDI;
     private static DutyCycleEncoder IntakeArmABSEnc;
     private static double IntakeArmABSEncPos = 0.0;
+    // --------a little rate limiting on starting the intake move..
+    private static SlewRateLimiter IntakeArmRateLimit;
+    // --------next rock time...
+    private static double locNextRockTime = 0.0;
+    private static double locRockTargetAngle = 0.0;
 
     
     public static void init() {
@@ -85,6 +92,7 @@ public class IntakeSystem {
         intakeAngleTarget=INTAKEUPANGLE;
         intakeSpeed=0.0;
         intakeState=1;
+        intakeRockState = false;
 
         IntakeArmLowLimitSwitchState = false;
         IntakeArmAngleActual = 0.0;
@@ -95,6 +103,8 @@ public class IntakeSystem {
         // was 30, now 35...
         IntakePositionControl = new Lib4150PositionControl( 2.0, 35.0, 
                             0.005, 0.25, 0.25, 1.0e-5, false, false);
+
+        IntakeArmRateLimit = new SlewRateLimiter(2.0);  // 0 to full in 1/2 second.
 
         IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
 
@@ -163,9 +173,28 @@ public class IntakeSystem {
             intakeSpeed=PICKUP_MOTOR_OFF;
         }
 
+
+        // --------should we rock ???
+        if ( intakeState == 2 && intakeRockState ) {
+            if ( systemElapsedTimeSec >= locNextRockTime ) {
+                locNextRockTime = systemElapsedTimeSec + 3.0;
+                if ( intakeAngleTarget == INTAKEDOWNANGLE ) {
+                    locRockTargetAngle = INTAKEDOWNANGLE + 30.0;
+                }
+                else {
+                    locRockTargetAngle = INTAKEDOWNANGLE;
+                }
+            }
+            intakeAngleTarget = locRockTargetAngle;
+        }
+        // --------just reset time.
+        else {
+            locNextRockTime = systemElapsedTimeSec + 3.0;
+        }
+
         // do arm position control - values in degrees
         // grav constant was 0.10, now 0.13.
-        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
+        intakeAngleMotorDemand=IntakeArmRateLimit.calculate( IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) );
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 8.0 ) {
@@ -202,16 +231,24 @@ public class IntakeSystem {
 
 
     // --------setters
+    public static void setRockOffState(){
+        intakeState=2;
+        intakeRockState = true;
+        return;
+    }
     public static void setDownOffState(){
         intakeState=2;
+        intakeRockState = false;
         return;
     }
     public static void setDownOnState(){
         intakeState=3;
+        intakeRockState = false;
         return;
     }
     public static void setUpOffState(){
         intakeState=1;
+        intakeRockState = false;
         return;
     }
 

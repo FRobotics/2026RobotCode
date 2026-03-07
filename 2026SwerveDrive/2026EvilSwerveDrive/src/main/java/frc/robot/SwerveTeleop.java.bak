@@ -18,10 +18,7 @@ public class SwerveTeleop {
     private static double YIn=0.0;
     private static double XIn=0.0;
     private static double RotIn=0.0;
-    //measured in feet
-   // private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
-    //private static final double circumfrence=2*Math.PI*motorOffsetTotal;
-    //private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
+    
     // true is field orient false is robot orient
     private static boolean orient = true; //true is field false is robot oriented
     private static double exeTime=0.0;
@@ -96,7 +93,6 @@ public class SwerveTeleop {
         //-----tell drive system our desired speed
         SwerveDrive.setDesiredSpeed(myChassisSpeeds);
 
-        // ==============================================================================
         //------- Second controller buttons
         if (myXboxController2.getAButtonPressed()){
             SupervisoryCmds.Collecting();
@@ -119,54 +115,14 @@ public class SwerveTeleop {
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
         }
+        
 
-        // --------toggle turret manual mode.
-        if ( myXboxController2.getBackButtonPressed()) {
-            // --------in manual, set auto
-            if ( TurretLauncher.getTurretManualMode() ) {
-                TurretLauncher.cmdTurretAutoMode();
-            }
-            // --------in auto, set manual
-            else {
-                TurretLauncher.cmdTurretManualMode();
-            }
-        }
-
-        // --------turret manual inc/dec
-        // --------This is approx 50 deg/second at maximum joystick value.
-        if ( TurretLauncher.getTurretManualMode()) {
-            TurretLauncher.cmdTurretIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightX(),0.10) * 3.0 );
-        }
-
-
-        // --------toggle launcher manual mode.
-        if ( myXboxController2.getStartButtonPressed()) {
-            // --------in manual, set auto
-            if ( TurretLauncher.getLauncherManualMode() ) {
-                TurretLauncher.cmdLauncherAutoMode();
-            }
-            // --------in auto, set manual
-            else {
-                TurretLauncher.cmdLauncherManualMode();
-            }
-        }
-
-        // --------launcher manual inc/dec
-        // --------This is approx 200 rpm/second at maximum joystick value.
-        if ( TurretLauncher.getLauncherManualMode()) {
-            TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightY(),0.08) * 4.0 );
-        }
 
       
         endTime = Timer.getFPGATimestamp();
         exeTime = (endTime-startTime)*1000;
 
-        // --------Tell system teleop is running
-        MatchSystem.setRobotPhaseTeleopRunning();
-        
         locNTsend.triggerUpdate();
-
-        return;
     }
 
     public static boolean getFieldOrientedDriving(){

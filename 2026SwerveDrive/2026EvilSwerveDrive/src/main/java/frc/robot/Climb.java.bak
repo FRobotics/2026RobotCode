@@ -12,6 +12,8 @@ public class Climb {
     
     private static SparkMax ClimbMotor1;
     private static RelativeEncoder ClimbEncoder1;
+
+
     // contants
 
     // class/object variables
@@ -23,13 +25,8 @@ public class Climb {
 
         ClimbMotor1 = new SparkMax(0, MotorType.kBrushless);
         ClimbEncoder1 = ClimbMotor1.getEncoder();
+
         
-        
-        
-        
-        
-        // TODO: open and configure motors
-        // TODO: open and configure sensors.
         // TODO: set initial system state
         // TODO: register command names with auto (so they can be called by name.)
 

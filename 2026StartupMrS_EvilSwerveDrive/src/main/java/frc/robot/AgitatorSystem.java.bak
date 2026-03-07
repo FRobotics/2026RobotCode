@@ -77,7 +77,7 @@ public class AgitatorSystem {
         locNTSend.addItemDouble("AgitatorRPMTarget", AgitatorSystem::getMotorRPMTarget);
         
         locNTSend.triggerUpdate();
-        
+        return;        
     }
 
     /**

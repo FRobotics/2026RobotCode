@@ -173,8 +173,25 @@ public class IntakeSystem {
             intakeSpeed=PICKUP_MOTOR_OFF;
         }
 
-        // do control
-        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, encoderRot);
+
+        // --------should we rock ???
+        if ( intakeState == 2 && intakeRockState ) {
+            if ( systemElapsedTimeSec >= locNextRockTime ) {
+                locNextRockTime = systemElapsedTimeSec + 3.0;
+                if ( intakeAngleTarget == INTAKEDOWNANGLE ) {
+                    locRockTargetAngle = INTAKEDOWNANGLE + 30.0;
+                }
+                else {
+                    locRockTargetAngle = INTAKEDOWNANGLE;
+                }
+            }
+            intakeAngleTarget = locRockTargetAngle;
+        }
+        // --------just reset time.
+        else {
+            locNextRockTime = systemElapsedTimeSec + 3.0;
+        }
+
         // do arm position control - values in degrees
         // grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand=IntakeArmRateLimit.calculate( IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) );

@@ -1,11 +1,14 @@
 package frc.robot;
 
 import Lib4150.Lib4150DigEdgeOn;
+import Lib4150.Lib4150DigOnDelay;
 import Lib4150.Lib4150NetTableSystemSend;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.RelativeEncoder;
@@ -21,7 +24,7 @@ public class AgitatorSystem {
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
-    private static final double Agitator_Kp = Agitator_Kn * 0.5;
+    private static final double Agitator_Kp = Agitator_Kn * 0.0;    // leave at zero untill we get max RPM...
     private static final double Agitator_Ki = Agitator_Kn * 0.0;
     private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
     private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
@@ -44,6 +47,10 @@ public class AgitatorSystem {
     private static SimpleMotorFeedforward AgitatorFeedForward;
     private static PIDController AgitatorPID;
     private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
+    private static SlewRateLimiter AgitatorRateLimit;
+    private static Lib4150DigOnDelay locFwdStalledOnDelay;
+    private static Lib4150DigOnDelay locRevStopOnDelay;
+    private static boolean locFwdStalled = false;
 
 
 
@@ -57,6 +64,9 @@ public class AgitatorSystem {
         AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
         AgitatorMotorEncoder = AgitatorMotor.getEncoder();
 
+        // --------output rate limit
+        AgitatorRateLimit = new SlewRateLimiter(3.0);       // 1/3 second to full output.
+
         //Speed control
         AgitatorFeedForward = new SimpleMotorFeedforward(Agitator_Ks, Agitator_Kv, Agitator_Ka);
         AgitatorPID = new PIDController(Agitator_Kp, Agitator_Ki, Agitator_Kd);
@@ -64,6 +74,10 @@ public class AgitatorSystem {
         AgitatorPID.setIZone(Agitator_Izone);        // only do integration when within this many RPMs.
         AgitatorZeroEdgeOn = new Lib4150DigEdgeOn();
 
+        // --------delays for stall
+        double systemElapsedTimeSec = Timer.getFPGATimestamp();
+        locFwdStalledOnDelay = new Lib4150DigOnDelay( 1.5, systemElapsedTimeSec );
+        locRevStopOnDelay = new Lib4150DigOnDelay( 2.5, systemElapsedTimeSec );
 
         // ensure agitator starts off
         cmdAgitatorOff();
@@ -72,6 +86,7 @@ public class AgitatorSystem {
         locNTSend = new Lib4150NetTableSystemSend("AgitatorSystem");
 
         locNTSend.addItemBoolean("AgitatorState", AgitatorSystem::getAgitatorState);
+        locNTSend.addItemBoolean("AgitatorStalled", AgitatorSystem::getAgitatorStallState);
         locNTSend.addItemDouble("AgitatorOutput", AgitatorSystem::getMotorOutput);
         locNTSend.addItemDouble("AgitatorRPM", AgitatorSystem::getMotorRPM);
         locNTSend.addItemDouble("AgitatorRPMTarget", AgitatorSystem::getMotorRPMTarget);
@@ -100,17 +115,33 @@ public class AgitatorSystem {
                 locAgitatorSetpointRPM = 0.0;
             }
         }
-        else if ( locAgitatorOnRev){
-            locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
-        }
+        // else if ( locAgitatorOnRev){
+        //     locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
+        //     locFwdStalled = false;
+        // }
         else {
             locAgitatorSetpointRPM = 0.0;
+            locFwdStalled = false;
         };
 
 
-        // Agitator Speed Control
-        locAgitatorFFoutput = AgitatorFeedForward.calculate(locAgitatorSetpointRPM);
-        locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, locAgitatorSetpointRPM);
+        // --------calculate values for reverse job when forward stalls
+        // --------turn rev stall prevention on
+        if ( locFwdStalledOnDelay.ExecOnDelay( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < 30.0)  && !locFwdStalled, systemElapsedTimeSec  ) ) {
+            locFwdStalled = true;
+        };
+        // --------after x seconds turn it off..
+        if ( locRevStopOnDelay.ExecOnDelay( locFwdStalled, systemElapsedTimeSec ) ) {
+            locFwdStalled = false;
+        };
+
+        // --------actual speed setpoint based on stall....
+        double tmpAgitatorSetpointRPM = ( locFwdStalled  ) ? -locAgitatorSetpointRPM : locAgitatorSetpointRPM;
+        
+        // --------Agitator Speed Control
+        locAgitatorFFoutput = AgitatorFeedForward.calculate(tmpAgitatorSetpointRPM);
+        locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, tmpAgitatorSetpointRPM);
+
         // --------special case for 0.0  -- don't control just coast.
         if ( AgitatorZeroEdgeOn.execEdgeOn( locAgitatorSetpointRPM == 0.0 ) ) {
             AgitatorPID.reset();      // reset integral.
@@ -118,22 +149,19 @@ public class AgitatorSystem {
         if ( locAgitatorSetpointRPM == 0.0 ) {
             locAgitatorPIDoutput = 0.0;
         }
-        AgitatorOutput = MathUtil.clamp( locAgitatorFFoutput+locAgitatorPIDoutput, -1.0, 1.0 );
 
+        // --------rate limit and clamp the motor output.
+        AgitatorOutput = MathUtil.clamp( AgitatorRateLimit.calculate( locAgitatorFFoutput+locAgitatorPIDoutput ), -1.0, 1.0 );
+
+        // --------send demand to motor.
         AgitatorMotor.set(AgitatorOutput);
 
+        // ---------update network tables.
         locNTSend.triggerUpdate();
         return;
     }
 
-    /**
-     * Get the current agitator state,  false = off, true = on
-     * 
-     * @return - Current state - boolean - false = off, true = on
-     */
-    public static boolean getAgitatorState() {
-        return locAgitatorOn;
-    }
+    // --------COMMANDS
 
     /**
      * turn the agitator on
@@ -143,14 +171,14 @@ public class AgitatorSystem {
         locAgitatorOnRev=false;
         return;
     }
-    /**
-     * turn the agitator on in reverse
-     */
-    public static void cmdAgitatorOnRev() {
-        locAgitatorOnRev=true;
-        locAgitatorOn=false;
-        return;
-    }
+    ///**
+    // * turn the agitator on in reverse
+    // */
+    //public static void cmdAgitatorOnRev() {
+    //    locAgitatorOnRev=true;
+    //    locAgitatorOn=false;
+    //    return;
+    //}
 
     /**
      * Turn the agitator off
@@ -160,6 +188,29 @@ public class AgitatorSystem {
         locAgitatorOnRev=false;
         return;
     }
+
+    // -------- GETTERS
+    
+    /**
+     * Get the current agitator state,  false = off, true = on
+     * 
+     * @return - Current state - boolean - false = off, true = on
+     */
+    public static boolean getAgitatorState() {
+        return locAgitatorOn;
+    }
+
+    
+    /**
+     * Get the current agitator stall state,  false = off, true = on
+     * When stalled the motor will try to run backwards.
+     * 
+     * @return - Current stall state - boolean - false = normal, true = stalled
+     */
+    public static boolean getAgitatorStallState() {
+        return locFwdStalled;
+    }
+
     /**
      * Get the current motor demand output
      * @return - double - motor demand +/- 1.0

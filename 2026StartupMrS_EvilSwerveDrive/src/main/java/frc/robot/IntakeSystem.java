@@ -90,6 +90,7 @@ public class IntakeSystem {
 
         //initial state
         intakeAngleTarget=INTAKEUPANGLE;
+        IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
         intakeSpeed=0.0;
         intakeState=1;
         intakeRockState = false;
@@ -104,9 +105,8 @@ public class IntakeSystem {
         IntakePositionControl = new Lib4150PositionControl( 2.0, 35.0, 
                             0.005, 0.25, 0.25, 1.0e-5, false, false);
 
-        IntakeArmRateLimit = new SlewRateLimiter(2.0);  // 0 to full in 1/2 second.
+        IntakeArmRateLimit = new SlewRateLimiter(.75);  // 0 to full in 1.3 seconds.
 
-        IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("IntakeSystem");
@@ -132,7 +132,7 @@ public class IntakeSystem {
 
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        // --------rev through bore encoder in absolute mode.
+        // --------rev through bore encoder in absolute mode. -- NOT USED FOR CONTROL YET.
         IntakeArmABSEncPos = IntakeArmABSEnc.get() * 360.0;
 
         // --------read the arm down limit switch..
@@ -143,7 +143,7 @@ public class IntakeSystem {
 
         // ---------if we just hit the limit switch, set the value of the encoder position.
         if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn(IntakeArmLowLimitSwitchState) ) {
-            IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
+            // TODO: DEBUG LEAVE THIS OUT FOR NOW IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
         }
         
         // --------read the arm position in degrees.
@@ -175,38 +175,43 @@ public class IntakeSystem {
 
 
         // --------should we rock ???
-        if ( intakeState == 2 && intakeRockState ) {
-            if ( systemElapsedTimeSec >= locNextRockTime ) {
-                locNextRockTime = systemElapsedTimeSec + 3.0;
-                if ( intakeAngleTarget == INTAKEDOWNANGLE ) {
-                    locRockTargetAngle = INTAKEDOWNANGLE + 30.0;
-                }
-                else {
-                    locRockTargetAngle = INTAKEDOWNANGLE;
-                }
-            }
-            intakeAngleTarget = locRockTargetAngle;
-        }
-        // --------just reset time.
-        else {
-            locNextRockTime = systemElapsedTimeSec + 3.0;
-        }
+        // TODO: FOR NOW DISABLE ROCKING....
+        //if ( intakeState == 2 && intakeRockState ) {
+        //    if ( systemElapsedTimeSec >= locNextRockTime ) {
+        //        locNextRockTime = systemElapsedTimeSec + 3.0;
+        //        if ( intakeAngleTarget == INTAKEDOWNANGLE ) {
+        //            locRockTargetAngle = INTAKEDOWNANGLE + 30.0;
+        //        }
+        //        else {
+        //            locRockTargetAngle = INTAKEDOWNANGLE;
+        //        }
+        //    }
+        //    intakeAngleTarget = locRockTargetAngle;
+        //}
+        //// --------just reset time.
+        //else {
+        //    locNextRockTime = systemElapsedTimeSec + 3.0;
+        //}
 
-        // do arm position control - values in degrees
-        // grav constant was 0.10, now 0.13.
-        intakeAngleMotorDemand=IntakeArmRateLimit.calculate( IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) );
+        // --------do arm position control - values in degrees
+        // --------grav constant was 0.10, now 0.13.
+        intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 8.0 ) {
             intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 8.0;
         }
-        intakeAngleMotorDemand = MathUtil.clamp( intakeAngleMotorDemand + intakeAngleGravityConstant, -1.0, 1.0 );
+        // --------clamp and rate limit final output
+        double tmpLowClamp = (IntakeArmLowLimitSwitchState) ? 0.0 : -1.0;
+
+        // --------rate limit then clamp.
+        intakeAngleMotorDemand = MathUtil.clamp( IntakeArmRateLimit.calculate( intakeAngleMotorDemand + intakeAngleGravityConstant), tmpLowClamp, 1.0 );
         IntakeArmMotor.set(intakeAngleMotorDemand);
         
         // set output for ball intake motor.
         IntakeBallMotor.set(intakeSpeed);
-        
-        // TODO: what is this for?  Maybe check the actual angle -- IntakeArmAngleActual -- instead.  
+
+        // ---------set local variable if arm extended for network tables.
         if (intakeState==1){
             locIntakeExtended=false;
         }else{
@@ -231,11 +236,11 @@ public class IntakeSystem {
 
 
     // --------setters
-    public static void setRockOffState(){
-        intakeState=2;
-        intakeRockState = true;
-        return;
-    }
+    // public static void setRockOffState(){
+    //     intakeState=2;
+    //     intakeRockState = true;
+    //     return;
+    // }
     public static void setDownOffState(){
         intakeState=2;
         intakeRockState = false;

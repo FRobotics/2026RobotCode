@@ -102,9 +102,25 @@ public class IntakeSystem {
         limitState = limitSwitch.get();
         encoderRot = (intakeMotor2Encoder.getPosition()*360/intakeGearRatio)+90;     // pos of arm ??
 
-        intakeMotorRPM = intakeMotor1Encoder.getVelocity();
+        // --------rev through bore encoder in absolute mode.
+        IntakeArmABSEncPos = IntakeArmABSEnc.get() * 360.0;
 
+        // --------read the arm down limit switch..
+        // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
+        // --------Add a little hysteresis of 2.0 degrees for the IntakeArmAngleActual position.
+        // --------This depends on the previous value of IntakeArmLowLimitSwitchState and IntakeArmAngleActual
+        IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get() || ( IntakeArmLowLimitSwitchState && ( IntakeArmAngleActual <= (INTAKEDOWNLIMITSWITCHANGLE+2.0)));
+
+        // ---------if we just hit the limit switch, set the value of the encoder position.
+        if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn(IntakeArmLowLimitSwitchState) ) {
+            IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
+        }
         
+        // --------read the arm position in degrees.
+        IntakeArmAngleActual = calcArmDegFromRawEncoder( IntakeArmMotorEncoder.getPosition() );     // pos of arm ??
+
+        // --------read the RPM of the ball intake.  This is to help determine what motor output is desired.
+        intakeMotorRPM = IntakeBallMotorEncoder.getVelocity(); // ball intake rpm        
         //1 is up off 2 is down off 3 is down on
 
         // down (on or off )
@@ -127,29 +143,50 @@ public class IntakeSystem {
 
         // do control
         intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, encoderRot);
-        intakeMotor2.set(intakeAngleMotorDemand);
+        // do arm position control - values in degrees
+        // grav constant was 0.10, now 0.13.
+        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
+        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
+        // --------gently remove the gravity constant
+        if ( IntakeArmAngleActual <= 8.0 ) {
+            intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 8.0;
+        }
+        intakeAngleMotorDemand = MathUtil.clamp( intakeAngleMotorDemand + intakeAngleGravityConstant, -1.0, 1.0 );
+        IntakeArmMotor.set(intakeAngleMotorDemand);        // set output for ball intake motor.
         
-        intakeMotor1.set(intakeSpeed);
-        
-        // TODO: what is this for?  Maybe check the actual angle -- encoderRot -- instead.  
-        if (intakeState==1){
+        IntakeBallMotor.set(intakeSpeed);                        if (intakeState==1){
             locIntakeExtended=false;
         }else{
             locIntakeExtended=true;
         }
 
         locNTSend.triggerUpdate();
+  		return;
     }
 
+    // --------internal calculation routines
+    
+    // ---------calculate the arm position in degrees given the raw encoder value in rotations.
+    private static double calcArmDegFromRawEncoder( double encoderRotations ) {
+        return encoderRotations*360.0/intakeGearRatio+90.0;
+    }
+
+    // ---------calculate the raw encoder value in rotations given the arm position in degrees
+    private static double calcEncoderRawValueFromArmDeg( double armDeg ) {
+        return ( armDeg - 90.0 ) /360.0*intakeGearRatio;    }
+        
     public static void setDownOffState(){
         intakeState=2;
-    }
+            }
     public static void setDownOnState(){
         intakeState=3;
-    }
+        return;
+            }
     public static void setUpOffState(){
-        intakeState=1;
-    }
+        intakeState=1;    
+        return;
+        }    
+    
     public static int getIntakeState(){
         return intakeState;
     }
@@ -173,5 +210,21 @@ public class IntakeSystem {
     }
     public static double getIntakeAngleMotorDemand() {
         return intakeAngleMotorDemand;
+    }
+    public static boolean getIntakeArmLowLimitSwitchState() {
+        return IntakeArmLowLimitSwitchState;
+    }
+     public static double getIntakeArmAngleActual() {
+        return IntakeArmAngleActual;
+    }
+      public static double getIntakeArmAngleActualABS() {
+        return IntakeArmABSEncPos;
+    }
+    public static double getIntakeAngleMotorOut() {
+        return intakeAngleMotorDemand;
+    }
+    // --------ball intake is on.
+    public static boolean getBallIntakeState() {
+        return ( intakeState == 3 );
     }
 }

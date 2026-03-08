@@ -8,12 +8,12 @@ import com.revrobotics.spark.SparkMax;
 //import com.revrobotics.spark.config.SparkMaxConfig;
 
 import Lib4150.Lib4150PositionControl;
-import Lib4150.Lib4150RateOfChange3;
-import Lib4150.Lib4150DigEdgeOn;
+//import Lib4150.Lib4150RateOfChange3;
+//import Lib4150.Lib4150DigEdgeOn;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-//import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.util.Units;
 //import edu.wpi.first.units.measure.Angle;
 //import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -33,30 +33,6 @@ public class TurretLauncher {
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 304.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
-
-    // --------LAUNCHER TUNING CONSTANTS
-    // --------overall normalization
-    // --------normalization is usually = Max motor output / max device RPM
-    private static final double Launcher_Kn = 0.000183705242146656;
-    // --------feedforward
-    // --------Ks - static feedforward is the amount of motor output to get started moving
-    private static final double Launcher_Ks = 0.0120480016499597;
-    // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
-    private static final double Launcher_Kv = 0.000181491957288762;
-    // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
-    private static final double Launcher_Ka = 0.0;
-    // --------PID
-    // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = 0.8 * Launcher_Kn;
-    // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = 4.0 * Launcher_Kn;
-    // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
-    // --------integral zone ( in sp/pv units )
-    // --------Izone -- Error has to be within this amount to be used.
-    private static final double Launcher_Izone = 300.0;
-    // --------Irange - -min/max value that the integral PID term can have.
-    private static final double Launcher_Irange = 0.3;
 
 
     //private double TURRETOFFSET;
@@ -140,8 +116,8 @@ public class TurretLauncher {
         
         cmdLauncherOff();
         cmdBallsToHub();
-        cmdTurretAutoMode();
-        cmdLauncherAutoMode();
+        //cmdTurretAutoMode();
+        //cmdLauncherAutoMode();
         //open motor config
         //SparkMaxConfig TurretSpinConfig = new SparkMaxConfig();
         
@@ -177,8 +153,8 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
         //limit switches
         clockwiseLimitSwitch = new DigitalInput(1);
         counterclockwiseLimitSwitch = new DigitalInput(2);
-        TurretCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
-        TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        //TurretCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        //TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
 
         //encoder
 
@@ -188,7 +164,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
         locNTSend.addItemDouble("TurretDesiredAngle", TurretLauncher::getturretAngleTarget);
         locNTSend.addItemDouble("TurretMotorVelocityRPM", TurretLauncher::getTurretMotorRPM);
         locNTSend.addItemDouble("TurretMotorDmd", TurretLauncher::getTurretMotorDemand);
-        locNTSend.addItemDouble("TurretAngleVelocityDegSec", TurretLauncher::getTurretMotorDegSec);
+        //locNTSend.addItemDouble("TurretAngleVelocityDegSec", TurretLauncher::getTurretMotorDegSec);
         locNTSend.addItemDouble("LauncherMotorDmd", TurretLauncher::getLauncherMotorDemand);
         locNTSend.addItemBoolean("TurretclockwiseLimitSwitch", TurretLauncher::getClockwiseLimitSwitch);
         locNTSend.addItemBoolean("TurretcounterclockwiseLimitSwitch", TurretLauncher::getCounterclockwiseLimitSwitch);
@@ -198,7 +174,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
         locNTSend.addItemDouble("LauncherTargetSpeed", TurretLauncher::getLauncherTargetSpeed);
         locNTSend.addItemBoolean("LauncherSpeedOnTarget", TurretLauncher::getLauncherSpeedOnTarget);
         locNTSend.addItemBoolean("LauncherOn", TurretLauncher::getLauncherOn);
-        locNTSend.addItemBoolean("LauncherManualMode", TurretLauncher::getLauncherManualMode);
+        //locNTSend.addItemBoolean("LauncherManualMode", TurretLauncher::getLauncherManualMode);
 
 
 
@@ -348,7 +324,9 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
     }
     private static boolean getLauncherOn() {
         return locLauncherOn;
-    }    public static double getTurretMotorDegSec() {        return turretAngleVelDegSec;
+    }    
+    public static double getTurretMotorRPM() {        
+        return turretAngleVelRPM;
     }
     public static boolean getClockwiseLimitSwitch(){
         return clockwiseLimitSwitchValue;
@@ -380,12 +358,12 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
     public static void cmdBallsToZone(){
         turretMode = true;
     }
-public static void cmdTurretManualMode() {
+/*public static void cmdTurretManualMode() {
         locTurretCmdManualMode = true;
-    }
+    }*/
 
     // --------request turret auto mode
-    public static void cmdTurretAutoMode() {
+   /*  public static void cmdTurretAutoMode() {
         locTurretCmdManualMode = false;
     }}
 // --------increment or decrement the turret manual setpoint
@@ -439,7 +417,7 @@ public static void cmdTurretManualMode() {
     // --------get target distance - actual target, not manual or clamped.
     public static double getTargetDistance() {
         return TargetDistance;    
-    }
+    }*/
 
     
 }

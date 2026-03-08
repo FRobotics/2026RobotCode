@@ -79,6 +79,7 @@ public class TurretLauncher {
     private static Translation2d zonePoseRed;
     private static Translation2d zonePoseBlue;
     private static double intakeAngle;
+    private static boolean launcherAgitatorPermissive = false;
     // Launcher Tunning Constants
     // Max motor output/ max device rpm
     private static final double Launcher_Kn = 0.000183705242146656;
@@ -263,6 +264,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
             launcherSpeedOnTarget = false;
         }
 
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) );
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
         double launcherPIDOutput = launcherPID.calculate(locLauncherSpeedActual, useSpeedTarget);
@@ -357,6 +359,9 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
     }
     public static void cmdBallsToZone(){
         turretMode = true;
+    }
+    public static boolean getAgitatorStartPermissive() {
+        return launcherAgitatorPermissive;
     }
 /*public static void cmdTurretManualMode() {
         locTurretCmdManualMode = true;

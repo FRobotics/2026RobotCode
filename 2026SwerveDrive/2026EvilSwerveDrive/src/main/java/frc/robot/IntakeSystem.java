@@ -36,7 +36,7 @@ public class IntakeSystem {
     private static RelativeEncoder IntakeArmMotorEncoder;
     private static int intakeState;//1 is up off, 2 is down off, 3 is down on,
     private static boolean intakeRockState = false;
-    private static double intakeAngleTarget;
+    public static double intakeAngleTarget;
     private static boolean IntakeArmLowLimitSwitchState;
     private static double IntakeArmAngleActual; //stores current value from encoder
     private static double intakeSpeed;
@@ -55,6 +55,7 @@ public class IntakeSystem {
     // --------next rock time...
     private static double locNextRockTime = 0.0;
     private static double locRockTargetAngle = 0.0;
+    private static double encoderRot;
 
     
     public static void init() {
@@ -173,8 +174,9 @@ public class IntakeSystem {
             intakeSpeed=PICKUP_MOTOR_OFF;
         }
 
+        
         // do control
-        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, encoderRot);
+        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
         // do arm position control - values in degrees
         // grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand=IntakeArmRateLimit.calculate( IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) );

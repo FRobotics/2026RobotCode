@@ -1,14 +1,14 @@
 package frc.robot;
 
 import Lib4150.Lib4150DigEdgeOn;
-import Lib4150.Lib4150DigOnDelay;
+// import Lib4150.Lib4150DigOnDelay;
 import Lib4150.Lib4150NetTableSystemSend;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.Timer;
+// import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.RelativeEncoder;
@@ -48,9 +48,11 @@ public class AgitatorSystem {
     private static PIDController AgitatorPID;
     private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
     private static SlewRateLimiter AgitatorRateLimit;
-    private static Lib4150DigOnDelay locFwdStalledOnDelay;
-    private static Lib4150DigOnDelay locRevStopOnDelay;
+    // private static Lib4150DigOnDelay locFwdStalledOnDelay;
+    // private static Lib4150DigOnDelay locRevStopOnDelay;
     private static boolean locFwdStalled = false;
+    private static int locStallStateNumb = 0;   // -- 0 - no stall, 1 - stall wait, 2 - reverse wait
+    private static double locStallTimer = 0.0;
 
 
 
@@ -75,9 +77,11 @@ public class AgitatorSystem {
         AgitatorZeroEdgeOn = new Lib4150DigEdgeOn();
 
         // --------delays for stall
-        double systemElapsedTimeSec = Timer.getFPGATimestamp();
-        locFwdStalledOnDelay = new Lib4150DigOnDelay( 1.5, systemElapsedTimeSec );
-        locRevStopOnDelay = new Lib4150DigOnDelay( 2.5, systemElapsedTimeSec );
+        // double systemElapsedTimeSec = Timer.getFPGATimestamp();
+        // locFwdStalledOnDelay = new Lib4150DigOnDelay( 2.0, systemElapsedTimeSec );
+        // locRevStopOnDelay = new Lib4150DigOnDelay( 3.0, systemElapsedTimeSec );
+        locStallStateNumb = 0;
+        locStallTimer = 0.0;
 
         // ensure agitator starts off
         cmdAgitatorOff();
@@ -118,22 +122,58 @@ public class AgitatorSystem {
         // else if ( locAgitatorOnRev){
         //     locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
         //     locFwdStalled = false;
+        //     locStallStateNumb = 0;
         // }
         else {
             locAgitatorSetpointRPM = 0.0;
             locFwdStalled = false;
+            locStallStateNumb = 0;
         };
 
 
         // --------calculate values for reverse job when forward stalls
         // --------turn rev stall prevention on
-        if ( locFwdStalledOnDelay.ExecOnDelay( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < 30.0)  && !locFwdStalled, systemElapsedTimeSec  ) ) {
-            locFwdStalled = true;
-        };
+        // boolean tmpboolStallOn = locFwdStalledOnDelay.ExecOnDelay( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < 30.0)  && !locFwdStalled, systemElapsedTimeSec  ); 
+        // boolean tmpboolStallOff = locRevStopOnDelay.ExecOnDelay( locFwdStalled, systemElapsedTimeSec );
+        // if ( tmpboolStallOn ) {
+        //     locFwdStalled = true;
+        // }
         // --------after x seconds turn it off..
-        if ( locRevStopOnDelay.ExecOnDelay( locFwdStalled, systemElapsedTimeSec ) ) {
-            locFwdStalled = false;
-        };
+        //if ( tmpboolStallOff ) {
+        //    locFwdStalled = false;
+        // }
+
+        switch ( locStallStateNumb ) {
+            // --------wait for stall to occur
+            case 0:
+                locFwdStalled = false;
+                locStallTimer = systemElapsedTimeSec;
+                if ( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < 40.0) ) {
+                    locStallStateNumb = 1;
+                } 
+                break;
+            // --------wait for timer to expire
+            case 1:
+                locFwdStalled = false;
+                if ( (locAgitatorSetpointRPM <= 0.0) ) {
+                    locStallStateNumb = 0;
+                } 
+                else if ( Math.abs( AgitatorRPM ) > 200 ) {
+                    locStallStateNumb = 0;
+                }
+                else if ( systemElapsedTimeSec > ( locStallTimer + 1.5 ) ) {
+                    locStallStateNumb = 2;
+                    locStallTimer = systemElapsedTimeSec;
+                }
+                break;
+            case 2:
+                locFwdStalled = true;
+                if ( systemElapsedTimeSec > ( locStallTimer + 3.0 ) ) {
+                    locStallStateNumb = 0;
+                    locStallTimer = systemElapsedTimeSec;
+                }
+                break;
+        }
 
         // --------actual speed setpoint based on stall....
         double tmpAgitatorSetpointRPM = ( locFwdStalled  ) ? -locAgitatorSetpointRPM : locAgitatorSetpointRPM;

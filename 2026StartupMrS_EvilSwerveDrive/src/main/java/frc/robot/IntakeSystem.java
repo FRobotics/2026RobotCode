@@ -102,7 +102,7 @@ public class IntakeSystem {
 
         // position units are degrees.
         // was 30, now 35...
-        IntakePositionControl = new Lib4150PositionControl( 2.0, 35.0, 
+        IntakePositionControl = new Lib4150PositionControl( 4.0, 35.0, 
                             0.005, 0.25, 0.25, 1.0e-5, false, false);
 
         IntakeArmRateLimit = new SlewRateLimiter(.75);  // 0 to full in 1.3 seconds.
@@ -198,8 +198,8 @@ public class IntakeSystem {
         intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
         // --------gently remove the gravity constant
-        if ( IntakeArmAngleActual <= 8.0 ) {
-            intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 8.0;
+        if ( IntakeArmAngleActual <= 10.0 ) {
+            intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 10.0;
         }
         // --------clamp and rate limit final output
         double tmpLowClamp = (IntakeArmLowLimitSwitchState) ? 0.0 : -1.0;

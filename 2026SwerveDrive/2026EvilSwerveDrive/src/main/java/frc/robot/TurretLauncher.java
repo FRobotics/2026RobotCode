@@ -8,8 +8,8 @@ import com.revrobotics.spark.SparkMax;
 //import com.revrobotics.spark.config.SparkMaxConfig;
 
 import Lib4150.Lib4150PositionControl;
-//import Lib4150.Lib4150RateOfChange3;
-//import Lib4150.Lib4150DigEdgeOn;
+import Lib4150.Lib4150RateOfChange3;
+import Lib4150.Lib4150DigEdgeOn;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -62,14 +62,18 @@ public class TurretLauncher {
     private static double turretAngleVelRPM = 0.0;
     private static DigitalInput clockwiseLimitSwitch;
     private static DigitalInput counterclockwiseLimitSwitch;
+    private static Lib4150DigEdgeOn TurretCWLimitSwitchEdgeOn;
+    private static Lib4150DigEdgeOn TurretCCWLimitSwitchEdgeOn;
     private static boolean clockwiseLimitSwitchValue = false;
     private static boolean counterclockwiseLimitSwitchValue = false;
     private static PIDController launcherPID;
     private static SimpleMotorFeedforward launcherFeedforward;
     private static double locLauncherSpeedActual = 0.0;
-    private static double launchertargetSpeed= 100;
+    private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
-    private static double turretGearRatio = 160.0;        private static double locLauncherSpeed1;
+    // private static double turretGearRatio = 160.0;
+    private static double turretGearRatio = 40.0;
+    private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
     private static boolean turretMode=false;
@@ -79,6 +83,7 @@ public class TurretLauncher {
     private static Translation2d zonePoseRed;
     private static Translation2d zonePoseBlue;
     private static double intakeAngle;
+    private static boolean launcherAgitatorPermissive = false;
     // Launcher Tunning Constants
     // Max motor output/ max device rpm
     private static final double Launcher_Kn = 0.000183705242146656;
@@ -101,7 +106,7 @@ public class TurretLauncher {
     
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
-    
+    private static double desiredTurretAngleDegRaw;    
     
     public static void init() {
         //get team side from MatchSystem
@@ -141,8 +146,8 @@ public class TurretLauncher {
         zonePoseBlue = new Translation2d(1.5,1.5);        
         
         //PositionControl
-        TurretPositionControl = new Lib4150PositionControl(Units.rotationsToDegrees(2.0),Units.rotationsToDegrees(50.0), 
-                            0.005, 0.35, 0.35, 1.0e-5, false, false);
+        //TurretPositionControl = new Lib4150PositionControl(Units.rotationsToDegrees(2.0),Units.rotationsToDegrees(50.0), 
+        //                    0.005, 0.35, 0.35, 1.0e-5, false, false);
 TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.0e-5, false, false);
         //Speed control
         launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
@@ -153,8 +158,8 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
         //limit switches
         clockwiseLimitSwitch = new DigitalInput(1);
         counterclockwiseLimitSwitch = new DigitalInput(2);
-        //TurretCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
-        //TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        TurretCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
 
         //encoder
 
@@ -263,6 +268,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
             launcherSpeedOnTarget = false;
         }
 
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) );
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
         double launcherPIDOutput = launcherPID.calculate(locLauncherSpeedActual, useSpeedTarget);
@@ -296,6 +302,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
 
         if ( !locLauncherOn ) {
             LauncherMotorDemand = 0;
+            launcherPID.reset();
         }
         LauncherMotor.set(LauncherMotorDemand); 
         LauncherMotor2.set(LauncherMotorDemand);
@@ -357,6 +364,9 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
     }
     public static void cmdBallsToZone(){
         turretMode = true;
+    }
+    public static boolean getAgitatorStartPermissive() {
+        return launcherAgitatorPermissive;
     }
 /*public static void cmdTurretManualMode() {
         locTurretCmdManualMode = true;

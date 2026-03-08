@@ -121,7 +121,7 @@ public class SwerveTeleop {
         }
 
         // --------toggle turret manual mode.
-        if ( myXboxController2.getBackButtonPressed()) {
+        /*if ( myXboxController2.getBackButtonPressed()) {
             // --------in manual, set auto
             if ( TurretLauncher.getTurretManualMode() ) {
                 TurretLauncher.cmdTurretAutoMode();
@@ -130,17 +130,17 @@ public class SwerveTeleop {
             else {
                 TurretLauncher.cmdTurretManualMode();
             }
-        }
+        }*/
 
         // --------turret manual inc/dec
         // --------This is approx 50 deg/second at maximum joystick value.
-        if ( TurretLauncher.getTurretManualMode()) {
+        /*if ( TurretLauncher.getTurretManualMode()) {
             TurretLauncher.cmdTurretIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightX(),0.10) * 3.0 );
-        }
+        }*/
 
 
         // --------toggle launcher manual mode.
-        if ( myXboxController2.getStartButtonPressed()) {
+        /*if ( myXboxController2.getStartButtonPressed()) {
             // --------in manual, set auto
             if ( TurretLauncher.getLauncherManualMode() ) {
                 TurretLauncher.cmdLauncherAutoMode();
@@ -149,13 +149,13 @@ public class SwerveTeleop {
             else {
                 TurretLauncher.cmdLauncherManualMode();
             }
-        }
+        }*/
 
         // --------launcher manual inc/dec
         // --------This is approx 200 rpm/second at maximum joystick value.
-        if ( TurretLauncher.getLauncherManualMode()) {
+        /*if ( TurretLauncher.getLauncherManualMode()) {
             TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightY(),0.08) * 4.0 );
-        }
+        }*/
 
       
         endTime = Timer.getFPGATimestamp();

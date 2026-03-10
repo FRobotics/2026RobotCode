@@ -33,7 +33,7 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOn();
         FeederSystem.cmdFeederOn();
         // IntakeSystem.setDownOffState();
-        IntakeSystem.setRockOffState();
+        IntakeSystem.setDownOffState();
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToHub();
         locMode = "Shooting";

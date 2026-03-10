@@ -1,14 +1,12 @@
 package frc.robot;
 
 import Lib4150.Lib4150DigEdgeOn;
-// import Lib4150.Lib4150DigOnDelay;
 import Lib4150.Lib4150NetTableSystemSend;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-// import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.RelativeEncoder;
@@ -33,14 +31,12 @@ public class AgitatorSystem {
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
 
-    // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
-    private static boolean locAgitatorOn = false;
-    private static boolean locAgitatorOnRev = false; 
+    
+    private static boolean locAgitatorOn = false;   // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
     private static SparkMax AgitatorMotor;
     private static RelativeEncoder AgitatorMotorEncoder;
     private static double AgitatorOutput = 0.0;
     private static double AgitatorRPM = 0.0;
-
     private static double locAgitatorSetpointRPM = 0.0;
     private static double locAgitatorFFoutput = 0.0;
     private static double locAgitatorPIDoutput = 0.0;
@@ -48,8 +44,6 @@ public class AgitatorSystem {
     private static PIDController AgitatorPID;
     private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
     private static SlewRateLimiter AgitatorRateLimit;
-    // private static Lib4150DigOnDelay locFwdStalledOnDelay;
-    // private static Lib4150DigOnDelay locRevStopOnDelay;
     private static boolean locFwdStalled = false;
     private static int locStallStateNumb = 0;   // -- 0 - no stall, 1 - stall wait, 2 - reverse wait
     private static double locStallTimer = 0.0;
@@ -77,9 +71,6 @@ public class AgitatorSystem {
         AgitatorZeroEdgeOn = new Lib4150DigEdgeOn();
 
         // --------delays for stall
-        // double systemElapsedTimeSec = Timer.getFPGATimestamp();
-        // locFwdStalledOnDelay = new Lib4150DigOnDelay( 2.0, systemElapsedTimeSec );
-        // locRevStopOnDelay = new Lib4150DigOnDelay( 3.0, systemElapsedTimeSec );
         locStallStateNumb = 0;
         locStallTimer = 0.0;
 
@@ -108,22 +99,17 @@ public class AgitatorSystem {
 
         AgitatorRPM = AgitatorMotorEncoder.getVelocity();
 
-        // if on, output 0.2
+        // if on, output pctDmdFromDash -- default 0.50
         // if off, output 0
 
         if (locAgitatorOn){
-            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 0.5);
+            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 0.50);
             locAgitatorSetpointRPM = pctDmdFromDash / Agitator_Kn;
             // --------if launcher not up to speed set demand at zero.
             if ( !TurretLauncher.getAgitatorStartPermissive() ) {
                 locAgitatorSetpointRPM = 0.0;
             }
         }
-        // else if ( locAgitatorOnRev){
-        //     locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
-        //     locFwdStalled = false;
-        //     locStallStateNumb = 0;
-        // }
         else {
             locAgitatorSetpointRPM = 0.0;
             locFwdStalled = false;
@@ -133,16 +119,7 @@ public class AgitatorSystem {
 
         // --------calculate values for reverse job when forward stalls
         // --------turn rev stall prevention on
-        // boolean tmpboolStallOn = locFwdStalledOnDelay.ExecOnDelay( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < 30.0)  && !locFwdStalled, systemElapsedTimeSec  ); 
-        // boolean tmpboolStallOff = locRevStopOnDelay.ExecOnDelay( locFwdStalled, systemElapsedTimeSec );
-        // if ( tmpboolStallOn ) {
-        //     locFwdStalled = true;
-        // }
-        // --------after x seconds turn it off..
-        //if ( tmpboolStallOff ) {
-        //    locFwdStalled = false;
-        // }
-
+        // --------process the "stall" state machine
         switch ( locStallStateNumb ) {
             // --------wait for stall to occur
             case 0:
@@ -208,24 +185,14 @@ public class AgitatorSystem {
      */
     public static void cmdAgitatorOn() {
         locAgitatorOn=true;
-        locAgitatorOnRev=false;
         return;
     }
-    ///**
-    // * turn the agitator on in reverse
-    // */
-    //public static void cmdAgitatorOnRev() {
-    //    locAgitatorOnRev=true;
-    //    locAgitatorOn=false;
-    //    return;
-    //}
 
     /**
      * Turn the agitator off
      */
     public static void cmdAgitatorOff() {
         locAgitatorOn=false;
-        locAgitatorOnRev=false;
         return;
     }
 

@@ -82,7 +82,6 @@ public class TurretLauncher {
     private static Translation2d zonePoseBLUE;
     private static double TargetDistance;
     private static Rotation2d DesiredTurretAngle;
-    //private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
     private static double LauncherMotorDemand;
     private static Lib4150PositionControl TurretPositionControl;
@@ -99,7 +98,6 @@ public class TurretLauncher {
     private static double locLauncherSpeedActual = 0.0;
     private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
-    // private static double turretGearRatio = 160.0;
     private static double turretGearRatio = 40.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
@@ -168,8 +166,6 @@ public class TurretLauncher {
         
         
         //PositionControl -- Turret -- everything is in degrees.
-        // TurretPositionControl = new Lib4150PositionControl(2.0,50.0, 
-        //                    0.005, 0.35, 0.35, 1.0e-5, false, false);
         TurretPositionControl = new Lib4150PositionControl(1.0,40.0, 
                             0.07, 0.30, 0.40, 1.0e-5, false, false);
         //Speed control
@@ -249,11 +245,12 @@ public class TurretLauncher {
 
         // --------read the turret position and velocity
         turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() );
-        turretAngleVelDegSec = calcTurretDegFromRawEncoder(TurrentRotationMotorEncoder.getVelocity()) / 60.0;
+        turretAngleVelDegSec = calcTurretVelFromRawEncoder(TurrentRotationMotorEncoder.getVelocity() );
 
+        // ------------------------------------------------------------------------------------------------------------
+        // --------AUTO SETPOINT CALCULATIONS.
         // --------get team side from MatchSystem
         isRed = MatchSystem.isRed();
-
 
         // --------if odometry is valid then calculate desired turret angle and distance to target.
         if ( SwerveOdometry.isOdometryValid() ) {
@@ -310,6 +307,7 @@ public class TurretLauncher {
         launchertargetSpeed  = 800.0 + TargetDistance * 250.0;
 
 
+        // ------------------------------------------------------------------------------------------------------------
         // --------TURRET CONTROL
         // --------process turrent manual mode setpoint.
         if ( locTurretCmdManualMode ) {         // we want manual mode
@@ -343,42 +341,23 @@ public class TurretLauncher {
         locTargetAngleRotVel = locTargetAngleROC.ExecROC3( desiredTurretAngleDegrees, systemElapsedTimeSec );
 
         //------Position Control
-        TurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
-
-        //use limit switches to stop travel
-        double turretMotorMin = -1.0;
-        double turretMotorMax = 1.0;
-        if (clockwiseLimitSwitchValue)
-        {
-            turretMotorMin = 0.0;
-        }
-        else if (counterclockwiseLimitSwitchValue)
-        {
-            turretMotorMax = 0.0;
-        }
-        double tmpTurretMotorDemand = MathUtil.clamp(TurretMotorDemand, turretMotorMin, turretMotorMax);
+        double tmpTurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
 
         // --------now clamp output based on limit switches...
-        double tmpLow = -1.0;
-        double tmpHigh = 1.0;
-        if ( clockwiseLimitSwitchValue ) {
-            tmpLow = 0.0;
-        }
-        if ( counterclockwiseLimitSwitchValue ) {
-            tmpHigh = 0.0;
-        }
+        double tmpLow = ( clockwiseLimitSwitchValue ) ? 0.0 : -1.0;
+        double tmpHigh = ( counterclockwiseLimitSwitchValue ) ? 0.0 : 1.0;
         TurretMotorDemand = MathUtil.clamp(tmpTurretMotorDemand, tmpLow, tmpHigh );
 
         // --------calculate if we on target ... use raw position before clamping to get accurate result.
         double turretRawError = desiredTurretAngleDegRaw - turretAngleEncoder;
         turretPositionOnTarget = ( Math.abs(turretRawError ) <= 2.0 );
 
-
+        // ------------------------------------------------------------------------------------------------------------
         // --------LAUNCHER CONTROL
         //Reads current motor speed //double check unit conversion
         locLauncherSpeed1= LauncherMotorEncoder.getVelocity();
         locLauncherSpeed2= LauncherMotorEncoder2.getVelocity();
-        locLauncherSpeedActual = (locLauncherSpeed1+locLauncherSpeed2) *0.5;
+        locLauncherSpeedActual = (locLauncherSpeed1+locLauncherSpeed2) * 0.5;
 
         // --------process launcher manual mode setpoint.
         if ( locLauncherCmdManualMode ) {         // we want manual mode
@@ -402,10 +381,8 @@ public class TurretLauncher {
             useSpeedTarget = 0.0;
         }
 
-
         // --------tell feeder how fast to go.   For now approx 80%
         FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.8);
-
 
         //check if within 75 RPM of target speed
         launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
@@ -429,6 +406,7 @@ public class TurretLauncher {
         }
 
 
+        // ------------------------------------------------------------------------------------------------------------
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
 
@@ -447,14 +425,20 @@ public class TurretLauncher {
     // --------calculate turret position in degrees given the raw encoder value in rotations.
     // --------allow angle value to go 0 360.0
     private static double calcTurretDegFromRawEncoder( double parmEncoderRotations ) {
-        return 180.0+parmEncoderRotations*360/turretGearRatio;
+        return 180.0+parmEncoderRotations*360.0/turretGearRatio;
+    }
+
+    
+    // --------calculate turret velocity in degrees/sec given the raw encoder value in rotations.
+    // --------allow angle value to go 0 360.0
+    private static double calcTurretVelFromRawEncoder( double parmEncoderVelRPM ) {
+        return parmEncoderVelRPM*360.0/turretGearRatio/60.0;
     }
 
     // ---------calculate the raw encoder value in rotations given the arm position in degrees
     // --------allow angle value to go 0 360.0
     private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
         double tmpTurretDeg = MathUtil.inputModulus(turretDeg, 0.0, 360.0);
-
         return (tmpTurretDeg-180.0) / 360.0 * turretGearRatio;
     }
 

@@ -239,6 +239,11 @@ public class IntakeSystem {
         intakeRockState = false;
         return;
     }
+    public static void setRockOffState(){
+        intakeState = 4;
+        intakeRockState = false;
+        return;
+    }
 
     // --------getters
     public static int getIntakeState(){

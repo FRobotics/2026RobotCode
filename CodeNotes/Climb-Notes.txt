@@ -1,0 +1,78 @@
+Notes on Climb
+--------------
+
+
+Need and Assumptions
+	- Retract limit switch will engage before hitting hard stop.  
+		Should allow for 40 milliseconds of travel before hitting switch.
+
+	- Direction of motor travel.  (extend should be plus.)
+
+	- Direction of encoder increment (extend should be plus.)
+
+	- Climber will always start down, with limit switch engaged.
+		This will be encoder position value = 0.0.
+		init method should set this position to be certain.
+
+	- Need to measure encoder value when fully extended.
+
+	- Need to determine retract limit switch hysteresis encoder value.
+		(1/2 inch of travel should be sufficient)
+
+	- In order to make commands need to be re-issued and reentrant --
+		when issue command -- increment command integer.
+		when command is processed - set processed integer = command integer
+		separate set of values for each command ( extend, retract )
+
+	- Things to send to network tables.
+		- hard retract limit switch value
+		- soft retract limit switch value
+		- soft extend limit switch value
+		- encoder value.
+		- motor output
+
+
+Execute Process
+	- Read sensors 
+		- motor encoder in rotations, 
+		- physical limit switch.
+	- set soft retract limit switch
+		- Turn on retract soft limit switch when physical switch is ON.
+		- Turn off retract soft limit switch when encoder value is above X and 
+			physical limit switch is off
+		( if neither of these is true, soft limit switch remains as is.
+		This is really a set-reset flip flop.)
+
+	- set soft extend limit switch
+		- Turn on extend soft limit switch when encoder >= fully extended.
+		- Turn off extend soft limit switch when 
+			encoder <= (fully extended-extended hyteresis value)
+		( if neither of these is true, soft limit switch remains as is.
+		This is really a set-reset flip flop.)
+
+	- process command and set desired un-clamped motor output.
+
+		- Commands:
+			RetractInc - motor output = one direction constant (for teleop)
+			ExtendInc - motor output = other direction constant (for teleop)
+			RetractFull - retract until hit retract soft limit switch or 
+				maybe timeout (for auto)
+			ExtendFull - extend until hit extend soft limit switch or
+				maybe timeout (for auto)
+			no command - motor output = 0.
+		- always reset processed value for all commands each time, 
+			even if command is not used. (both on at the same time).
+
+	- set retract clamp value.
+		- if soft retract limit switch is on use 0 otherwise some sign 1.0
+
+	- set extend clamp value.
+		- if soft extend limit switch is on use 0 otherwise some sign 1.0
+
+	- clamp motor demand
+
+	- output motor demand.
+
+	- update network tables..
+
+	

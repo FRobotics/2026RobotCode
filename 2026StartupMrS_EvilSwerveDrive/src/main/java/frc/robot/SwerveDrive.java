@@ -19,10 +19,10 @@ public class SwerveDrive {
     public static final double maxLinearSpeed = 15.0; // measured in fps
     public static final double maxRotSpeed = 360.0; //measured in degrees
 
-    static private SwerveModule module1;
-    static private SwerveModule module2;
-    static private SwerveModule module3;
-    static private SwerveModule module4;
+    static private SwerveModule module1;    // front left
+    static private SwerveModule module2;    // front right
+    static private SwerveModule module3;    // rear left
+    static private SwerveModule module4;    // rear right
     static private ChassisSpeeds locSpeedTarget = new ChassisSpeeds();
     static private ChassisSpeeds locSpeedActual = new ChassisSpeeds();
     static public SwerveDriveKinematics publicDriveKinematics;
@@ -82,6 +82,38 @@ public class SwerveDrive {
         sender.addItemDouble("vxActual", SwerveDrive::getActualVX);
         sender.addItemDouble("vyActual", SwerveDrive::getActualVY);
         sender.addItemDouble("omegaActual", SwerveDrive::getActualOmega);
+
+        // --------module 1
+        sender.addItemDouble( "1/driveSpeedDmd", SwerveDrive.module1::getDriveSpeedDmd);
+        sender.addItemDouble( "1/driveSpeed", SwerveDrive.module1::getDriveSpeed);
+        sender.addItemDouble( "1/driveMotorOut", SwerveDrive.module1::getDriveMotorOutput);
+        sender.addItemDouble( "1/spinPosDmdDeg", SwerveDrive.module1::getSpinPosDmdDeg);
+        sender.addItemDouble( "1/spinPosDeg", SwerveDrive.module1::getSpinPosDeg);
+        sender.addItemDouble( "1/spinMotorOut", SwerveDrive.module1::getSpinMotorOutput);
+
+        // --------module 2
+        sender.addItemDouble( "2/driveSpeedDmd", SwerveDrive.module2::getDriveSpeedDmd);
+        sender.addItemDouble( "2/driveSpeed", SwerveDrive.module2::getDriveSpeed);
+        sender.addItemDouble( "2/driveMotorOut", SwerveDrive.module2::getDriveMotorOutput);
+        sender.addItemDouble( "2/spinPosDmdDeg", SwerveDrive.module2::getSpinPosDmdDeg);
+        sender.addItemDouble( "2/spinPosDeg", SwerveDrive.module2::getSpinPosDeg);
+        sender.addItemDouble( "2/spinMotorOut", SwerveDrive.module2::getSpinMotorOutput);
+
+        // --------module 3
+        sender.addItemDouble( "3/driveSpeedDmd", SwerveDrive.module3::getDriveSpeedDmd);
+        sender.addItemDouble( "3/driveSpeed", SwerveDrive.module3::getDriveSpeed);
+        sender.addItemDouble( "3/driveMotorOut", SwerveDrive.module3::getDriveMotorOutput);
+        sender.addItemDouble( "3/spinPosDmdDeg", SwerveDrive.module3::getSpinPosDmdDeg);
+        sender.addItemDouble( "3/spinPosDeg", SwerveDrive.module3::getSpinPosDeg);
+        sender.addItemDouble( "3/spinMotorOut", SwerveDrive.module3::getSpinMotorOutput);
+
+        // --------module 4
+        sender.addItemDouble( "4/driveSpeedDmd", SwerveDrive.module4::getDriveSpeedDmd);
+        sender.addItemDouble( "4/driveSpeed", SwerveDrive.module4::getDriveSpeed);
+        sender.addItemDouble( "4/driveMotorOut", SwerveDrive.module4::getDriveMotorOutput);
+        sender.addItemDouble( "4/spinPosDmdDeg", SwerveDrive.module4::getSpinPosDmdDeg);
+        sender.addItemDouble( "4/spinPosDeg", SwerveDrive.module4::getSpinPosDeg);
+        sender.addItemDouble( "4/spinMotorOut", SwerveDrive.module4::getSpinMotorOutput);
 
         
     }

@@ -5,61 +5,99 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-//import edu.wpi.first.wpilibj.CAN;
-import Lib4150.Lib4150PositionControl;
 import edu.wpi.first.math.geometry.Rotation2d;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-//import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+
+import Lib4150.Lib4150PositionControl;
+
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+
 import com.ctre.phoenix6.hardware.CANcoder;
-//import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
-//import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.StatusSignal;
-//import com.ctre.phoenix6.configs.CANcoderConfiguration;
-//import com.ctre.phoenix6.configs.CANcoderConfigurator;
-//import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
+/**
+ * Class used to control one swerve module
+ */
 public class SwerveModule {
 
 
-    // Flex motor output = 1.0
-    // Flex speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
-    // Kn (normalization constant) = Flex motor out / Flex speed = 0.07645406
-    // when doing everything in meters then Flex speed is 3.98670783
+    // --------class constants
+
+    // Spark motor output = 1.0
+    // Spark speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
+    // Kn (normalization constant) = Flex motor out / Spark speed = 0.07645406
+    // when doing everything in meters then Spark speed is 3.98670783
 
     //Now 15 ft/sec -> 4.572 m/s
-    private static double Drive_Kn = 1.0 / 4.572;
+    // --------maximum velocity m/sec
+    private static final double Drive_MaxV = 4.572;
+    // --------normalization constant max_motor_out / max_velocity
+    private static final double Drive_Kn = 1.0 / Drive_MaxV;
+    // --------feedforward static constant - minimum output
+    private static final double Drive_Ks = 0.0;
+    // --------feedforward velocity constant 
+    private static final double Drive_Kv = ( 1.0 - Drive_Ks) / Drive_MaxV;
+    // --------feedforward acceleration constant ( lead function, or kicker circuit )
+    private static final double Drive_Ka = 0.0;
+    // --------PID proportional constant
+    private static final double Drive_Kp = Drive_Kn * 0.5;
+    // --------PID integral constant
+    private static final double Drive_Ki =  Drive_Kn * 2.5;
+    // --------PID derivative constant
+    private static final double Drive_Kd =  Drive_Kn * 1.0e-5;
+    // --------Izone - maximum error magnitude to allow use of integral 
+    private static final double Drive_Izone = 0.4;  // m/sec
+    // --------Irange - allowed range of integral output
+    private static final double Drive_Irange = 0.25;   // motor output units.
 
-    private double xOff = 0.0;
-    private double yOff = 0.0;
-    private int driveid = 0;
-    private int spinid = 0;
-    private int spinEnc = 0;
-    private Translation2d moduleoffset;
-    //private double spinPosRad = 0.0;
-    //private double driveSpeedMPS = 0.0;
+
+    // --------class variables
+    // --------sensors and actuators
     private SparkFlex driveMotor;
     private SparkFlex spinMotor;
-    private Lib4150PositionControl spinPositionControl;
-    private PIDController drivePID;
-    private SimpleMotorFeedforward drivFeedforward;
-     
     private CANcoder spinAbsEncoder;
-    private double locSpeedActual = 0.0;
-    private double locDistanceActual = 0.0;
-    private double actualSpinAngleRad = 0.0;
+    // --------controllers
+    private Lib4150PositionControl spinPositionControl;
+    private SimpleMotorFeedforward drivFeedforward;
+    private PIDController drivePID;
+    // --------agregate data
+    private Translation2d moduleoffset;
     private SwerveModulePosition modulePosition = new SwerveModulePosition();
     private SwerveModuleState moduleState = new SwerveModuleState();
+    // --------individual data
+    private double xOff = 0.0;      // meters
+    private double yOff = 0.0;      // meters
+    private int driveid = 0;        // can id
+    private int spinid = 0;         // can id
+    private int spinEnc = 0;        // can id
+    // --------drive motor values
+    private double locSpeedActual = 0.0;        
+    private double locDistanceActual = 0.0;     
+    private double locDriveSpeedDemand = 0.0;   
+    private double locDriveMotorOutput = 0.0;  
+    // --------spin motor values
+    private double actualSpinAngleRad = 0.0;
+    private double locDesiredSpinAngleRad = 0.0;
+    private double locSpinMotorOutput = 0.0;
 
+    /**
+     * SwerveModule constructor 
+     * 
+     * @param paraXoffset - double - X offset from chassis speed location - Meters
+     * @param paraYoffset - double - Y offset from chassis speed location - Meters
+     * @param paradriveid - int - CAN id of drive motor - Spark Flex
+     * @param paraspinid - int - CAN id of spin motor - Spark Flex
+     * @param paraspinEnc - int - CAN id of absolute encoder -  CTRE CanCoder
+     */
     public SwerveModule(double paraXoffset, double paraYoffset, int paradriveid, int paraspinid, int paraspinEnc) {
 
         xOff = paraXoffset;
@@ -67,12 +105,10 @@ public class SwerveModule {
         driveid = paradriveid;
         spinid = paraspinid;
         spinEnc = paraspinEnc;
-        
 
         moduleoffset = new Translation2d(xOff, yOff);
         driveMotor = new SparkFlex(driveid,MotorType.kBrushless);
         spinMotor = new SparkFlex(spinid,MotorType.kBrushless);
-        
 
         SparkFlexConfig driveConfig = new SparkFlexConfig();
         SparkFlexConfig spinConfig = new SparkFlexConfig();
@@ -116,60 +152,62 @@ public class SwerveModule {
         
         
         // (Error Deadband,error threshhold )
-        spinPositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 0.005, 0.35, 0.8, 1.0e-5, false, true);
+        // --------was 2 deg, see if we can do 1.   min output was 0.005
+        spinPositionControl = new Lib4150PositionControl(Units.degreesToRadians(1.0), Units.degreesToRadians(50.0), 
+                                    0.003, 0.35, 0.8, 1.0e-5, false, true);
 
         // original was in feet .... change to meters...
-
         
         // drivFeedforward = new SimpleMotorFeedforward (0.0, 0.07645406, 0.0);
-        drivFeedforward = new SimpleMotorFeedforward (0.0, Drive_Kn, 0.0);
+        drivFeedforward = new SimpleMotorFeedforward (Drive_Ks, Drive_Kv, Drive_Ka);
         //drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
         // drivePID = new PIDController (0.07645406*.5, 0, 0);
-        drivePID = new PIDController ( Drive_Kn *.5, 0, 0);
-        
+        drivePID = new PIDController ( Drive_Kp, Drive_Ki,Drive_Kd);
+        drivePID.setIZone(Drive_Izone);
+        drivePID.setIntegratorRange(-Drive_Irange, Drive_Irange);
+
+        return;
     }
 
-    public Translation2d getModuleLocation() {
-        return moduleoffset;
-    }
-        
-    public SwerveModulePosition getModulePosition(){
-        return modulePosition;
-    }
-        
+    /**
+     * Perform data acquisition and control for this swerve module.
+     * 
+     * @param parmModState - SwerveModuleState - desired module state - spin angle, drive speed.
+     * @param systemElapsedTime - double - current system elapsed time - seconds.
+     */        
     public void ExecuteLogic( SwerveModuleState parmModState, double systemElapsedTime ) {
         
+        // --------get sensor data
         this.readSensors();
 
         double currentAngle = actualSpinAngleRad;
         parmModState.optimize(new Rotation2d(currentAngle));
         
+        // ---------------------------------
         // control the spin motor
-        double targetAngle = parmModState.angle.getRadians();
+        // double targetAngle
+        locDesiredSpinAngleRad = parmModState.angle.getRadians();
 
-        spinMotor.set(spinPositionControl.PosCtrlExec(targetAngle, currentAngle));
+        locSpinMotorOutput = spinPositionControl.PosCtrlExec(locDesiredSpinAngleRad, currentAngle);
+        spinMotor.set(locSpinMotorOutput);
+
+        double driveSpinErrorCompensation = MathUtil.clamp(Math.abs((new Rotation2d(locDesiredSpinAngleRad)).minus(new Rotation2d(currentAngle)).getCos()), 0.0, 1.0);
         
+        // ---------------------------------
         // control the drive motor
-        double TargetSpeed = parmModState.speedMetersPerSecond;
-        double ActualSpeed = locSpeedActual;
-        double feedForward = drivFeedforward.calculate(TargetSpeed);
-        double PIDoutput = drivePID.calculate(ActualSpeed, TargetSpeed);
-        double MotorDemand = -MathUtil.clamp(feedForward+PIDoutput, -1.0, 1.0);
-        driveMotor.set(MotorDemand);
-        
-        
-
+        locDriveSpeedDemand = parmModState.speedMetersPerSecond * driveSpinErrorCompensation;
+        double feedForward = drivFeedforward.calculate(locDriveSpeedDemand);
+        double PIDoutput = drivePID.calculate(locSpeedActual, locDriveSpeedDemand);
+        locDriveMotorOutput = -MathUtil.clamp( feedForward + PIDoutput, -1.0, 1.0);
+        driveMotor.set(locDriveMotorOutput);
+              
+        return;
     }
 
-    public SwerveModulePosition getSwerveModulePosition(){
-        return modulePosition;
-    }
-    
-    public SwerveModuleState getSwerveModuleState(){
-        return moduleState;
-    }
-
-    public void readSensors(){
+    /**
+     * Read sensors.  Store in local class variables.
+     */
+    private void readSensors(){
         //Reads current drive speed
         RelativeEncoder driveEncoder = driveMotor.getEncoder();
         locDistanceActual = -Units.feetToMeters(driveEncoder.getPosition()); //double check unit conversion
@@ -184,10 +222,103 @@ public class SwerveModule {
 
         moduleState.speedMetersPerSecond = locSpeedActual;
         moduleState.angle = Rotation2d.fromRadians(actualSpinAngleRad);        
-
+        
+        return;
     }
 
+    // ============COMMANDS
+
+    // ---------none -- desired values are passed to the execute logic function.
+
+    // ============GETTERS
     
+    /**
+     * Get Module Position
+     * 
+     * @return modulePosition - SwerveModulePosition - Current position of module (distance,angle)
+     */
+    public SwerveModulePosition getModulePosition(){
+        return modulePosition;
+    }
 
+    /**
+     * Get current module state
+     * 
+     * @return moduleState - SwerveModuleState - Current module state (speed,angle)
+     */
+    public SwerveModuleState getSwerveModuleState(){
+        return moduleState;
+    }
 
+    /**
+     * Get module location relative to location of chassis speeds (usually center of robot)
+     * 
+     * @return moduleOffset - Translation2d -- offset of module from location of chassis speed.
+     */
+    public Translation2d getModuleLocation() {
+        return moduleoffset;
+    }
+
+    /**
+     * Get total drive distance - meters
+     * 
+     * @return driveDistance - double - total drive distance - meters
+     */
+    public double getDriveDistance() {
+        return locDistanceActual;
+    }
+
+    /**
+     * Get current drive speed - m/sec
+     * 
+     * @return driveSpeed - double - current drive speed - meters/sec
+     */
+    public double getDriveSpeed() {
+        return locSpeedActual;
+    }
+
+    /**
+     * Get current drive speed demand - m/sec
+     * 
+     * @return driveSpeedDmd - double - desired drive speed - meters/sec
+     */
+    public double getDriveSpeedDmd() {
+        return locDriveSpeedDemand;
+    }
+
+    /**
+     * Current drive motor output - +/- 1.0
+     * 
+     * @return driveMotorOutput - double - Current drive motor output - +/- 1.0
+     */
+    public double getDriveMotorOutput() {
+        return locDriveMotorOutput;
+    }
+    
+    /**
+     * Get current spin position - degrees
+     * 
+     * @return - spinPos - double - current spin position - degrees
+     */
+    public double getSpinPosDeg() {
+        return Units.radiansToDegrees( actualSpinAngleRad );
+    }
+
+    /**
+     * get current optimized desired spin position - degrees
+     * 
+     * @return desiredSpinPos - double - optimized desired spin position - degrees
+     */
+    public double getSpinPosDmdDeg() {
+        return Units.radiansToDegrees( locDesiredSpinAngleRad);
+    }
+
+     /**
+     * Current spin motor output - +/- 1.0
+     * 
+     * @return spinMotorOutput - double - Current spin motor output - +/- 1.0
+     */
+    public double getSpinMotorOutput() {
+        return locSpinMotorOutput;
+    }
 }

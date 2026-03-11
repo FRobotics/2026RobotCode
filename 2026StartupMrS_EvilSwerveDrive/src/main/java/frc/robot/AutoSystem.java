@@ -210,12 +210,12 @@ public class AutoSystem {
                         break;
                 
                 case Climb:
-                        SupervisoryCmds.Climb();
+                        SupervisoryCmds.ClimbExtend();
                         locExecDoNextStep = true;
                         break;
                 
                 case Descend:
-                        SupervisoryCmds.Descend();
+                        SupervisoryCmds.ClimbRetract();
                         locExecDoNextStep = true;
                         break;
                 

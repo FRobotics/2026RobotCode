@@ -21,8 +21,7 @@ public class AutoStep {
         Stop,
         BallsToAlliance,
         Climb,
-        Descend,
-        Defense;
+        Descend;
     }
 
     public static StepCmd StepCommandCases(int input){
@@ -51,8 +50,6 @@ public class AutoStep {
                 return StepCmd.Climb;
             case 11:
                 return StepCmd.Descend;
-            case 12:
-                return StepCmd.Defense;
             default:
                 return StepCmd.AutoWait;
         

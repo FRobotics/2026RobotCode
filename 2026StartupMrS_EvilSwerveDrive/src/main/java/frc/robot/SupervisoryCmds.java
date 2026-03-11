@@ -64,7 +64,7 @@ public class SupervisoryCmds {
 
     // --------do climb.   BE CAREFULL - IF INTAKE NEEDS TO BE FULLY UP FIRST THIS WONT WORK.
     // --------            DOES THE TURRET NEED TO BE AT ZERO FIRST!
-    public static void Climb(){
+    public static void ClimbExtend(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
@@ -74,7 +74,7 @@ public class SupervisoryCmds {
     }
 
     // --------climb dowm
-    public static void Descend(){
+    public static void ClimbRetract(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
@@ -112,10 +112,10 @@ public class SupervisoryCmds {
             BallsToAlliance();
         }
         else if ( cmdName.equalsIgnoreCase("climb")) {
-            Climb();
+            ClimbExtend();
         }
         else if ( cmdName.equalsIgnoreCase("descend")) {
-            Descend();
+            ClimbRetract();
         }
         else if ( cmdName.equalsIgnoreCase("defense")) {
             Defense();

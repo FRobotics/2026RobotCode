@@ -160,13 +160,11 @@ public class AutoSystem {
         // do step
         switch (ourStep.getCmd()){
                 case DriveStraight:
-                        // -- p1 - how far m, p2 - how fast m/sec, p3 angle deg
-                        //locExecDoNextStep = AutoFunctions.autoDriveStraight(locExecInitStep, ourStep.getParam1(),ourStep.getParam2(),ourStep.getParam3());
+                        // locExecDoNextStep = AutoFunctions.autoDriveStraight();
                         break;
                 
                 case DriveTurn:
-                        // -- p1 - how far - deg, p2 - how fast deg/sec
-                        //locExecDoNextStep = AutoFunctions.autoDriveSpin(locExecInitStep, ourStep.getParam1(),ourStep.getParam2());
+                        // locExecDoNextStep = AutoFunctions.autoDriveSpin();
                         break;
 
                 case FollowAbsTrajectory:
@@ -181,7 +179,6 @@ public class AutoSystem {
                         break;
 
                 case FollowAbsTrajWithTimedCmd:
-                        locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
                         break;
 
                 case FollowRelTrajWithTimedComd:
@@ -229,8 +226,6 @@ public class AutoSystem {
         if ( locExecDoNextStep ) {
                 locExecIndex++;
         }
-        // --------tell system we are running autos
-        MatchSystem.setRobotPhaseAutoRunning();
         
         locNTSend.triggerUpdate();
 
@@ -250,8 +245,6 @@ public class AutoSystem {
 
         // load all autos into cache
         String[] readAutos = AutoSystem.readFiles(AutoSystem.availableAutos());
-        // --------tell match system trajectories are read
-        MatchSystem.setRobotPhaseAutosRead();
 
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AutoSystem");

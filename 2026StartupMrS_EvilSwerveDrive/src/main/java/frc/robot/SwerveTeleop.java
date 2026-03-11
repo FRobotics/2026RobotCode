@@ -111,10 +111,10 @@ public class SwerveTeleop {
             SupervisoryCmds.BallsToAlliance();
         }
         if (myXboxController2.getYButtonPressed()){
-            SupervisoryCmds.Descend();
+            SupervisoryCmds.ClimbRetract();
         }
         if (myXboxController2.getXButtonPressed()){
-            SupervisoryCmds.Climb();
+            SupervisoryCmds.ClimbExtend();
         }
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();

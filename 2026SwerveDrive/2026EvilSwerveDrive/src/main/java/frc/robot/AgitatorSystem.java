@@ -6,6 +6,7 @@ import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.RelativeEncoder;
@@ -44,7 +45,10 @@ public class AgitatorSystem {
     private static SimpleMotorFeedforward AgitatorFeedForward;
     private static PIDController AgitatorPID;
     private static Lib4150DigEdgeOn AgitatorZeroEdgeOn;
-
+    private static boolean locFwdStalled = false;
+    private static int locStallStateNumb = 0;   // -- 0 - no stall, 1 - stall wait, 2 - reverse wait
+    private static double locStallTimer = 0.0;
+    private static SlewRateLimiter AgitatorRateLimit;
 
 
     /**
@@ -64,10 +68,15 @@ public class AgitatorSystem {
         AgitatorPID.setIZone(Agitator_Izone);        // only do integration when within this many RPMs.
         AgitatorZeroEdgeOn = new Lib4150DigEdgeOn();
 
+        //rate limiter
+        AgitatorRateLimit = new SlewRateLimiter(3.0);
 
         // ensure agitator starts off
         cmdAgitatorOff();
 
+        //delay for stalls
+        locStallStateNumb = 0;
+        locStallTimer = 0.0;
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("AgitatorSystem");
 
@@ -105,12 +114,48 @@ public class AgitatorSystem {
         }
         else {
             locAgitatorSetpointRPM = 0.0;
-        };
+            locFwdStalled = false;
+            locStallStateNumb = 0;
+        }
+
+        switch (locStallStateNumb) {
+            case 0:
+                locFwdStalled = false;
+                locStallTimer= systemElapsedTimeSec;
+                if ((locAgitatorSetpointRPM > 0.0)&&(Math.abs(AgitatorRPM)< 120.0)){
+                    locStallStateNumb = 1;
+                }
+                
+                break;
+            case 1:
+                locFwdStalled = false;
+                if((locAgitatorSetpointRPM<= 0.0)){
+                    locStallStateNumb = 0;
+                }
+                else if (Math.abs(AgitatorRPM)>180){
+                    locStallStateNumb = 0;
+                }
+                else if (systemElapsedTimeSec > (locStallTimer+0.6)){
+                    locStallStateNumb = 2;
+                    locStallTimer = systemElapsedTimeSec;
+                }
+                break;
+            case 2:
+                locFwdStalled = true;
+                if (systemElapsedTimeSec > (locStallTimer +1.0)){
+                    locStallStateNumb = 0;
+                    locStallTimer = systemElapsedTimeSec;
+                }
+                break;
+        }
+
+        // speed setpoint based on stall
+        double tmpAgitatorSetpointRPM = (locFwdStalled) ? -locAgitatorSetpointRPM : locAgitatorSetpointRPM;
 
 
         // Agitator Speed Control
-        locAgitatorFFoutput = AgitatorFeedForward.calculate(locAgitatorSetpointRPM);
-        locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, locAgitatorSetpointRPM);
+        locAgitatorFFoutput = AgitatorFeedForward.calculate(tmpAgitatorSetpointRPM);
+        locAgitatorPIDoutput = AgitatorPID.calculate(AgitatorRPM, tmpAgitatorSetpointRPM);
         // --------special case for 0.0  -- don't control just coast.
         if ( AgitatorZeroEdgeOn.execEdgeOn( locAgitatorSetpointRPM == 0.0 ) ) {
             AgitatorPID.reset();      // reset integral.
@@ -118,7 +163,7 @@ public class AgitatorSystem {
         if ( locAgitatorSetpointRPM == 0.0 ) {
             locAgitatorPIDoutput = 0.0;
         }
-        AgitatorOutput = MathUtil.clamp( locAgitatorFFoutput+locAgitatorPIDoutput, -1.0, 1.0 );
+        AgitatorOutput = MathUtil.clamp(AgitatorRateLimit.calculate(locAgitatorFFoutput+locAgitatorPIDoutput), -1.0, 1.0 );
 
         AgitatorMotor.set(AgitatorOutput);
 

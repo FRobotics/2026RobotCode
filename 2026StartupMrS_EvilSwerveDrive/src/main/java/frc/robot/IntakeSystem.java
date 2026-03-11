@@ -35,7 +35,7 @@ public class IntakeSystem {
     private static Lib4150PositionControl IntakePositionControl;
     private static RelativeEncoder IntakeArmMotorEncoder;
     private static int intakeState;//1 is up off, 2 is down off, 3 is down on,
-    private static boolean intakeRockState = false;
+    // private static boolean intakeRockState = false;
     private static double intakeAngleTarget;
     private static boolean IntakeArmLowLimitSwitchState;
     private static double IntakeArmAngleActual; //stores current value from encoder
@@ -53,8 +53,8 @@ public class IntakeSystem {
     // --------a little rate limiting on starting the intake move..
     private static SlewRateLimiter IntakeArmRateLimit;
     // --------next rock time...
-    private static double locNextRockTime = 0.0;
-    private static double locRockTargetAngle = 0.0;
+    //private static double locNextRockTime = 0.0;
+    //private static double locRockTargetAngle = 0.0;
 
     
     public static void init() {
@@ -70,7 +70,6 @@ public class IntakeSystem {
         //SparkMaxConfig intake2Config = new SparkMaxConfig();
         
         //motor Config
-        //TODO: config values need to be changed/tuned
         /*intake1Config.idleMode(IdleMode.kBrake);
         intake2Config.idleMode(IdleMode.kBrake);
         intake1Config.smartCurrentLimit(50);
@@ -93,7 +92,7 @@ public class IntakeSystem {
         IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
         intakeSpeed=0.0;
         intakeState=1;
-        intakeRockState = false;
+        //intakeRockState = false;
 
         IntakeArmLowLimitSwitchState = false;
         IntakeArmAngleActual = 0.0;
@@ -243,17 +242,17 @@ public class IntakeSystem {
     // }
     public static void setDownOffState(){
         intakeState=2;
-        intakeRockState = false;
+        //intakeRockState = false;
         return;
     }
     public static void setDownOnState(){
         intakeState=3;
-        intakeRockState = false;
+        //intakeRockState = false;
         return;
     }
     public static void setUpOffState(){
         intakeState=1;
-        intakeRockState = false;
+        //intakeRockState = false;
         return;
     }
 

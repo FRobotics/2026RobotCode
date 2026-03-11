@@ -41,7 +41,6 @@ public class SwerveTeleop {
         myXboxController2 = new XboxController(1);
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
-        // TODO: add driver button box - if you want one
         // TODO: add aux button box - if you want one.
 
         locNTsend = new Lib4150NetTableSystemSend("Teleop");

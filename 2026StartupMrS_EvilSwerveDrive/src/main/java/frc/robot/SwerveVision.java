@@ -19,6 +19,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 
 public class SwerveVision {
+
+    // --------global constants
+    private static final double MAX_ALLOWED_AMBIGUITY = 0.30;
     
     private static Lib4150NetTableSystemSend    locNtSend;
     private static AprilTagFieldLayout fieldLayout;
@@ -169,7 +172,12 @@ public class SwerveVision {
         for (var result : camera1.getAllUnreadResults()) {
             visionEst1 = photonPoseEstimator1.estimateCoprocMultiTagPose(result);
             if (visionEst1.isEmpty()) {
-                visionEst1 = photonPoseEstimator1.estimatePnpDistanceTrigSolvePose(result);
+                Optional<EstimatedRobotPose> tmpVisionEst1 = photonPoseEstimator1.estimatePnpDistanceTrigSolvePose(result);
+                if ( tmpVisionEst1.isPresent() ) {
+                    if ( tmpVisionEst1.get().targetsUsed.get(0).poseAmbiguity <= MAX_ALLOWED_AMBIGUITY ) {
+                        visionEst1 = tmpVisionEst1;
+                    }
+                }
             }
             if ( visionEst1.isPresent() ) {
                 locCam1Count++;
@@ -189,7 +197,12 @@ public class SwerveVision {
         for (var result : camera2.getAllUnreadResults()) {
             visionEst2 = photonPoseEstimator2.estimateCoprocMultiTagPose(result);
             if (visionEst2.isEmpty()) {
-                visionEst2 = photonPoseEstimator2.estimatePnpDistanceTrigSolvePose(result);
+                Optional<EstimatedRobotPose> tmpVisionEst2 = photonPoseEstimator2.estimatePnpDistanceTrigSolvePose(result);
+                if ( tmpVisionEst2.isPresent() ) {
+                    if ( tmpVisionEst2.get().targetsUsed.get(0).poseAmbiguity <= MAX_ALLOWED_AMBIGUITY ) {
+                        visionEst2 = tmpVisionEst2;
+                    }
+                }
             }
             if ( visionEst2.isPresent() ) {
                 locCam2Count++;
@@ -207,7 +220,12 @@ public class SwerveVision {
         for (var result : camera3.getAllUnreadResults()) {
             visionEst3 = photonPoseEstimator3.estimateCoprocMultiTagPose(result);
             if (visionEst3.isEmpty()) {
-                visionEst3 = photonPoseEstimator3.estimatePnpDistanceTrigSolvePose(result);
+                Optional<EstimatedRobotPose> tmpVisionEst3 = photonPoseEstimator3.estimatePnpDistanceTrigSolvePose(result);
+                if ( tmpVisionEst3.isPresent() ) {
+                    if ( tmpVisionEst3.get().targetsUsed.get(0).poseAmbiguity <= MAX_ALLOWED_AMBIGUITY ) {
+                        visionEst3 = tmpVisionEst3;
+                    }
+                }
             }
             if ( visionEst3.isPresent() ) {
                 locCam3Count++;
@@ -225,7 +243,12 @@ public class SwerveVision {
         for (var result : camera4.getAllUnreadResults()) {
             visionEst4 = photonPoseEstimator4.estimateCoprocMultiTagPose(result);
             if (visionEst4.isEmpty()) {
-                visionEst4 = photonPoseEstimator4.estimatePnpDistanceTrigSolvePose(result);
+                Optional<EstimatedRobotPose> tmpVisionEst4 = photonPoseEstimator4.estimatePnpDistanceTrigSolvePose(result);
+                if ( tmpVisionEst4.isPresent() ) {
+                    if ( tmpVisionEst4.get().targetsUsed.get(0).poseAmbiguity <= MAX_ALLOWED_AMBIGUITY ) {
+                        visionEst4 = tmpVisionEst4;
+                    }
+                }
             }
             if ( visionEst4.isPresent() ) {
                 locCam4Count++;

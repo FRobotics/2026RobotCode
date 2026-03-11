@@ -437,6 +437,7 @@ public class TurretLauncher {
 
     // ---------calculate the raw encoder value in rotations given the arm position in degrees
     // --------allow angle value to go 0 360.0
+    @SuppressWarnings("unused")
     private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
         double tmpTurretDeg = MathUtil.inputModulus(turretDeg, 0.0, 360.0);
         return (tmpTurretDeg-180.0) / 360.0 * turretGearRatio;

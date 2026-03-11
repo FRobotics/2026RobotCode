@@ -1,3 +1,7 @@
+
+down 89.9
+up 25.3
+ 
 robot.java
 
  	-- remove unused choreo imports - very low

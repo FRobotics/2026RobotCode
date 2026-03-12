@@ -153,7 +153,7 @@ public class SwerveTeleop {
         // --------launcher manual inc/dec
         // --------This is approx 200 rpm/second at maximum joystick value.
         if ( TurretLauncher.getLauncherManualMode()) {
-            TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getLeftY(),0.08) * 4.0 );
+            TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightY(),0.08) * 4.0 );
         }
 
       

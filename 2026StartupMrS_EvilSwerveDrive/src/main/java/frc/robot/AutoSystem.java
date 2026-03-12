@@ -58,7 +58,7 @@ public class AutoSystem {
      * @return
      */
     public static String[] availableAutos() {
-        List<String> autos = new ArrayList<>();
+        List<String> autos = new ArrayList<String>();
         File[] files = AUTO_DIR.listFiles();
         if (files != null) {
                 for (File file : files) {

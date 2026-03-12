@@ -47,7 +47,7 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = 0.2 * Launcher_Kn;
+    private static final double Launcher_Kp = 0.25 * Launcher_Kn;
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Launcher_Ki = 2.0 * Launcher_Kn;
     // --------kd = derivative constant     output = Kd * derivative( error )

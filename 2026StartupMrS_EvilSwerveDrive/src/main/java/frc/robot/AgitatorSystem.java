@@ -18,15 +18,22 @@ public class AgitatorSystem {
     private AgitatorSystem(){}
 
     // contants
+    // --------agitator PID constants.
     private static final double Agitator_Kn = 1.0 / 4914.0; // max RPM guess.
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
-    private static final double Agitator_Kp = Agitator_Kn * 1.0;    // leave at zero untill we get max RPM...
+    private static final double Agitator_Kp = Agitator_Kn * 1.5;    // leave at zero untill we get max RPM...
     private static final double Agitator_Ki = Agitator_Kn * 0.0;
     private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
     private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
+    // --------stall contants
+    private static final double STALL_DETECT_TIME = 0.30;       // seconds to detect stall
+    private static final double STALL_DETECT_MIN_RPM = 120.0;   // RPM below this indicates stall.
+    private static final double STALL_DETECT_HYSTERESIS_RPM = 180.0;    // RPM indicates no longer stalled.
+    private static final double STALL_REVERSE_TIME = 0.60;      // seconds to go in reverse.
+    private static final double STALL_REVERSE_MOTOR = -0.50;    // motor output to un-jam things.
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -125,7 +132,7 @@ public class AgitatorSystem {
             case 0:
                 locFwdStalled = false;
                 locStallTimer = systemElapsedTimeSec;
-                if ( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < 120.0) ) {
+                if ( (locAgitatorSetpointRPM > 0.0) && (Math.abs( AgitatorRPM ) < STALL_DETECT_MIN_RPM) ) {
                     locStallStateNumb = 1;
                 } 
                 break;
@@ -135,17 +142,17 @@ public class AgitatorSystem {
                 if ( (locAgitatorSetpointRPM <= 0.0) ) {
                     locStallStateNumb = 0;
                 } 
-                else if ( Math.abs( AgitatorRPM ) > 180 ) {
+                else if ( Math.abs( AgitatorRPM ) > STALL_DETECT_HYSTERESIS_RPM ) {
                     locStallStateNumb = 0;
                 }
-                else if ( systemElapsedTimeSec > ( locStallTimer + 0.6 ) ) {
+                else if ( systemElapsedTimeSec > ( locStallTimer + STALL_DETECT_TIME ) ) {
                     locStallStateNumb = 2;
                     locStallTimer = systemElapsedTimeSec;
                 }
                 break;
             case 2:
                 locFwdStalled = true;
-                if ( systemElapsedTimeSec > ( locStallTimer + 1.0 ) ) {
+                if ( systemElapsedTimeSec > ( locStallTimer + STALL_REVERSE_TIME ) ) {
                     locStallStateNumb = 0;
                     locStallTimer = systemElapsedTimeSec;
                 }
@@ -153,7 +160,7 @@ public class AgitatorSystem {
         }
 
         // --------actual speed setpoint based on stall....
-        double tmpAgitatorSetpointRPM = ( locFwdStalled  ) ? -locAgitatorSetpointRPM : locAgitatorSetpointRPM;
+        double tmpAgitatorSetpointRPM = ( locFwdStalled  ) ? STALL_REVERSE_MOTOR : locAgitatorSetpointRPM;
         
         // --------Agitator Speed Control
         locAgitatorFFoutput = AgitatorFeedForward.calculate(tmpAgitatorSetpointRPM);

@@ -234,7 +234,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
         DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-        desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), -100.0, 100.0);
+        desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), MIN_ALLOWED_TURRET_ANGLE, MIN_ALLOWED_TURRET_ANGLE);
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...

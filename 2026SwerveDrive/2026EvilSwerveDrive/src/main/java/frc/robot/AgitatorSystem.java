@@ -33,7 +33,6 @@ public class AgitatorSystem {
 
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
     private static boolean locAgitatorOn = false;
-    private static boolean locAgitatorOnRev = false; 
     private static SparkMax AgitatorMotor;
     private static RelativeEncoder AgitatorMotorEncoder;
     private static double AgitatorOutput = 0.0;
@@ -109,9 +108,6 @@ public class AgitatorSystem {
                 locAgitatorSetpointRPM = 0.0;
             }
         }
-        else if ( locAgitatorOnRev){
-            locAgitatorSetpointRPM = -0.1 / Agitator_Kn;
-        }
         else {
             locAgitatorSetpointRPM = 0.0;
             locFwdStalled = false;
@@ -185,14 +181,12 @@ public class AgitatorSystem {
      */
     public static void cmdAgitatorOn() {
         locAgitatorOn=true;
-        locAgitatorOnRev=false;
         return;
     }
     /**
      * turn the agitator on in reverse
      */
     public static void cmdAgitatorOnRev() {
-        locAgitatorOnRev=true;
         locAgitatorOn=false;
         return;
     }
@@ -202,7 +196,6 @@ public class AgitatorSystem {
      */
     public static void cmdAgitatorOff() {
         locAgitatorOn=false;
-        locAgitatorOnRev=false;
         return;
     }
     /**

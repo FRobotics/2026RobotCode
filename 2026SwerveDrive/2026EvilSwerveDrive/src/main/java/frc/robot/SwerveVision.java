@@ -22,9 +22,9 @@ public class SwerveVision {
     
     private static Lib4150NetTableSystemSend    locNtSend;
     private static AprilTagFieldLayout fieldLayout;
-
+    //cameras are ordered from left to right while looking at intake
     // --------camera 1
-    private static final String cam1name = "Arducam_OV9281_USB_Camera";
+    private static final String cam1name = "OV9782-2601";
     private static long locCam1Count = 0;
     private static PhotonCamera camera1;
     private static PhotonPoseEstimator photonPoseEstimator1;
@@ -43,7 +43,7 @@ public class SwerveVision {
 
 
      // --------camera 2
-    private static final String cam2name = "Arducam_OV9281_USB_Camera";
+    private static final String cam2name = "OV9782-2602";
     private static long locCam2Count = 0;
     private static PhotonCamera camera2;
     private static PhotonPoseEstimator photonPoseEstimator2;
@@ -61,7 +61,7 @@ public class SwerveVision {
     private static double cam2orient = 0.0;
 
      // --------camera 3
-    private static final String cam3name = "Arducam_OV9281_USB_Camera";
+    private static final String cam3name = "OV9782-2603";
     private static long locCam3Count = 0;
     private static PhotonCamera camera3;
     private static PhotonPoseEstimator photonPoseEstimator3;
@@ -79,7 +79,7 @@ public class SwerveVision {
     private static double cam3orient = 0.0;
 
      // --------camera 4
-    private static final String cam4name = "Arducam_OV9281_USB_Camera";
+    private static final String cam4name = "OV9782-2604";
     private static long locCam4Count = 0;
     private static PhotonCamera camera4;
     private static PhotonPoseEstimator photonPoseEstimator4;

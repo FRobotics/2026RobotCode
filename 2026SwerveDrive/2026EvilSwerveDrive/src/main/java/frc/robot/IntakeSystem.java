@@ -178,7 +178,7 @@ public class IntakeSystem {
         intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
         // do arm position control - values in degrees
         // grav constant was 0.10, now 0.13.
-        intakeAngleMotorDemand=IntakeArmRateLimit.calculate( IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) );
+        intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 10.0 ) {

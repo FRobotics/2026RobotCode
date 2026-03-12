@@ -47,14 +47,14 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = 0.4 * Launcher_Kn;
+    private static final double Launcher_Kp = 0.2 * Launcher_Kn;
     // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = 4.0 * Launcher_Kn;
+    private static final double Launcher_Ki = 2.0 * Launcher_Kn;
     // --------kd = derivative constant     output = Kd * derivative( error )
     private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
-    private static final double Launcher_Izone = 100.0;
+    private static final double Launcher_Izone = 60.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
 
@@ -382,12 +382,12 @@ public class TurretLauncher {
         }
 
         // --------tell feeder how fast to go.   For now approx 80%
-        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.8);
+        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.95);
 
         //check if within 75 RPM of target speed
         launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
         // launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
-        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 ) );
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);

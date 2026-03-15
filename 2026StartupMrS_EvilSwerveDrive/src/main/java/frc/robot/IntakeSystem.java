@@ -67,8 +67,8 @@ public class IntakeSystem {
     public static void init() {
 
         //motors
-        IntakeBallMotor = new SparkMax(6,MotorType.kBrushless);
-        IntakeArmMotor = new SparkMax(5,MotorType.kBrushless);
+        IntakeBallMotor = new SparkMax(CanId.IntakeBallMotor,MotorType.kBrushless);
+        IntakeArmMotor = new SparkMax(CanId.IntakeArmMotor,MotorType.kBrushless);
 
         
         

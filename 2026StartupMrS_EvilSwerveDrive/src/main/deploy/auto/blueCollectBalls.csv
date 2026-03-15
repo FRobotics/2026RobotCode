@@ -1,0 +1,11 @@
+# -------- Shoot, then collect balls, then shoot
+#cmd, Timeout, P1,      P2,        P3,     Func
+# -------- shoot for 4 seconds.
+8,    0.0,     0.0,     0.0,       0.0,    "--"
+4,    4.0,     1.5,     1.0,      90.0,    "--"
+# -------- execute trajectory.
+5,   10.0,     0.0,     0.0,       0.0,    "blueCollectBalls"
+# -------- continue shooting for 5 seconds
+4,    5.0,     0.0,     0.0,       0.0,    "--"
+4, 9999.0,     0.0,     0.0,       0,0,    "--"
+# --------end

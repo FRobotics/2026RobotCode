@@ -26,74 +26,75 @@ public class SwerveVision {
     private static Lib4150NetTableSystemSend    locNtSend;
     private static AprilTagFieldLayout fieldLayout;
 
-    // --------camera 1
-    private static final String cam1name = "Arducam_OV9281_USB_Camera";
+    // --------camera 1-BACK-LEFT
+    private static final String cam1name = "OV9281-2603";
     private static long locCam1Count = 0;
     private static PhotonCamera camera1;
     private static PhotonPoseEstimator photonPoseEstimator1;
     // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(10.0), 
-                                                                Units.inchesToMeters(11.0), 
-                                                                Units.inchesToMeters(8.5), 
+    private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(-9.5), 
+                                                                Units.inchesToMeters(7.5), 
+                                                                Units.inchesToMeters(16.5), 
                                                 new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(15.0), 
-                                                                Units.degreesToRadians(-25.0)));
+                                                                Units.degreesToRadians(20.0), 
+                                                                Units.degreesToRadians(150.0-3.7)));
     private static double cam1X = 0.0;
     private static double cam1Y = 0.0;
     private static double cam1Z = 0.0;
     private static double cam1orient = 0.0;
 
 
-     // --------camera 2
-    private static final String cam2name = "Arducam_OV9281_USB_Camera";
+     // --------camera 2 BACK right
+    private static final String cam2name = "OV9782-2602";
     private static long locCam2Count = 0;
     private static PhotonCamera camera2;
     private static PhotonPoseEstimator photonPoseEstimator2;
     // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(10.0), 
-                                                                Units.inchesToMeters(11.0), 
-                                                                Units.inchesToMeters(8.5), 
+    private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(-9.5), 
+                                                                Units.inchesToMeters(-7.5), 
+                                                                Units.inchesToMeters(16.5), 
                                                 new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(15.0), 
-                                                                Units.degreesToRadians(-25.0)));
+                                                                Units.degreesToRadians(20.0), 
+                                                                Units.degreesToRadians(-150.0-3.7)));
+
     private static double cam2X = 0.0;
     private static double cam2Y = 0.0;
     private static double cam2Z = 0.0;
     private static double cam2orient = 0.0;
 
-     // --------camera 3
-    private static final String cam3name = "Arducam_OV9281_USB_Camera";
+     // --------camera 3 MIDDLE LEFT
+    private static final String cam3name = "OV9782-2604";
     private static long locCam3Count = 0;
     private static PhotonCamera camera3;
     private static PhotonPoseEstimator photonPoseEstimator3;
     // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(10.0), 
-                                                                Units.inchesToMeters(11.0), 
-                                                                Units.inchesToMeters(8.5), 
+    private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(-1.0), 
+                                                                Units.inchesToMeters(14.25), 
+                                                                Units.inchesToMeters(9.0), 
                                                 new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(15.0), 
-                                                                Units.degreesToRadians(-25.0)));
+                                                                Units.degreesToRadians(20.0), 
+                                                                Units.degreesToRadians(90.0)));
     private static double cam3X = 0.0;
     private static double cam3Y = 0.0;
     private static double cam3Z = 0.0;
     private static double cam3orient = 0.0;
 
-     // --------camera 4
-    private static final String cam4name = "Arducam_OV9281_USB_Camera";
+     // --------camera 4 midle right
+    private static final String cam4name = "OV9281-2601";
     private static long locCam4Count = 0;
     private static PhotonCamera camera4;
     private static PhotonPoseEstimator photonPoseEstimator4;
     // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(10.0), 
-                                                                Units.inchesToMeters(11.0), 
-                                                                Units.inchesToMeters(8.5), 
+    private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(-1.0), 
+                                                                Units.inchesToMeters(-14.25), 
+                                                                Units.inchesToMeters(9.0), 
                                                 new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(15.0), 
-                                                                Units.degreesToRadians(-25.0)));
+                                                                Units.degreesToRadians(20.0), 
+                                                                Units.degreesToRadians(-90.0)));
     private static double cam4X = 0.0;
     private static double cam4Y = 0.0;
     private static double cam4Z = 0.0;

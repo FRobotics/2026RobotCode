@@ -29,11 +29,11 @@ public class AgitatorSystem {
     private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
     // --------stall contants
-    private static final double STALL_DETECT_TIME = 0.30;       // seconds to detect stall
+    private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
     private static final double STALL_DETECT_MIN_RPM = 120.0;   // RPM below this indicates stall.
     private static final double STALL_DETECT_HYSTERESIS_RPM = 180.0;    // RPM indicates no longer stalled.
     private static final double STALL_REVERSE_TIME = 0.60;      // seconds to go in reverse.
-    private static final double STALL_REVERSE_MOTOR = -0.50;    // motor output to un-jam things.
+    private static final double STALL_REVERSE_MOTOR = -1.00 / Agitator_Kn;    // motor output to un-jam things.
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;

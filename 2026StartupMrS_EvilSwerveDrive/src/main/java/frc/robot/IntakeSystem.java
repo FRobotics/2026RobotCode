@@ -23,10 +23,12 @@ public class IntakeSystem {
     private static final double INTAKEDOWNANGLE = 0.0;
     private static final double INTAKEDOWNLIMITSWITCHANGLE = 0.9;
 
+    private static final double ARM_GRAVITY_CONSTANT = 0.11;    // was 0.13
+
     private static final double PICKUP_MOTOR_ON = 0.75;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
-    private static final double ROCK_DOWN_TIME = 4.0;   // time arm is down - seconds
+    private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
     private static final double ROCK_UP_TIME = 3.0;     // time arm is up - seconds
     private static final double ROCK_UP_POS = 35.0;     // arm pos for up - degrees
 
@@ -221,7 +223,7 @@ public class IntakeSystem {
         // --------do arm position control - values in degrees
         // --------grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
-        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
+        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * ARM_GRAVITY_CONSTANT;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 10.0 ) {
             intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 10.0;

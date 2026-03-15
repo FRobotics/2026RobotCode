@@ -28,11 +28,11 @@ public class FeederSystem {
     private static final double Feeder_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Feeder_Kp = Feeder_Kn * 0.60;
+    private static final double Feeder_Kp = Feeder_Kn * 4.0;    // was 0.6  
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Feeder_Ki = Feeder_Kn * 2.5;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Feeder_Kd = Feeder_Kn * 1.0E-6;
+    private static final double Feeder_Kd = Feeder_Kn * 1.0E-5; 
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Feeder_Izone = 100.0;  // Error RPM where I is used.
@@ -62,7 +62,7 @@ public class FeederSystem {
 
 
         // init network table
-        FeederMotor = new SparkMax(9,MotorType.kBrushless);
+        FeederMotor = new SparkMax(CanId.Feeder,MotorType.kBrushless);
         FeederMotorEncoder = FeederMotor.getEncoder();
 
         //Speed control

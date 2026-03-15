@@ -31,7 +31,6 @@ public class SwerveVision {
     private static long locCam1Count = 0;
     private static PhotonCamera camera1;
     private static PhotonPoseEstimator photonPoseEstimator1;
-    // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
     private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(-9.5), 
                                                                 Units.inchesToMeters(7.5), 
@@ -50,7 +49,6 @@ public class SwerveVision {
     private static long locCam2Count = 0;
     private static PhotonCamera camera2;
     private static PhotonPoseEstimator photonPoseEstimator2;
-    // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
     private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(-9.5), 
                                                                 Units.inchesToMeters(-7.5), 
@@ -69,7 +67,6 @@ public class SwerveVision {
     private static long locCam3Count = 0;
     private static PhotonCamera camera3;
     private static PhotonPoseEstimator photonPoseEstimator3;
-    // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
     private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(-1.0), 
                                                                 Units.inchesToMeters(14.25), 
@@ -87,7 +84,6 @@ public class SwerveVision {
     private static long locCam4Count = 0;
     private static PhotonCamera camera4;
     private static PhotonPoseEstimator photonPoseEstimator4;
-    // TODO: will have to set physical camera offset position once it is known.
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
     private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(-1.0), 
                                                                 Units.inchesToMeters(-14.25), 

@@ -57,7 +57,7 @@ public class Climb {
      */
     public static void init() {
 
-        ClimbMotor1 = new SparkFlex(18, MotorType.kBrushless);
+        ClimbMotor1 = new SparkFlex(CanId.Climb, MotorType.kBrushless);
         ClimbEncoder1 = ClimbMotor1.getEncoder();
         ClimbEncoder1.setPosition(RETRACT_ENC_VALUE);
 

@@ -50,17 +50,17 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = 0.70 * Launcher_Kn;
+    private static final double Launcher_Kp =Launcher_Kn *  4.0;       // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = 3.5 * Launcher_Kn;
+    private static final double Launcher_Ki = Launcher_Kn * 3.5;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
+    private static final double Launcher_Kd = Launcher_Kn * 1E-5;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Launcher_Izone = 60.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
-    private static final double LAUNCHER_FILTER_TIME_CONST = 0.100;   // seconds
+    //private static final double LAUNCHER_FILTER_TIME_CONST = 0.100;   // seconds
     // private static final double LAUNCHER_M = 183.586426696663;   
     // private static final double LAUNCHER_B = 991.971428571429;
     private static final double LAUNCHER_M = 193.820210097687;
@@ -108,7 +108,8 @@ public class TurretLauncher {
     private static double locLauncherSpeedActual = 0.0;
     private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
-    private static double turretGearRatio = 40.0;
+    // private static double turretGearRatio = 40.0;
+    private static double turretGearRatio = 160.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
@@ -136,15 +137,14 @@ public class TurretLauncher {
     
     public static void init() {
 
-        //TODO: is this the right spot for this (will this be run after the value in MatchSystem is created?) --- NO - it might not be set yet...   Call during execute
-        //get team side from MatchSystem
+        //get team side from MatchSystem  -- also need to call in execute method
         isRed = MatchSystem.isRed();
 
-        TurretRotationMotor = new SparkMax(10,MotorType.kBrushless);
+        TurretRotationMotor = new SparkMax(CanId.TurretMotor,MotorType.kBrushless);
         TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
-        LauncherMotor = new SparkMax(11,MotorType.kBrushless);
+        LauncherMotor = new SparkMax(CanId.LauncherMotor1,MotorType.kBrushless);
         LauncherMotorEncoder = LauncherMotor.getEncoder();
-        LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
+        LauncherMotor2 = new SparkMax(CanId.LauncherMotor2,MotorType.kBrushless);
         LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
 
         cmdLauncherOff();
@@ -166,7 +166,6 @@ public class TurretLauncher {
         TurretOffset = new Translation2d( -0.14605 , 0);
 
 
-        //TODO: get the values of the goal position based on alliance - currently using Red values
         //Blue: x: 11.92m y: 4.03m  (is this really red??)
         goalPoseRED = new Translation2d(11.92, 4.03);
         zonePoseRED = new Translation2d(15.0,6.6);
@@ -317,7 +316,6 @@ public class TurretLauncher {
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
-        // TODO: Need to get data and create this curve....
         launchertargetSpeed  = LAUNCHER_B + TargetDistance * LAUNCHER_M;
 
 

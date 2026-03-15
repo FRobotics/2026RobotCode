@@ -9,9 +9,12 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.hardware.TalonFX;
+//import com.revrobotics.RelativeEncoder;
+//import com.revrobotics.spark.SparkMax;
+//import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+
 
 public class AgitatorSystem {
 
@@ -19,14 +22,15 @@ public class AgitatorSystem {
 
     // contants
     // --------agitator PID constants.
-    private static final double Agitator_Kn = 1.0 / 4914.0; // max RPM guess.
+    // private static final double Agitator_Kn = 1.0 / 4914.0; // max RPM
+    private static final double Agitator_Kn = 1.0 / 5393.0; // max RPM guess.
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
     private static final double Agitator_Kp = Agitator_Kn * 1.5;    // leave at zero untill we get max RPM...
-    private static final double Agitator_Ki = Agitator_Kn * 0.0;
+    private static final double Agitator_Ki = Agitator_Kn * 0.5;
     private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
-    private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
+    private static final double Agitator_Izone = 400.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
     // --------stall contants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -36,12 +40,14 @@ public class AgitatorSystem {
     private static final double STALL_REVERSE_MOTOR = -1.00 / Agitator_Kn;    // motor output to un-jam things.
 
     // class/object variables
+    // private static SparkMax AgitatorMotor;
+    // private static RelativeEncoder AgitatorMotorEncoder;     -- its a Kraken X60 now
+    private static TalonFX AgitatorMotor;
+
     private static Lib4150NetTableSystemSend locNTSend;
 
     
     private static boolean locAgitatorOn = false;   // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
-    private static SparkMax AgitatorMotor;
-    private static RelativeEncoder AgitatorMotorEncoder;
     private static double AgitatorOutput = 0.0;
     private static double AgitatorRPM = 0.0;
     private static double locAgitatorSetpointRPM = 0.0;
@@ -64,8 +70,9 @@ public class AgitatorSystem {
 
 
         // init agitator motor
-        AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
-        AgitatorMotorEncoder = AgitatorMotor.getEncoder();
+        // AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
+        // AgitatorMotorEncoder = AgitatorMotor.getEncoder();
+        AgitatorMotor = new TalonFX(CanId.Agitator);
 
         // --------output rate limit
         AgitatorRateLimit = new SlewRateLimiter(3.0);       // 1/3 second to full output.
@@ -104,7 +111,7 @@ public class AgitatorSystem {
      */
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        AgitatorRPM = AgitatorMotorEncoder.getVelocity();
+        AgitatorRPM = AgitatorMotor.getVelocity().getValueAsDouble() * 60.0;    // convert from RPS to RPM.
 
         // if on, output pctDmdFromDash -- default 0.50
         // if off, output 0

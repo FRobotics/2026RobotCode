@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkMax;
 import Lib4150.Lib4150PositionControl;
 import Lib4150.Lib4150RateOfChange3;
 import Lib4150.Lib4150DigEdgeOn;
-import Lib4150.Lib4150FilterLowPassBW1;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -58,7 +57,6 @@ public class TurretLauncher {
     //private static double TurretRelativeAngle;
     private static double TurretMotorDemand;
     private static double LauncherMotorDemand;
-    private static Lib4150FilterLowPassBW1 TurretPosFilter;
     private static Lib4150PositionControl TurretPositionControl;
     private static double turretAngleEncoder;
     private static double turretAngleVelRPM = 0.0;
@@ -74,7 +72,7 @@ public class TurretLauncher {
     private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
     // private static double turretGearRatio = 160.0;
-    private static double turretGearRatio = 160.0;
+    private static double turretGearRatio = 40.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
@@ -88,28 +86,23 @@ public class TurretLauncher {
     private static boolean launcherAgitatorPermissive = false;
     // Launcher Tunning Constants
     // Max motor output/ max device rpm
-    private static final double Launcher_Kn = 1.0 / 5721.6;
+    private static final double Launcher_Kn = 0.000183705242146656;
     // static feedforward (amount of motor output to get started moving)
-    private static final double Launcher_Ks = 0.0149140408235032;
-    // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
-    private static final double Launcher_Kv = 0.000172170358450721;
-    // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
+    private static final double Launcher_Ks = 0.0120480016499597;
+    // velocity feedforward (slope of the motor output to get a particular RPM ( + Ks ))
+    private static final double Launcher_Kv = 0.000181491957288762;
+    // acceleration constant (Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now))
     private static final double Launcher_Ka = 0.0;
-    // --------PID
-    // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp =Launcher_Kn *  4.0;       // was 0.7
-    // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = Launcher_Kn * 3.5;
-    // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = Launcher_Kn * 1E-5;
-    // --------integral zone ( in sp/pv units )
-    // --------Izone -- Error has to be within this amount to be used.
-    private static final double Launcher_Izone = 60.0;
-    // --------Irange - -min/max value that the integral PID term can have.
+    // proportional constant (output =  error * Kp)
+    private static final double Launcher_Kp = 0.8 * Launcher_Kn;
+    // integral constant  (output  = Ki x integral( error ))
+    private static final double Launcher_Ki = 4.0 * Launcher_Kn;
+    // derivative constant  (output = Kd * derivative( error ))
+    private static final double Launcher_Kd = 1.0E-6 * Launcher_Kn;
+    // integral zone ( in sp/pv units (Error has to be within this amount to be used.))
+    private static final double Launcher_Izone = 300.0;
+    // -min/max value that the integral PID term can have
     private static final double Launcher_Imax = 0.3;
-    //private static final double LAUNCHER_FILTER_TIME_CONST = 0.100;   // seconds
-
-
     
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
@@ -198,31 +191,12 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
 
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        // -------- read sensors and correct limit switches
+        // -------- read sensors
+        clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
+        counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+
         turretAngleEncoder = (TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio) + 180;
         turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
-       
-        clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
-
-        if (counterclockwiseLimitSwitch.get()==counterclockwiseLimitSwitchValue){
-            counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
-        } else{
-            if ((turretAngleEncoder>= 325)&&(counterclockwiseLimitSwitchValue==true)) {
-                counterclockwiseLimitSwitchValue = true;
-            } else {
-                counterclockwiseLimitSwitchValue = false;
-            }
-        }
-         if (clockwiseLimitSwitch.get()==clockwiseLimitSwitchValue){
-            clockwiseLimitSwitchValue=clockwiseLimitSwitch.get();
-         } else{
-            if ((turretAngleEncoder<= 35)&&(clockwiseLimitSwitchValue==true)){
-                clockwiseLimitSwitchValue = true;
-            } else {
-                clockwiseLimitSwitchValue = false;
-            }
-         }
-
 
         //get team side from MatchSystem
         isRed = MatchSystem.isRed();        
@@ -302,11 +276,27 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
 
 
         //use limit switches to stop travel
+        double turretMax = 1.0;
+        double turretMin = -1.0;
+        if (clockwiseLimitSwitchValue)
+        {
+            turretMax = 0.0;
+        }
+        if (counterclockwiseLimitSwitchValue)
+        {
+            turretMin = 0.0;
+        }
+        double tmpMotorDemand = MathUtil.clamp(TurretMotorDemand, turretMin, turretMax);
+
         // clamp output based on limit switches.
-        double tmpMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
-        double turretHigh = (clockwiseLimitSwitchValue) ? 0.0: -1.0;
-        double turretLow = (counterclockwiseLimitSwitchValue) ? 0.0 : 1.0;
-        
+        double turretHigh = 1.0;
+        double turretLow = -1.0;
+        if (clockwiseLimitSwitchValue){
+            turretHigh = 0.0;
+        }
+        if (counterclockwiseLimitSwitchValue){
+            turretLow = 0.0;
+        }
         TurretMotorDemand = MathUtil.clamp(tmpMotorDemand, turretLow, turretHigh);        // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
 
@@ -318,8 +308,7 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
         LauncherMotor2.set(LauncherMotorDemand);
 
 
-        locNTSend.triggerUpdate();    
-        }
+        locNTSend.triggerUpdate();    }
     
               //METERS      
 

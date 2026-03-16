@@ -8,7 +8,6 @@ import java.util.HashMap;
 //import edu.wpi.first.wpilibj.DigitalInput;
 
 import Lib4150.Lib4150NetTableSystemSend;
-
 ///import choreo.trajectory.SwerveSample;
 //import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -134,105 +133,109 @@ public class AutoSystem {
      */
     public static void ExecuteList(double SystemElapsedTime){
 
-            
-        AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
+        if ( locExecRoutine == null){
+                AutoFunctions.autoWait();
+        } 
+        else{
+                AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
 
 
-        // --------is this the first time for this step
-        if ( locExecIndex != locExecLastIndex ) {
-                locExecInitStep = true;
-                locExecLastIndex = locExecIndex;
-        }
-        else {
-                locExecInitStep = false;
-        }
+                // --------is this the first time for this step
+                if ( locExecIndex != locExecLastIndex ) {
+                        locExecInitStep = true;
+                        locExecLastIndex = locExecIndex;
+                }
+                else {
+                   locExecInitStep = false;
+                }
 
-        // First time in this step.  if so reset timer.
-        if ( locExecInitStep ) {
-                autoTimer.reset();
-                autoTimer.start();
-        }
+                // First time in this step.  if so reset timer.
+                if ( locExecInitStep ) {
+                        autoTimer.reset();
+                        autoTimer.start();
+                }
 
-        locStepTime = autoTimer.get();
+              locStepTime = autoTimer.get();
 
-        locExecDoNextStep = false;
+                locExecDoNextStep = false;
 
-        // do step
-        switch (ourStep.getCmd()){
-                case DriveStraight:
+                // do step
+                switch (ourStep.getCmd()){
+                        case DriveStraight:
                         // -- p1 - how far m, p2 - how fast m/sec, p3 angle deg
                         //locExecDoNextStep = AutoFunctions.autoDriveStraight(locExecInitStep, ourStep.getParam1(),ourStep.getParam2(),ourStep.getParam3());
-                        break;
+                                break;
                 
-                case DriveTurn:
+                        case DriveTurn:
                         // -- p1 - how far - deg, p2 - how fast deg/sec
                         //locExecDoNextStep = AutoFunctions.autoDriveSpin(locExecInitStep, ourStep.getParam1(),ourStep.getParam2());
-                        break;
+                                break;
 
-                case FollowAbsTrajectory:
-                        locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
-                        break;
+                         case FollowAbsTrajectory:
+                                locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
+                                break;
 
-                case FollowRelTrajectory:
-                        break;
+                        case FollowRelTrajectory:
+                                break;
 
-                case AutoWait:
-                        locExecDoNextStep = AutoFunctions.autoWait();
-                        break;
+                       case AutoWait:
+                                locExecDoNextStep = AutoFunctions.autoWait();
+                               break;
 
-                case FollowAbsTrajWithTimedCmd:
-                        locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
-                        break;
+                        case FollowAbsTrajWithTimedCmd:
+                                locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
+                                break;
 
-                case FollowRelTrajWithTimedComd:
-                        break;
+                        case FollowRelTrajWithTimedComd:
+                          break;
 
-                case Collect:
-                        SupervisoryCmds.Collecting();
-                        locExecDoNextStep = true;
-                        break;
+                        case Collect:
+                                SupervisoryCmds.Collecting();
+                           locExecDoNextStep = true;
+                               break;
 
-                case Shoot:
-                        SupervisoryCmds.Shooting();
-                        locExecDoNextStep = true;
-                        break;
+                        case Shoot:
+                                SupervisoryCmds.Shooting();
+                               locExecDoNextStep = true;
+                                break;
 
-                case Stop:
-                        SupervisoryCmds.StopAction();
-                        locExecDoNextStep = true;
-                        break;
+                       case Stop:
+                                SupervisoryCmds.StopAction();
+                                      locExecDoNextStep = true;
+                                break;
 
-                case BallsToAlliance:
-                        SupervisoryCmds.BallsToAlliance();
-                        locExecDoNextStep = true;
-                        break;
+                        case BallsToAlliance:
+                                SupervisoryCmds.BallsToAlliance();
+                                locExecDoNextStep = true;
+                               break;
                 
-                case Climb:
-                        SupervisoryCmds.ClimbExtend();
-                        locExecDoNextStep = true;
-                        break;
+                        case Climb:
+                             SupervisoryCmds.ClimbExtend();
+                                locExecDoNextStep = true;
+                                break;
                 
-                case Descend:
-                        SupervisoryCmds.ClimbRetract();
-                        locExecDoNextStep = true;
-                        break;
+                        case Descend:
+                                SupervisoryCmds.ClimbRetract();
+                                locExecDoNextStep = true;
+                                break;
                 
-                case Defense:
-                        SupervisoryCmds.Defense();
-                        locExecDoNextStep = true;
-                        break;
-        }
-
-        // did we time out.
-        if ( ourStep.getTimeout() > 0.0 ) {
-                if ( autoTimer.hasElapsed(ourStep.getTimeout()) ) { 
-                        locExecDoNextStep = true;
+                        case Defense:
+                                SupervisoryCmds.Defense();
+                                locExecDoNextStep = true;
+                                break;
                 }
-        }
 
-        // should we do next step
-        if ( locExecDoNextStep ) {
-                locExecIndex++;
+                // did we time out.
+                if ( ourStep.getTimeout() > 0.0 ) {
+                        if ( autoTimer.hasElapsed(ourStep.getTimeout()) ) { 
+                                locExecDoNextStep = true;
+                        }
+                }
+
+               // should we do next step
+                if ( locExecDoNextStep ) {
+                        locExecIndex++;
+                }
         }
         // --------tell system we are running autos
         MatchSystem.setRobotPhaseAutoRunning();

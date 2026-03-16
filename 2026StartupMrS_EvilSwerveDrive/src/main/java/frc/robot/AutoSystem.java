@@ -232,6 +232,7 @@ public class AutoSystem {
                         SupervisoryCmds.Defense();
                         locExecDoNextStep = true;
                         break;
+               
         }
 
         // did we time out.

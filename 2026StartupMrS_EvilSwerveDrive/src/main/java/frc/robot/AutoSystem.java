@@ -134,6 +134,15 @@ public class AutoSystem {
      */
     public static void ExecuteList(double SystemElapsedTime){
 
+        // --------if our auto is null then, execute wait routine and return...
+        if ( locExecRoutine == null ) {
+                AutoFunctions.autoWait();
+                // --------tell system we are running autos
+                MatchSystem.setRobotPhaseAutoRunning();
+                // --------trigger NT update.
+                locNTSend.triggerUpdate();
+                return;
+        }
             
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
 
@@ -223,6 +232,7 @@ public class AutoSystem {
                         SupervisoryCmds.Defense();
                         locExecDoNextStep = true;
                         break;
+               
         }
 
         // did we time out.

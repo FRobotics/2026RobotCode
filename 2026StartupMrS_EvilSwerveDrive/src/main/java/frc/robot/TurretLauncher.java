@@ -31,9 +31,11 @@ public class TurretLauncher {
     // --------THESE WILL NEED TO BE TUNED...
     private static final double MIN_INTAKE_ANGLE = 70.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
-    private static final double MIN_ALLOWED_TURRET_ANGLE = 60.0;
+    // private static final double MIN_ALLOWED_TURRET_ANGLE = 60.0;
+    private static final double MIN_ALLOWED_TURRET_ANGLE = 50.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
-    private static final double MAX_ALLOWED_TURRET_ANGLE = 304.0;
+    //private static final double MAX_ALLOWED_TURRET_ANGLE = 304.0;
+    private static final double MAX_ALLOWED_TURRET_ANGLE = 310.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
     private static final double TURRET_FILTER_TIME_CONST = 0.100;   // seconds
 
@@ -175,8 +177,8 @@ public class TurretLauncher {
         
         
         //PositionControl -- Turret -- everything is in degrees.
-        TurretPositionControl = new Lib4150PositionControl(1.0,40.0, 
-                            0.07, 0.30, 0.40, 1.0e-5, false, false);
+        TurretPositionControl = new Lib4150PositionControl(1.0,30.0, 
+                            0.07, 1.00, 1.00, 1.0e-5, false, false);
 
         TurretPosFilter = new Lib4150FilterLowPassBW1(TURRET_FILTER_TIME_CONST, 0.020);
 

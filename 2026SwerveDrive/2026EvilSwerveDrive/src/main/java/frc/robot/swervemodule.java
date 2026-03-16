@@ -149,8 +149,13 @@ public class SwerveModule {
 
         spinMotor.set(spinPositionControl.PosCtrlExec(targetAngle, currentAngle));
         
+        double driveSpinErrorCompensation = MathUtil.clamp(
+                                                Math.abs(
+                                                (new Rotation2d(targetAngle)).minus(new Rotation2d(currentAngle)).getCos()),
+                                                0.0,1.0);
+
         // control the drive motor
-        double TargetSpeed = parmModState.speedMetersPerSecond;
+        double TargetSpeed = parmModState.speedMetersPerSecond * driveSpinErrorCompensation;
         double ActualSpeed = locSpeedActual;
         double feedForward = drivFeedforward.calculate(TargetSpeed);
         double PIDoutput = drivePID.calculate(ActualSpeed, TargetSpeed);

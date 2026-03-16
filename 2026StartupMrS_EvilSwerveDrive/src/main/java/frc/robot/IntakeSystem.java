@@ -25,7 +25,7 @@ public class IntakeSystem {
 
     private static final double ARM_GRAVITY_CONSTANT = 0.11;    // was 0.13
 
-    private static final double PICKUP_MOTOR_ON = 0.75;
+    private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
@@ -49,7 +49,8 @@ public class IntakeSystem {
     private static double intakeAngleMotorDemand;
     private static DigitalInput IntakeArmLowLimitSwitch;
     // private static double intakeGearRatio = 36.0;
-    private static double intakeGearRatio = 32.2;
+    // private static double intakeGearRatio = 32.2;
+    private static double intakeGearRatio = 53.6666666;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
     // --------rev through bore encoder - abs mode
     private static DigitalInput IntakeArmABSEncDI;

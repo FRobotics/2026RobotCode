@@ -23,13 +23,13 @@ public class AgitatorSystem {
     // contants
     // --------agitator PID constants.
     // private static final double Agitator_Kn = 1.0 / 4914.0; // max RPM
-    private static final double Agitator_Kn = 1.0 / 5393.0; // max RPM guess.
+    private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
-    private static final double Agitator_Kp = Agitator_Kn * 1.5;    // leave at zero untill we get max RPM...
-    private static final double Agitator_Ki = Agitator_Kn * 0.5;
-    private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
+    private static final double Agitator_Kp = Agitator_Kn * 0.0;    // leave at zero untill we get max RPM...
+    private static final double Agitator_Ki = Agitator_Kn * 0.0;
+    private static final double Agitator_Kd = Agitator_Kn * 0.0E-6;
     private static final double Agitator_Izone = 400.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
     // --------stall contants

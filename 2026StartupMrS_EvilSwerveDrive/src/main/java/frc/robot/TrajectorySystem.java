@@ -23,6 +23,9 @@ public class TrajectorySystem {
     private static final double KX = 10.0; 
     private static final double KY = 10.0;
     private static final double KRot = 7.5; //KRot needs to be adjusted based on robot preformance
+    //private static final double KX = 0.0; 
+    //private static final double KY = 0.0;
+    //private static final double KRot = 0.0; //KRot needs to be adjusted based on robot preformance
 
     private static Lib4150NetTableSystemSend locNTSend;
     private static Choreo.TrajectoryCache TrajectoryStorage;
@@ -110,6 +113,7 @@ public class TrajectorySystem {
         if ( oursample.isPresent() ) {
             realsample = oursample.get();
             havesample = true;
+            // --------errors are field relative.
             xErr = ( realsample.x - SwerveOdometry.getxposition());
             yErr = ( realsample.y - SwerveOdometry.getyposition());
             // rotErr = ( realsample.heading - SwerveOdometry.getrotposition());

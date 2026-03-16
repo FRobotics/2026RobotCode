@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 import Lib4150.Lib4150PositionControl;
 import Lib4150.Lib4150RateOfChange3;
 import Lib4150.Lib4150DigEdgeOn;
+import Lib4150.Lib4150FilterLowPassBW1;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -28,11 +29,13 @@ public class TurretLauncher {
     // --------CONSTANTS
 
     // --------THESE WILL NEED TO BE TUNED...
+    private static final double MIN_INTAKE_ANGLE = 70.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
     private static final double MIN_ALLOWED_TURRET_ANGLE = 60.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 304.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
+    private static final double TURRET_FILTER_TIME_CONST = 0.100;   // seconds
 
     // --------LAUNCHER TUNING CONSTANTS
     // --------overall normalization
@@ -47,16 +50,22 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = 0.4 * Launcher_Kn;
+    private static final double Launcher_Kp =Launcher_Kn *  4.0;       // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = 4.0 * Launcher_Kn;
+    private static final double Launcher_Ki = Launcher_Kn * 3.5;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = 1E-6 * Launcher_Kn;
+    private static final double Launcher_Kd = Launcher_Kn * 1E-5;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
-    private static final double Launcher_Izone = 100.0;
+    private static final double Launcher_Izone = 60.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
+    //private static final double LAUNCHER_FILTER_TIME_CONST = 0.100;   // seconds
+    // private static final double LAUNCHER_M = 183.586426696663;   
+    // private static final double LAUNCHER_B = 991.971428571429;
+    private static final double LAUNCHER_M = 193.820210097687;
+    private static final double LAUNCHER_B = 1030.12111625272;
+
 
 
     //private double TURRETOFFSET;
@@ -84,6 +93,7 @@ public class TurretLauncher {
     private static Rotation2d DesiredTurretAngle;
     private static double TurretMotorDemand;
     private static double LauncherMotorDemand;
+    private static Lib4150FilterLowPassBW1 TurretPosFilter;
     private static Lib4150PositionControl TurretPositionControl;
     private static double turretAngleEncoder;
     private static double turretAngleVelDegSec = 0.0;
@@ -98,7 +108,8 @@ public class TurretLauncher {
     private static double locLauncherSpeedActual = 0.0;
     private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
-    private static double turretGearRatio = 40.0;
+    // private static double turretGearRatio = 40.0;
+    private static double turretGearRatio = 160.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
     private static boolean locLauncherOn=false;
@@ -126,15 +137,14 @@ public class TurretLauncher {
     
     public static void init() {
 
-        //TODO: is this the right spot for this (will this be run after the value in MatchSystem is created?) --- NO - it might not be set yet...   Call during execute
-        //get team side from MatchSystem
+        //get team side from MatchSystem  -- also need to call in execute method
         isRed = MatchSystem.isRed();
 
-        TurretRotationMotor = new SparkMax(10,MotorType.kBrushless);
+        TurretRotationMotor = new SparkMax(CanId.TurretMotor,MotorType.kBrushless);
         TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
-        LauncherMotor = new SparkMax(11,MotorType.kBrushless);
+        LauncherMotor = new SparkMax(CanId.LauncherMotor1,MotorType.kBrushless);
         LauncherMotorEncoder = LauncherMotor.getEncoder();
-        LauncherMotor2 = new SparkMax(12,MotorType.kBrushless);
+        LauncherMotor2 = new SparkMax(CanId.LauncherMotor2,MotorType.kBrushless);
         LauncherMotorEncoder2 = LauncherMotor2.getEncoder();
 
         cmdLauncherOff();
@@ -156,7 +166,6 @@ public class TurretLauncher {
         TurretOffset = new Translation2d( -0.14605 , 0);
 
 
-        //TODO: get the values of the goal position based on alliance - currently using Red values
         //Blue: x: 11.92m y: 4.03m  (is this really red??)
         goalPoseRED = new Translation2d(11.92, 4.03);
         zonePoseRED = new Translation2d(15.0,6.6);
@@ -168,6 +177,9 @@ public class TurretLauncher {
         //PositionControl -- Turret -- everything is in degrees.
         TurretPositionControl = new Lib4150PositionControl(1.0,40.0, 
                             0.07, 0.30, 0.40, 1.0e-5, false, false);
+
+        TurretPosFilter = new Lib4150FilterLowPassBW1(TURRET_FILTER_TIME_CONST, 0.020);
+
         //Speed control
         launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
         launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);
@@ -244,7 +256,7 @@ public class TurretLauncher {
         }
 
         // --------read the turret position and velocity
-        turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() );
+        turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() ) - 3.7;
         turretAngleVelDegSec = calcTurretVelFromRawEncoder(TurrentRotationMotorEncoder.getVelocity() );
 
         // ------------------------------------------------------------------------------------------------------------
@@ -290,7 +302,8 @@ public class TurretLauncher {
             DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
             DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-            desiredTurretAngleDegRaw = MathUtil.inputModulus( DesiredTurretAngle.getDegrees(), 0.0, 360.0);
+            desiredTurretAngleDegRaw = TurretPosFilter.execFilter( MathUtil.inputModulus( DesiredTurretAngle.getDegrees(), 0.0, 360.0),
+                                        systemElapsedTimeSec);
             desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
 
         }
@@ -303,8 +316,7 @@ public class TurretLauncher {
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
-        // TODO: Need to get data and create this curve....
-        launchertargetSpeed  = 800.0 + TargetDistance * 250.0;
+        launchertargetSpeed  = LAUNCHER_B + TargetDistance * LAUNCHER_M;
 
 
         // ------------------------------------------------------------------------------------------------------------
@@ -328,7 +340,7 @@ public class TurretLauncher {
         }
 
         // --------if intake arm is still up, don't move turret!!
-        if ( IntakeSystem.getIntakeArmAngleActual() > 50.0 ) {
+        if ( IntakeSystem.getIntakeArmAngleActual() > MIN_INTAKE_ANGLE ) {
             desiredTurretAngleDegrees = 180.0;
         }
 
@@ -382,12 +394,12 @@ public class TurretLauncher {
         }
 
         // --------tell feeder how fast to go.   For now approx 80%
-        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.8);
+        FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.95);
 
         //check if within 75 RPM of target speed
         launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
         // launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
-        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 100.0 ) );
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);

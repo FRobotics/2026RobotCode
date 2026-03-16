@@ -29,7 +29,7 @@ public class TrajectorySystem {
 
     // things for executing the trajectory
     private static Trajectory<SwerveSample> TrajectoryToRun;
-    // TODO: add starting time, add initComplete
+    // TODO: add initComplete
     private static double startTime = 0.0;
     private static double elapsedTrajTime = 0.0;
     private static double xErr = 0.0;
@@ -83,7 +83,6 @@ public class TrajectorySystem {
     }
 
     @SuppressWarnings("unchecked")
-    //TODO: should this be a primative???
     public static boolean FollowTrajectory(Boolean Init, String TrajectoryName, double SystemElapsedTime){
 
         if(Init) {
@@ -126,7 +125,9 @@ public class TrajectorySystem {
             else {
                 ontarget = false;
             }        
-            SwerveDrive.setDesiredSpeed(new ChassisSpeeds( xvelDmd, yvelDmd, rotvelDmd));
+            // --------trajectory speeds are field relative.  Need to convert
+            SwerveDrive.setDesiredSpeed( ChassisSpeeds.fromFieldRelativeSpeeds( xvelDmd, yvelDmd, rotvelDmd, SwerveOdometry.getpose().getRotation()));
+
             // -------- is it time to run an event
             // -------- we have some events.
             if ( events.size() > 0 ) {
@@ -179,5 +180,4 @@ public class TrajectorySystem {
     public static double getTimeLengthOfTrajectory(){
         return timeLengthOfTrajectory;
     }
-    // TODO: add getters for new things written to network tables.  ontarget, havesample,done.
 }

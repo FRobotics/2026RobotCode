@@ -23,8 +23,14 @@ public class IntakeSystem {
     private static final double INTAKEDOWNANGLE = 0.0;
     private static final double INTAKEDOWNLIMITSWITCHANGLE = 0.9;
 
+    private static final double ARM_GRAVITY_CONSTANT = 0.11;    // was 0.13
+
     private static final double PICKUP_MOTOR_ON = 0.75;
     private static final double PICKUP_MOTOR_OFF = 0.0;
+
+    private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
+    private static final double ROCK_UP_TIME = 3.0;     // time arm is up - seconds
+    private static final double ROCK_UP_POS = 35.0;     // arm pos for up - degrees
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -35,7 +41,6 @@ public class IntakeSystem {
     private static Lib4150PositionControl IntakePositionControl;
     private static RelativeEncoder IntakeArmMotorEncoder;
     private static int intakeState;//1 is up off, 2 is down off, 3 is down on,
-    // private static boolean intakeRockState = false;
     private static double intakeAngleTarget;
     private static boolean IntakeArmLowLimitSwitchState;
     private static double IntakeArmAngleActual; //stores current value from encoder
@@ -52,16 +57,18 @@ public class IntakeSystem {
     private static double IntakeArmABSEncPos = 0.0;
     // --------a little rate limiting on starting the intake move..
     private static SlewRateLimiter IntakeArmRateLimit;
-    // --------next rock time...
-    //private static double locNextRockTime = 0.0;
+    // --------variables for rocking..
+    private static boolean intakeRockEnable = false;
+    private static int intakeRockState = 0; // states - 0 - Off or Wait to Start, 1 - Start, set up, 2 - up, wait to finish
+    private static double intakeRockStepTime = 0.0;
     //private static double locRockTargetAngle = 0.0;
 
     
     public static void init() {
 
         //motors
-        IntakeBallMotor = new SparkMax(6,MotorType.kBrushless);
-        IntakeArmMotor = new SparkMax(5,MotorType.kBrushless);
+        IntakeBallMotor = new SparkMax(CanId.IntakeBallMotor,MotorType.kBrushless);
+        IntakeArmMotor = new SparkMax(CanId.IntakeArmMotor,MotorType.kBrushless);
 
         
         
@@ -92,7 +99,7 @@ public class IntakeSystem {
         IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
         intakeSpeed=0.0;
         intakeState=1;
-        //intakeRockState = false;
+        cmdRockDisable();
 
         IntakeArmLowLimitSwitchState = false;
         IntakeArmAngleActual = 0.0;
@@ -173,29 +180,50 @@ public class IntakeSystem {
         }
 
 
-        // --------should we rock ???
-        // TODO: FOR NOW DISABLE ROCKING....
-        //if ( intakeState == 2 && intakeRockState ) {
-        //    if ( systemElapsedTimeSec >= locNextRockTime ) {
-        //        locNextRockTime = systemElapsedTimeSec + 3.0;
-        //        if ( intakeAngleTarget == INTAKEDOWNANGLE ) {
-        //            locRockTargetAngle = INTAKEDOWNANGLE + 30.0;
-        //        }
-        //        else {
-        //            locRockTargetAngle = INTAKEDOWNANGLE;
-        //        }
-        //    }
-        //    intakeAngleTarget = locRockTargetAngle;
-        //}
-        //// --------just reset time.
-        //else {
-        //    locNextRockTime = systemElapsedTimeSec + 3.0;
-        //}
+        // --------should we rock ??? -- if so, process..
+        // --------regardless of enable - only rock if state is 2 (down, off)
+        if ( intakeState == 2 && intakeRockEnable ) {
+            // --------process rock state machine
+            switch ( intakeRockState ) {
+                // --------remember start time.  Leave angle which should be down, alone
+                case 0:
+                    intakeRockStepTime = systemElapsedTimeSec;
+                    intakeRockState = 1;
+                    break;
+                // --------down, waitin for timer to expire.
+                case 1:
+                    if ( systemElapsedTimeSec > ( intakeRockStepTime+ROCK_DOWN_TIME) ) {
+                        intakeRockState = 2;
+                    }
+                    break;
+                // --------up, set start time.
+                case 2:
+                    intakeAngleTarget = ROCK_UP_POS;
+                    intakeRockStepTime = systemElapsedTimeSec;
+                    intakeRockState = 3;
+                    break;
+                // --------up, wait for up time to expire..
+                case 3:
+                    intakeAngleTarget = ROCK_UP_POS;
+                    if ( systemElapsedTimeSec > ( intakeRockStepTime+ROCK_UP_TIME) ) {
+                        intakeRockState = 0;
+                    }
+                    break;
+                // --------something is wrong, disable rock
+                default:
+                    cmdRockDisable();
+                    break;
+            }
 
+        }
+        else {
+            intakeRockState = 0;
+        }
+     
         // --------do arm position control - values in degrees
         // --------grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
-        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
+        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * ARM_GRAVITY_CONSTANT;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 10.0 ) {
             intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 10.0;
@@ -235,24 +263,26 @@ public class IntakeSystem {
 
 
     // --------setters
-    // public static void setRockOffState(){
-    //     intakeState=2;
-    //     intakeRockState = true;
-    //     return;
-    // }
+    public static void cmdRockEnable(){
+        intakeRockEnable = true;
+        return;
+    }
+    public static void cmdRockDisable(){
+        intakeRockEnable = false;
+        return;
+    }
     public static void setDownOffState(){
         intakeState=2;
-        //intakeRockState = false;
+        cmdRockDisable();    // also set rock state off.
         return;
     }
     public static void setDownOnState(){
         intakeState=3;
-        //intakeRockState = false;
         return;
     }
     public static void setUpOffState(){
         intakeState=1;
-        //intakeRockState = false;
+        cmdRockDisable();    // also set rock state off.
         return;
     }
 

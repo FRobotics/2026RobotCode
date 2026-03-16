@@ -23,6 +23,7 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOn();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setDownOnState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Collecting";
         locNTSend.triggerUpdate();
@@ -34,6 +35,7 @@ public class SupervisoryCmds {
         FeederSystem.cmdFeederOn();
         // IntakeSystem.setDownOffState();
         IntakeSystem.setDownOffState();
+        IntakeSystem.cmdRockEnable();   // enable intake rocking... 
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToHub();
         locMode = "Shooting";
@@ -45,6 +47,7 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setDownOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Driving Only";
         locNTSend.triggerUpdate();
@@ -56,6 +59,7 @@ public class SupervisoryCmds {
         FeederSystem.cmdFeederOn();
         // IntakeSystem.setDownOffState();
         IntakeSystem.setDownOnState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToZone();
         locMode = "BallsToAlliance";
@@ -68,6 +72,7 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Climb - Up";
         locNTSend.triggerUpdate();
@@ -78,15 +83,18 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Climb - Down";
         locNTSend.triggerUpdate();
     }
 
+    // --------play defense
     public static void Defense(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
     }
 

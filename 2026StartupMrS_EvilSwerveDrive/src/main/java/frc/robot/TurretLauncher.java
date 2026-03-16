@@ -175,8 +175,8 @@ public class TurretLauncher {
         
         
         //PositionControl -- Turret -- everything is in degrees.
-        TurretPositionControl = new Lib4150PositionControl(1.0,40.0, 
-                            0.07, 0.30, 0.40, 1.0e-5, false, false);
+        TurretPositionControl = new Lib4150PositionControl(1.0,30.0, 
+                            0.07, 1.00, 1.00, 1.0e-5, false, false);
 
         TurretPosFilter = new Lib4150FilterLowPassBW1(TURRET_FILTER_TIME_CONST, 0.020);
 

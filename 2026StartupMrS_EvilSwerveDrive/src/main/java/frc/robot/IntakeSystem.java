@@ -25,7 +25,7 @@ public class IntakeSystem {
 
     private static final double ARM_GRAVITY_CONSTANT = 0.11;    // was 0.13
 
-    private static final double PICKUP_MOTOR_ON = 0.75;
+    private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds

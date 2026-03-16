@@ -49,7 +49,8 @@ public class IntakeSystem {
     private static double intakeAngleMotorDemand;
     private static DigitalInput IntakeArmLowLimitSwitch;
     // private static double intakeGearRatio = 36.0;
-    private static double intakeGearRatio = 32.2;
+    // private static double intakeGearRatio = 32.2;
+    private static double intakeGearRatio = 53.6666666;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
     // --------rev through bore encoder - abs mode
     private static DigitalInput IntakeArmABSEncDI;

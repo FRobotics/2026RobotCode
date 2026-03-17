@@ -1,0 +1,116 @@
+AgitatorSystem.java
+	must do -- change from sparkmax to talonFX
+	must do -- update PID constants -- will still likely change 
+	must do -- update stall detect time
+	must do -- update stall reverse time.
+	must do -- update stall reverse motor demand.
+	should do -- add stall indicator to network tables.
+
+AutoFunctions.java
+	okay as is
+
+AutoRoutine.java
+	okay as is
+
+AutoStep.java
+	must do - method StepCmd is missing a command...Stop.  
+		goes between shoot and balls to alliance...
+
+AutoSystem.java
+	okay as is
+
+CanId.java
+	okay as is
+
+Climb.java
+	okay as is -- likely won't need.
+
+FeederSystem.java	
+	must do - updat PID tuning
+		kp 0.4 -> 4.0
+		Ki 3.0 -> 2.5
+		Kd 1.0E-6 -> 1.0E-5
+
+IntakeSystem.java
+	must do - update PICKUP_MOTOR_ON  from 0.75 to 1.00
+	must do - update intakeGearRatio  from 32.2 to 53.6666  (Need to test to verify)
+	must do - change gravity constant from 0.13 to 0.11 (may still need to change)
+	should do - implement rocking.
+Main.java
+	okay as is
+
+MatchSystem.java
+	okay as is
+
+Robot.java
+	okay as is
+
+SupervisorySystem.java
+	okay as is
+
+SwerveDrive.java
+	okay as is
+
+SwerveModule.java
+	okay as is
+
+SwerveOdometry.java
+	okay as is
+
+SwerveTeleop.java
+	okay as is.
+
+SwerveVision.java
+	okay as is.
+
+TrajectoryEvent.java
+	okay as is
+
+TrajectorySystem.java
+	must do - speeds are field relative.  Need to use:
+		ChassisSpeeds.fromFieldRelativeSpeeds to set robot speed demand.
+
+TurretLauncher.java
+	should do - add filtering to turret position demand - reduce jitter.
+	must do - limit switches are TRUE LOW ( 0 = ON ).
+	must do - only read limit switch hardware once each execution cycle.
+			mulitiple reads might get different answers and will take extra time.
+			create temporary boolean values if you need to for this.
+			bool tmpClockwiseLimitSwitch = !clockwiseLimitSwitch.get();
+
+	must do - fix limit switch calculations.
+		I don't think this does what you want it to.\
+		-------------------------------------------------------------------
+		if (counterclockwiseLimitSwitch.get()==counterclockwiseLimitSwitchValue){
+            		counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+        	} else{
+            		if ((turretAngleEncoder>= 325)&&(counterclockwiseLimitSwitchValue==true)) {
+                		counterclockwiseLimitSwitchValue = true;
+            		} else {
+                		counterclockwiseLimitSwitchValue = false;
+            		}
+        	}
+		-------------------------------------------------------------------
+		WRITE OUT WHAT YOU WANT, THEN WRITE THE CODE.
+			Is this what you want??
+			The "soft" limit switch should be true when:
+				The hardware limit switch is TRUE (0)
+				OR
+				( the "soft" limit switch was true last time 
+				AND 
+				the turret angle is still less/greater limit switch position )
+			[ greater for counter clockwise, less for clockwise ]
+		THEN WRITE OUT EQUATION.
+		THEN WRITE OUT CODE.
+
+	must do - use intake pos > 65 to set turret position to 180.
+	must do - update speed calculation with data from GOS testing.
+	must do - set feeder speed demand.
+	must do - use within 100 RPM for agitator permissive
+
+				 
+
+
+
+
+

@@ -190,25 +190,4 @@ public class SwerveTeleop {
         return myChassisSpeeds.omegaRadiansPerSecond; 
     }
 
-    /*   public static double TeleopCalc(double input) {
-
-        double joyval = input;
-        if ((joyval <= 0.05) && (joyval >= -0.05)) {
-            joyval = 0.0;
-        }
-        if (joyval < -1) {
-            joyval = -1;
-        }
-        if (joyval > 1) {
-            joyval = 1;
-        }
-        if (joyval >= 0) {
-            joyval = joyval * joyval;
-        } else {
-            joyval = joyval * -joyval;
-        }
-        return joyval;
-    }
-*/
-
 }

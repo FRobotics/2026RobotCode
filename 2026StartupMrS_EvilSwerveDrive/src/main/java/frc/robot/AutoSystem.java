@@ -185,6 +185,9 @@ public class AutoSystem {
                         break;
 
                 case FollowRelTrajectory:
+                        // NOT DONE
+                        AutoFunctions.autoWait();
+                        locExecDoNextStep = true;
                         break;
 
                 case AutoWait:
@@ -196,6 +199,9 @@ public class AutoSystem {
                         break;
 
                 case FollowRelTrajWithTimedComd:
+                        // NOT DONE
+                        AutoFunctions.autoWait();
+                        locExecDoNextStep = true;
                         break;
 
                 case Collect:

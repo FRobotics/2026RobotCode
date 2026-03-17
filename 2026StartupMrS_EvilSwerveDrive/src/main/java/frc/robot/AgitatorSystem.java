@@ -10,11 +10,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-//import com.revrobotics.RelativeEncoder;
-//import com.revrobotics.spark.SparkMax;
-//import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-
 
 public class AgitatorSystem {
 
@@ -23,7 +18,7 @@ public class AgitatorSystem {
     // contants
     // --------agitator PID constants.
     // private static final double Agitator_Kn = 1.0 / 4914.0; // max RPM
-    private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess.
+    private static final double Agitator_Kn = 1.0 / 5000.0; // max RPM guess. --- need data on new motor...
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
@@ -40,14 +35,12 @@ public class AgitatorSystem {
     private static final double STALL_REVERSE_MOTOR = -1.00 / Agitator_Kn;    // motor output to un-jam things.
 
     // class/object variables
-    // private static SparkMax AgitatorMotor;
-    // private static RelativeEncoder AgitatorMotorEncoder;     -- its a Kraken X60 now
-    private static TalonFX AgitatorMotor;
+    private static TalonFX AgitatorMotor;       // motor is a kraken x60 now.
 
     private static Lib4150NetTableSystemSend locNTSend;
 
-    
-    private static boolean locAgitatorOn = false;   // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
+    // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
+    private static boolean locAgitatorOn = false;   
     private static double AgitatorOutput = 0.0;
     private static double AgitatorRPM = 0.0;
     private static double locAgitatorSetpointRPM = 0.0;
@@ -70,8 +63,6 @@ public class AgitatorSystem {
 
 
         // init agitator motor
-        // AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
-        // AgitatorMotorEncoder = AgitatorMotor.getEncoder();
         AgitatorMotor = new TalonFX(CanId.Agitator);
 
         // --------output rate limit
@@ -117,7 +108,7 @@ public class AgitatorSystem {
         // if off, output 0
 
         if (locAgitatorOn){
-            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 0.50);
+            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 0.5);
             locAgitatorSetpointRPM = pctDmdFromDash / Agitator_Kn;
             // --------if launcher not up to speed set demand at zero.
             if ( !TurretLauncher.getAgitatorStartPermissive() ) {

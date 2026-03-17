@@ -32,10 +32,10 @@ public class SwerveModule {
 
     // --------class constants
 
-    // Spark motor output = 1.0
-    // Spark speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
-    // Kn (normalization constant) = Flex motor out / Spark speed = 0.07645406
-    // when doing everything in meters then Spark speed is 3.98670783
+    // SparkFlex motor output = 1.0
+    // SparkFlex speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
+    // Kn (normalization constant) = SparkFlex motor out / SparkFlex speed = 0.07645406
+    // when doing everything in meters then SparkFlex speed is 3.98670783
 
     //Now 15 ft/sec -> 4.572 m/s
     // --------maximum velocity m/sec
@@ -191,9 +191,11 @@ public class SwerveModule {
         locSpinMotorOutput = spinPositionControl.PosCtrlExec(locDesiredSpinAngleRad, currentAngle);
         spinMotor.set(locSpinMotorOutput);
 
-        double driveSpinErrorCompensation = MathUtil.clamp(Math.abs((new Rotation2d(locDesiredSpinAngleRad)).minus(new Rotation2d(currentAngle)).getCos()), 0.0, 1.0);
+        double driveSpinErrorCompensation = MathUtil.clamp(
+                                                Math.abs(
+                                                (new Rotation2d(locDesiredSpinAngleRad)).minus(new Rotation2d(currentAngle)).getCos()), 
+                                                0.0, 1.0);
         
-        // ---------------------------------
         // control the drive motor
         locDriveSpeedDemand = parmModState.speedMetersPerSecond * driveSpinErrorCompensation;
         double feedForward = drivFeedforward.calculate(locDriveSpeedDemand);

@@ -95,7 +95,7 @@ public class MatchSystem {
 
         locNTSend.addItemBoolean("isRed", MatchSystem::isRed);
         locNTSend.addItemBoolean("isBlue", MatchSystem::isBlue);
-        locNTSend.addItemDouble("RobotCodePhase", MatchSystem::getRobotCodePhaseNumb);
+        locNTSend.addItemDouble("RobotCodePhase", MatchSystem::getRobotCodePhaseNumber);
         
         // --------enable data logging --- disable this for competition.
         DataLogManager.start();
@@ -223,7 +223,7 @@ public class MatchSystem {
      * 
      * @return phaseNumber - double - current robot execution phase number
      */
-    public static double getRobotCodePhaseNumb() {
+    public static double getRobotCodePhaseNumber() {
         return (double)locRobotCodePhase.ordinal();
     }
     

@@ -25,8 +25,8 @@ public class SwerveVision {
     
     private static Lib4150NetTableSystemSend    locNtSend;
     private static AprilTagFieldLayout fieldLayout;
-
-    // --------camera 1-BACK-LEFT
+    //cameras are ordered from left to right while looking at intake
+    // --------camera 1---back left
     private static final String cam1name = "OV9281-2603";
     private static long locCam1Count = 0;
     private static PhotonCamera camera1;
@@ -44,7 +44,7 @@ public class SwerveVision {
     private static double cam1orient = 0.0;
 
 
-     // --------camera 2 BACK right
+     // --------camera 2----back right
     private static final String cam2name = "OV9782-2602";
     private static long locCam2Count = 0;
     private static PhotonCamera camera2;
@@ -62,7 +62,7 @@ public class SwerveVision {
     private static double cam2Z = 0.0;
     private static double cam2orient = 0.0;
 
-     // --------camera 3 MIDDLE LEFT
+     // --------camera 3----middle left
     private static final String cam3name = "OV9782-2604";
     private static long locCam3Count = 0;
     private static PhotonCamera camera3;
@@ -79,7 +79,7 @@ public class SwerveVision {
     private static double cam3Z = 0.0;
     private static double cam3orient = 0.0;
 
-     // --------camera 4 midle right
+     // --------camera 4----middle right
     private static final String cam4name = "OV9281-2601";
     private static long locCam4Count = 0;
     private static PhotonCamera camera4;

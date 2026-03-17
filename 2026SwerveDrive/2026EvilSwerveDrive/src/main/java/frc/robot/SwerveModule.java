@@ -5,12 +5,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-//import edu.wpi.first.wpilibj.CAN;
 import Lib4150.Lib4150PositionControl;
 import edu.wpi.first.math.geometry.Rotation2d;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-//import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -18,12 +16,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import com.ctre.phoenix6.hardware.CANcoder;
-//import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
-//import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.StatusSignal;
-//import com.ctre.phoenix6.configs.CANcoderConfiguration;
-//import com.ctre.phoenix6.configs.CANcoderConfigurator;
-//import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -31,14 +24,17 @@ import com.revrobotics.ResetMode;
 public class SwerveModule {
 
 
-    // Flex motor output = 1.0
-    // Flex speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
-    // Kn (normalization constant) = Flex motor out / Flex speed = 0.07645406
-    // when doing everything in meters then Flex speed is 3.98670783
+    // SparkFlex motor output = 1.0
+    // SparkFlex speed -- for previous robots was 13.079750113990022243423043851432 feet/sec
+    // Kn (normalization constant) = SparkFlex motor out / SparkFlex speed = 0.07645406
+    // when doing everything in meters then SparkFlex speed is 3.98670783
 
     //Now 15 ft/sec -> 4.572 m/s
     private static double Drive_Kn = 1.0 / 4.572;
-
+    // --------Izone - maximum error magnitude to allow use of integral 
+    private static final double Drive_Izone = 0.4;  // m/sec
+    // --------Irange - allowed range of integral output
+    private static final double Drive_Irange = 0.25;   // motor output units.
     private double xOff = 0.0;
     private double yOff = 0.0;
     private int driveid = 0;
@@ -116,7 +112,8 @@ public class SwerveModule {
         
         
         // (Error Deadband,error threshhold )
-        spinPositionControl = new Lib4150PositionControl(Units.degreesToRadians(2.0), Units.degreesToRadians(50.0), 0.005, 0.35, 0.8, 1.0e-5, false, true);
+        spinPositionControl = new Lib4150PositionControl(Units.degreesToRadians(1.0), Units.degreesToRadians(50.0), 
+                                    0.003, 0.35, 0.8, 1.0e-5, false, true);
 
         // original was in feet .... change to meters...
 
@@ -125,8 +122,9 @@ public class SwerveModule {
         drivFeedforward = new SimpleMotorFeedforward (0.0, Drive_Kn, 0.0);
         //drivePID = new PIDController (0.07645406*1.0, 0.07645406*0.5, 1.0e-7*0.7645406);
         // drivePID = new PIDController (0.07645406*.5, 0, 0);
-        drivePID = new PIDController ( Drive_Kn *.5, 0, 0);
-        
+        drivePID = new PIDController ( Drive_Kn *.5, Drive_Kn * 2.5, Drive_Kn * 1.0e-5);
+        drivePID.setIZone(Drive_Izone);
+        drivePID.setIntegratorRange(-Drive_Irange, Drive_Irange);
     }
 
     public Translation2d getModuleLocation() {

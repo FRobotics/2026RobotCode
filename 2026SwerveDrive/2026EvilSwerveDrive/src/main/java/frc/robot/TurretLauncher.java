@@ -29,12 +29,13 @@ public class TurretLauncher {
     // --------CONSTANTS
 
     // --------THESE WILL NEED TO BE TUNED...
+    private static final double MIN_INTAKE_ANGLE = 65.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
     private static final double MIN_ALLOWED_TURRET_ANGLE = 50.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 310.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
-
+    private static final double TURRET_FILTER_TIME_CONST = 0.100;
 
     //private double TURRETOFFSET;
     //private Rotation2d RobotRotation;
@@ -86,6 +87,8 @@ public class TurretLauncher {
     private static Translation2d zonePoseBlue;
     private static double intakeAngle;
     private static boolean launcherAgitatorPermissive = false;
+    private static boolean tmpclockwiseLimitSwitch;
+    private static boolean tmpcounterclockwiseLimitSwitch;
     // Launcher Tunning Constants
     // Max motor output/ max device rpm
     private static final double Launcher_Kn = 1.0 / 5721.6;
@@ -108,7 +111,8 @@ public class TurretLauncher {
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Imax = 0.3;
     //private static final double LAUNCHER_FILTER_TIME_CONST = 0.100;   // seconds
-
+    private static final double LAUNCHER_M = 193.820210097687;
+    private static final double LAUNCHER_B = 1030.12111625272;
 
     
     //private static SparkMax turretEncoder;
@@ -199,23 +203,24 @@ public class TurretLauncher {
         // -------- read sensors and correct limit switches
         turretAngleEncoder = (TurrentRotationMotorEncoder.getPosition()*360.0/turretGearRatio) + 180.0 - 3.7;
         turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360.0/turretGearRatio)/60.0;
-       
-        clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
 
-        if (counterclockwiseLimitSwitch.get()==counterclockwiseLimitSwitchValue){
-            counterclockwiseLimitSwitchValue = counterclockwiseLimitSwitch.get();
+        tmpclockwiseLimitSwitch = !clockwiseLimitSwitch.get();
+        tmpcounterclockwiseLimitSwitch = !counterclockwiseLimitSwitch.get();
+
+        if (tmpcounterclockwiseLimitSwitch==false){
+            counterclockwiseLimitSwitchValue = tmpcounterclockwiseLimitSwitch;
         } else{
-            if ((turretAngleEncoder>= 325)&&(counterclockwiseLimitSwitchValue==true)) {
+            if ((turretAngleEncoder>= 305)&&(counterclockwiseLimitSwitchValue==true)) {
                 counterclockwiseLimitSwitchValue = true;
             } else {
                 counterclockwiseLimitSwitchValue = false;
             }
         }
 
-        if (clockwiseLimitSwitch.get()==clockwiseLimitSwitchValue){
-            clockwiseLimitSwitchValue=clockwiseLimitSwitch.get();
+        if (tmpclockwiseLimitSwitch==false){
+            clockwiseLimitSwitchValue=tmpclockwiseLimitSwitch;
         } else{
-            if ((turretAngleEncoder<= 35)&&(clockwiseLimitSwitchValue==true)){
+            if ((turretAngleEncoder<= 55)&&(clockwiseLimitSwitchValue==true)){
                 clockwiseLimitSwitchValue = true;
             } else {
                 clockwiseLimitSwitchValue = false;
@@ -259,7 +264,7 @@ public class TurretLauncher {
         DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 
         DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
-        desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), MIN_ALLOWED_TURRET_ANGLE, MIN_ALLOWED_TURRET_ANGLE);
+        desiredTurretAngleDegrees = MathUtil.clamp( DesiredTurretAngle.getDegrees(), MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...

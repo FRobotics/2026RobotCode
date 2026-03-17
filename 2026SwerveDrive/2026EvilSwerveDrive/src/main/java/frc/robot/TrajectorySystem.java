@@ -125,7 +125,7 @@ public class TrajectorySystem {
             else {
                 ontarget = false;
             }        
-            SwerveDrive.setDesiredSpeed(new ChassisSpeeds( xvelDmd, yvelDmd, rotvelDmd));
+                SwerveDrive.setDesiredSpeed( ChassisSpeeds.fromFieldRelativeSpeeds( xvelDmd, yvelDmd, rotvelDmd, SwerveOdometry.getpose().getRotation()));
             // -------- is it time to run an event
             // -------- we have some events.
             if ( events.size() > 0 ) {

@@ -29,7 +29,7 @@ public class TrajectorySystem {
 
     // things for executing the trajectory
     private static Trajectory<SwerveSample> TrajectoryToRun;
-    // TODO: add starting time, add initComplete
+    // TODO: add initComplete
     private static double startTime = 0.0;
     private static double elapsedTrajTime = 0.0;
     private static double xErr = 0.0;
@@ -83,7 +83,6 @@ public class TrajectorySystem {
     }
 
     @SuppressWarnings("unchecked")
-    //TODO: should this be a primative???
     public static boolean FollowTrajectory(Boolean Init, String TrajectoryName, double SystemElapsedTime){
 
         if(Init) {

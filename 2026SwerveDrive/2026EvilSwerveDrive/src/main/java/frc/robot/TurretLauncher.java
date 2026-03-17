@@ -8,13 +8,13 @@ import com.revrobotics.spark.SparkMax;
 //import com.revrobotics.spark.config.SparkMaxConfig;
 
 import Lib4150.Lib4150PositionControl;
-import Lib4150.Lib4150RateOfChange3;
+//import Lib4150.Lib4150RateOfChange3;
 import Lib4150.Lib4150DigEdgeOn;
 import Lib4150.Lib4150FilterLowPassBW1;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
+//import edu.wpi.first.math.util.Units;
 //import edu.wpi.first.units.measure.Angle;
 //import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -30,9 +30,9 @@ public class TurretLauncher {
 
     // --------THESE WILL NEED TO BE TUNED...
     // --------Turret angle range is 0.0 - 360.0 degrees.
-    private static final double MIN_ALLOWED_TURRET_ANGLE = 60.0;
+    private static final double MIN_ALLOWED_TURRET_ANGLE = 50.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
-    private static final double MAX_ALLOWED_TURRET_ANGLE = 304.0;
+    private static final double MAX_ALLOWED_TURRET_ANGLE = 310.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
 
 
@@ -73,7 +73,7 @@ public class TurretLauncher {
     private static double locLauncherSpeedActual = 0.0;
     private static double launchertargetSpeed= 100.0;
     private static boolean launcherSpeedOnTarget = false;
-    // private static double turretGearRatio = 160.0;
+    // private static double turretGearRatio = 40.0;
     private static double turretGearRatio = 160.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
@@ -153,9 +153,7 @@ public class TurretLauncher {
         zonePoseBlue = new Translation2d(1.5,1.5);        
         
         //PositionControl
-        //TurretPositionControl = new Lib4150PositionControl(Units.rotationsToDegrees(2.0),Units.rotationsToDegrees(50.0), 
-        //                    0.005, 0.35, 0.35, 1.0e-5, false, false);
-TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.0e-5, false, false);
+        TurretPositionControl = new Lib4150PositionControl(1.0,30.0,0.05, 1.00, 1.00, 1.0e-5, false, false);
         //Speed control
         launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
         launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);
@@ -199,8 +197,8 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
     public static void executeLogic(double systemElapsedTimeSec) {
 
         // -------- read sensors and correct limit switches
-        turretAngleEncoder = (TurrentRotationMotorEncoder.getPosition()*360/turretGearRatio) + 180;
-        turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360/turretGearRatio)/60;
+        turretAngleEncoder = (TurrentRotationMotorEncoder.getPosition()*360.0/turretGearRatio) + 180.0 - 3.7;
+        turretAngleVelRPM = (TurrentRotationMotorEncoder.getVelocity()*360.0/turretGearRatio)/60.0;
        
         clockwiseLimitSwitchValue = clockwiseLimitSwitch.get();
 
@@ -213,15 +211,16 @@ TurretPositionControl = new Lib4150PositionControl(1.0,40.0,0.07, 0.30, 0.40, 1.
                 counterclockwiseLimitSwitchValue = false;
             }
         }
-         if (clockwiseLimitSwitch.get()==clockwiseLimitSwitchValue){
+
+        if (clockwiseLimitSwitch.get()==clockwiseLimitSwitchValue){
             clockwiseLimitSwitchValue=clockwiseLimitSwitch.get();
-         } else{
+        } else{
             if ((turretAngleEncoder<= 35)&&(clockwiseLimitSwitchValue==true)){
                 clockwiseLimitSwitchValue = true;
             } else {
                 clockwiseLimitSwitchValue = false;
             }
-         }
+        }
 
 
         //get team side from MatchSystem

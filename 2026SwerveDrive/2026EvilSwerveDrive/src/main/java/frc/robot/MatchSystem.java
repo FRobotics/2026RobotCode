@@ -3,6 +3,9 @@ package frc.robot;
 import java.util.Optional;
 
 import Lib4150.Lib4150NetTableSystemSend;
+
+import com.revrobotics.util.StatusLogger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -65,8 +68,11 @@ public class MatchSystem {
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("MatchSystem");
         locNTSend.addItemBoolean("isRed", MatchSystem::isRed);
-        locNTSend.addItemBoolean("isBlue", MatchSystem::isRed);
+        locNTSend.addItemBoolean("isBlue", MatchSystem::isBlue);
         locNTSend.addItemDouble("RobotCodePhase", MatchSystem::getRobotCodePhaseNumber);
+
+        // --------disable automatic REV logging
+        StatusLogger.disableAutoLogging();
 
         locNTSend.triggerUpdate();
     }

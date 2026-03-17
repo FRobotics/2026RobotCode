@@ -41,7 +41,6 @@ public class SwerveTeleop {
         myXboxController2 = new XboxController(1);
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
-        // TODO: add driver button box - if you want one
         // TODO: add aux button box - if you want one.
 
         locNTsend = new Lib4150NetTableSystemSend("Teleop");
@@ -111,10 +110,10 @@ public class SwerveTeleop {
             SupervisoryCmds.BallsToAlliance();
         }
         if (myXboxController2.getYButtonPressed()){
-            SupervisoryCmds.Descend();
+            SupervisoryCmds.ClimbRetract();
         }
         if (myXboxController2.getXButtonPressed()){
-            SupervisoryCmds.Climb();
+            SupervisoryCmds.ClimbExtend();
         }
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
@@ -154,7 +153,7 @@ public class SwerveTeleop {
         // --------launcher manual inc/dec
         // --------This is approx 200 rpm/second at maximum joystick value.
         if ( TurretLauncher.getLauncherManualMode()) {
-            TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightY(),0.08) * 4.0 );
+            TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getLeftY(),0.08) * 4.0 );
         }
 
       
@@ -190,26 +189,5 @@ public class SwerveTeleop {
     public static double getDriveSpeedTargRot() {
         return myChassisSpeeds.omegaRadiansPerSecond; 
     }
-
-    /*   public static double TeleopCalc(double input) {
-
-        double joyval = input;
-        if ((joyval <= 0.05) && (joyval >= -0.05)) {
-            joyval = 0.0;
-        }
-        if (joyval < -1) {
-            joyval = -1;
-        }
-        if (joyval > 1) {
-            joyval = 1;
-        }
-        if (joyval >= 0) {
-            joyval = joyval * joyval;
-        } else {
-            joyval = joyval * -joyval;
-        }
-        return joyval;
-    }
-*/
 
 }

@@ -1,0 +1,149 @@
+AgitatorSystem
+--------------
+	- remove AgitatorOnRev command and all code and variables that go with it.
+	- add state machine to detect stall, initiate reverse, then go back to normal when done.
+		currently 0.6 seconds to detect stall, reverse for 1.0 seconds.  
+		might consider reducing both of these a little.
+	- add rate limiting on motor output so we aren't step changing the motor from forward to
+		reverse.
+	- update motor feedforward and pid tuning 
+
+
+AutoFunctions
+---------------
+	- okay 
+	- later --  missing driveStraight, driveSpin (may not need)
+
+AutoRoutine
+-----------
+	- okay
+
+AutoStep
+---------------
+	- okay 
+	- later -- missing Defense, but likely won't need.
+
+AutoSystem
+-----------
+	- later - Add something -- maybe a call to autowait for commands without code.
+	- add code to take care null exception that happens when user didn't select an auto.
+
+Climb
+---------------
+	- new - need to add commands Up, Down, Off
+		- suggest Up 15%, Down 40%, Off 0%
+
+
+Feeder
+---------------
+	- okay
+
+IntakeSystem
+---------------
+	- later - class variables - Why is intakeAngleTarget public??  Think this should 
+		be private.
+	- later - executelogic method - Watch what happens when setting the encoder 
+		position when limit switch is hit.  A rough landing may cause the 
+		value to be set differently than expected.  (Leave as is an watch.)
+	- executeLogic method - CANT USE THE RATE LIMIT IN TWO PLACES.  Only rate limit 
+		the final value. 
+		- remove the rate limit here...
+			intakeAngleMotorDemand=IntakeArmRateLimit.calculate( 
+                                               -----------------------------
+				IntakePositionControl.PosCtrlExec(intakeAngleTarget,
+					 IntakeArmAngleActual) );
+                                                                                                        
+		- keep the rate limit here...
+        			intakeAngleMotorDemand = MathUtil.clamp( 
+					IntakeArmRateLimit.calculate( 
+					intakeAngleMotorDemand + intakeAngleGravityConstant),
+						 tmpLowClamp, 1.0 );
+
+
+
+MatchSystem
+---------------
+	- init method  --- The getter should probably be blue...??
+		locNTSend.addItemBoolean("isBlue", MatchSystem::isRed);
+
+
+
+SupervisoryCmds
+----------------
+	- shooting method  -- for now don't "rock", use setDownOffState.   Need to test rocking
+				 and see what build wants.
+	- climbing -- it seems like climbing is not going to be for auto -- check with build -- 
+		- suggest leaving command alone for now.  If going to be used for auto likely a
+		do climb state machine will be needed -- or something to sequence the actions...
+
+SwerveDrive
+--------------
+	- nothing
+
+SwerveModule
+------------
+	- should do some tuning if we have time !!
+	- later - may want to multiply the drive output by the cosine of the spin angle error.
+		- spin error should always be within +/- 90 degrees after optimization.
+		- when error is near zero, cosine is near 1.0.  As error increases, value
+		decreases to zero.  This can help reduce sway when changing directions.
+
+
+	
+	
+SwerveOdometry
+---------------
+	- okay -- if we have null exceptions, may need to revisit protections on getters.
+
+
+
+SwerveTeleop
+--------------
+	- okay 
+	- do you want a button box ???
+	- add buttons for climb reach up, climb pull down.
+
+
+SwerveVision
+------------
+	- okay 
+	- update with camera names and locations.
+	- NEED TO TEST AND TUNE
+
+TrajectoryEvent
+---------------
+	- okay
+	- NEED TO TEST
+
+TrajectorySystem
+-----------------
+	- okay
+	- NEED TO TEST AND TUNE
+
+TurretLauncher
+--------------
+	- are the launcher tuning constants up to date ??
+	- limit switch values need to be "locked" until position is away from limit switch.
+		( limit switch position + hysteresys value --- sign depends on which limit
+		switch.
+	- Should only use automatic setpoints if odometry is good.  Otherwise set constant
+		"safe" values.
+	- need to update launcher speed demand calculation based on testing.
+	- clamp the auto calculated turret setpoint. "desiredTurretAngleDegrees", using 
+		actual limit values, not -100 and 100.
+	- this code:
+		        //-------------------------------
+        		if (IntakeSystem.intakeAngleTarget > 45){
+            			TurretMotorDemand = 180;
+        		}
+		should set the desiredTurretAngleDegrees not the motor output.
+		It also must be above the position control.
+		If you really want to set the motor demand based on this permissive,
+		the demand needs to be zero.
+
+	- appears that turret motor outpt is being clamped twice. (It might work as is,
+		but is should be fixed.)
+
+	
+
+	

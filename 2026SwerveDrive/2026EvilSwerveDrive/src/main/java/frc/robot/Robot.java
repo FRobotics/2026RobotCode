@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -16,10 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
+
+  private static final String kDefaultAuto = "--NONE--";
+  // private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  //private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,6 +28,7 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
 
+    MatchSystem.init();   // match system has to be first because of robotphase....
     SwerveTeleop.init();
     SwerveDrive.SwerveInit();
     SwerveOdometry.init();
@@ -40,13 +40,15 @@ public class Robot extends TimedRobot {
     String[] ourautos = AutoSystem.init();
     TurretLauncher.init();
     // Climb.init();
+    SupervisoryCmds.init();
  
-    // TODO: update this code after reading auto files from roborio mem card.  This might be moved to end of this method, after the system inits.
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     //m_chooser.addOption("My Auto", kCustomAuto);
     //SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putStringArray("Auto List", ourautos);
-    
+
+    // --------indicate startup is done.
+    MatchSystem.setRobotPhaseStartupComplete();
 
   }
 
@@ -68,11 +70,9 @@ public class Robot extends TimedRobot {
     IntakeSystem.executeLogic(systemElapsedTimeSec);
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
     FeederSystem.executeLogic(systemElapsedTimeSec);
-    
-    // TurretLauncher.executeLogic(systemElapsedTimeSec);
+    TurretLauncher.executeLogic(systemElapsedTimeSec);
     // Climb.executeLogic(systemElapsedTimeSec);
-    // TODO: add feeder
-
+    return;    
   }
 
   /**
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     AutoSystem.ExecuteListInit(m_autoSelected);
-    // TODO: Update as needed to init for running an auto routine...
+    return;
   }
 
   /** This function is called periodically during autonomous. */
@@ -99,42 +99,56 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     double systemElapsedTimeSec = Timer.getFPGATimestamp();
     AutoSystem.ExecuteList(systemElapsedTimeSec);
+    return;
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-
+    return;
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     SwerveTeleop.SwerveExecute();
-
+    return;
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    return;
+  }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    MatchSystem.disableExec();
+    return;
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+    return;
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    return;
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    return;
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    return;
+  }
 }

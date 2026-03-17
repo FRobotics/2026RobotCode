@@ -1,0 +1,63 @@
+
+down 89.9
+up 25.3
+ 
+robot.java
+
+ 	-- remove unused choreo imports - very low
+ 	-- Do you have a match system to get Red / blue, if so call its init in Robot() constructor
+ 	-- Uncomment SwerveVision.execute in robotPeriodic
+ 	-- If it's ready, uncomment TurretLauncher.executeLogic in robotPeriodic
+ 	-- If there is a match system "disableExecute" call it.
+
+
+Agitator
+	-- AgitatorOutput isn't calculated.  Output will likely always be zero.  
+
+AutoFunctions
+	-- nothing that is needed right now.  If we end up needing we can discuss..
+		new functions for spin and drive straight..
+
+AutoRoutine
+	-- nothing
+
+AutoStep
+	-- add a new enum value for Defense
+	-- update StepCommandCases to add Defense
+
+AutoSystem
+	-- remove unused imports -- very low
+	-- add a new command for "Defense"
+
+Climb
+	-- need more info from build...
+
+FeederSystem
+	-- tuning
+	-- manual mode -- do we want ??
+	-- 
+
+IntakeSystem
+	-- update gear ratio
+	-- didn't finish looking at this.... likely some things to look at.
+
+MatchSystem
+
+SupervisoryCmds
+
+SwerveDrive
+
+SwerveModule
+
+SwerveOdometry
+
+SwerveSim
+
+SwerveTeleop
+
+SwerveVision
+
+TrajectorySystem
+
+TurretLauncher
+

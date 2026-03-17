@@ -21,7 +21,7 @@ public class AutoSystem {
     private static AutoRoutine locExecRoutine;
     private static Timer autoTimer = new Timer();
     private static boolean locExecDoNextStep = false;
-    private static String AUTO_FILE_EXTENSION = ".csv";
+    private static final String AUTO_FILE_EXTENSION = ".csv";
     private static File AUTO_DIR = new File(Filesystem.getDeployDirectory(), "auto");
     private static double locStepTime = 0.0;
 
@@ -53,9 +53,12 @@ public class AutoSystem {
         MatchSystem.setRobotPhaseAutoInitComplete();
         
     }
-
+    /**
+     * If a file ends in AUTO_FILE_EXTENSION it removes AUTO_FILE_EXTENSION from its name and adds it to autos
+     * @return
+     */
     public static String[] availableAutos() {
-        List<String> autos = new ArrayList<>();
+        List<String> autos = new ArrayList<String>();
         File[] files = AUTO_DIR.listFiles();
         if (files != null) {
                 for (File file : files) {
@@ -67,7 +70,11 @@ public class AutoSystem {
         }
         return autos.toArray(new String[0]);
     }
-
+    /**
+     * Adds a new file and reads it in AutoSystem files
+     * @param files
+     * @return
+     */
     public static String[] readFiles(String[] files){
         ArrayList<AutoRoutine> routines = new ArrayList<AutoRoutine>();
         ArrayList<String> routineNames = new ArrayList<String>();
@@ -120,8 +127,22 @@ public class AutoSystem {
     }
 
     // this gets called every 20 ms.   execlistinit needs to be called first to set things up.
+
+    /**
+     * Finds the systems elapsed time, goes through the robots steps, and tests if the robot timed out.
+     * @param SystemElapsedTime
+     */
     public static void ExecuteList(double SystemElapsedTime){
 
+        // --------if our auto is null then, execute wait routine and return...
+        if ( locExecRoutine == null ) {
+                AutoFunctions.autoWait();
+                // --------tell system we are running autos
+                MatchSystem.setRobotPhaseAutoRunning();
+                // --------trigger NT update.
+                locNTSend.triggerUpdate();
+                return;
+        }
             
         AutoStep ourStep = locExecRoutine.getStep(locExecIndex);
 
@@ -164,6 +185,9 @@ public class AutoSystem {
                         break;
 
                 case FollowRelTrajectory:
+                        // NOT DONE
+                        AutoFunctions.autoWait();
+                        locExecDoNextStep = true;
                         break;
 
                 case AutoWait:
@@ -175,6 +199,9 @@ public class AutoSystem {
                         break;
 
                 case FollowRelTrajWithTimedComd:
+                        // NOT DONE
+                        AutoFunctions.autoWait();
+                        locExecDoNextStep = true;
                         break;
 
                 case Collect:
@@ -198,12 +225,12 @@ public class AutoSystem {
                         break;
                 
                 case Climb:
-                        SupervisoryCmds.Climb();
+                        SupervisoryCmds.ClimbExtend();
                         locExecDoNextStep = true;
                         break;
                 
                 case Descend:
-                        SupervisoryCmds.Descend();
+                        SupervisoryCmds.ClimbRetract();
                         locExecDoNextStep = true;
                         break;
                 
@@ -211,6 +238,7 @@ public class AutoSystem {
                         SupervisoryCmds.Defense();
                         locExecDoNextStep = true;
                         break;
+               
         }
 
         // did we time out.
@@ -231,7 +259,10 @@ public class AutoSystem {
 
     } 
 
-    // one time init when robot boots up.
+    /**
+     * one time init when robot boots up. Resets/starts timer and loads autos into chache.
+     * @return
+     */
     public static String[] init() {
 
         autoTimer.reset();
@@ -262,7 +293,10 @@ public class AutoSystem {
         return readAutos;
         
     }
-
+    /**
+     * Returns getStep value
+     * @return
+     */
     public static double getStep(){
         double returnGetStepValue = 0.0;
         if ( locExecRoutine != null ) {
@@ -270,6 +304,10 @@ public class AutoSystem {
         }
         return returnGetStepValue;
     }
+    /**
+     * Returns getTimeout value
+     * @return
+     */
     public static double getTimeout(){
         double returnGetTimeoutValue = 0.0;
         if (locExecRoutine != null){ 
@@ -277,6 +315,10 @@ public class AutoSystem {
         }
         return returnGetTimeoutValue;
     }
+    /**
+     * Returns getParm1 value
+     * @return
+     */
     public static double getParm1(){
         double returnGetParm1Value = 0.0;
         if (locExecRoutine != null){
@@ -284,6 +326,10 @@ public class AutoSystem {
         }
         return returnGetParm1Value;
     }
+    /**
+     * Returns getParm2 value
+     * @return
+     */
     public static double getParm2(){
         double returnGetParm2Value = 0.0;
         if (locExecRoutine != null){
@@ -291,6 +337,10 @@ public class AutoSystem {
         }
         return returnGetParm2Value;
     }
+    /**
+     * Returns getParm3 value
+     * @return
+     */
     public static double getParm3(){
         double returnGetParm3Value = 0.0;
         if (locExecRoutine != null){
@@ -298,6 +348,10 @@ public class AutoSystem {
         }
         return returnGetParm3Value;
     }
+    /**
+     * Returns getFunction string value.
+     * @return
+     */
     public static String getFunction(){
         String returnGetFunctionValue = "";
         if (locExecRoutine != null){

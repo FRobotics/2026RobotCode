@@ -23,6 +23,7 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOn();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setDownOnState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Collecting";
         locNTSend.triggerUpdate();
@@ -32,7 +33,9 @@ public class SupervisoryCmds {
     public static void Shooting(){
         AgitatorSystem.cmdAgitatorOn();
         FeederSystem.cmdFeederOn();
+        // IntakeSystem.setDownOffState();
         IntakeSystem.setDownOffState();
+        IntakeSystem.cmdRockEnable();   // enable intake rocking... 
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToHub();
         locMode = "Shooting";
@@ -44,6 +47,7 @@ public class SupervisoryCmds {
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setDownOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Driving Only";
         locNTSend.triggerUpdate();
@@ -53,7 +57,9 @@ public class SupervisoryCmds {
     public static void BallsToAlliance(){
         AgitatorSystem.cmdAgitatorOn(); 
         FeederSystem.cmdFeederOn();
-        IntakeSystem.setDownOffState();
+        // IntakeSystem.setDownOffState();
+        IntakeSystem.setDownOnState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToZone();
         locMode = "BallsToAlliance";
@@ -62,29 +68,33 @@ public class SupervisoryCmds {
 
     // --------do climb.   BE CAREFULL - IF INTAKE NEEDS TO BE FULLY UP FIRST THIS WONT WORK.
     // --------            DOES THE TURRET NEED TO BE AT ZERO FIRST!
-    public static void Climb(){
+    public static void ClimbExtend(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Climb - Up";
         locNTSend.triggerUpdate();
     }
 
     // --------climb dowm
-    public static void Descend(){
+    public static void ClimbRetract(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
         locMode = "Climb - Down";
         locNTSend.triggerUpdate();
     }
 
+    // --------play defense
     public static void Defense(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
         IntakeSystem.setUpOffState();
+        IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
     }
 
@@ -110,10 +120,10 @@ public class SupervisoryCmds {
             BallsToAlliance();
         }
         else if ( cmdName.equalsIgnoreCase("climb")) {
-            Climb();
+            ClimbExtend();
         }
         else if ( cmdName.equalsIgnoreCase("descend")) {
-            Descend();
+            ClimbRetract();
         }
         else if ( cmdName.equalsIgnoreCase("defense")) {
             Defense();

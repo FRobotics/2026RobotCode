@@ -1,32 +1,40 @@
 package frc.robot;
 
 import java.util.Optional;
+
 import Lib4150.Lib4150NetTableSystemSend;
+
+import com.revrobotics.util.StatusLogger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class MatchSystem {
-  
+
+    // type defs
     static private enum RobotCodePhase{
-        InitialStartup,
-        GyroCalibrated,
-        TrajectoriesRead,
-        AutosRead,
-        StartupComplete,
+
+        InitialStartup, 
+        GyroCalibrated, 
+        TrajectoriesRead, 
+        AutosRead, 
+        StartupComplete, 
         Disabled,
-        AutoInitComplete,
+        AutoInitComplete, 
         AutoRunning,
         TeleopRunning;
-
     }
 
-    private static final int SKIP_INTERVAL=10;
-    
+    // constants
+    private static final int SKIP_INTERVAL = 10;
+
+    // class variables
     private static boolean areRed;
     private static boolean areBlue;
-    private static int skipCounter=0;
+    private static int skipCounter = 0;
     private static Lib4150NetTableSystemSend locNTSend;
     private static RobotCodePhase locRobotCodePhase = RobotCodePhase.InitialStartup;
+
 
   
     private MatchSystem(){}
@@ -35,6 +43,7 @@ public class MatchSystem {
         areRed = true;
         areBlue = false;
         return;
+
     }
     private static void setBlue(){
         areBlue = true;
@@ -45,6 +54,7 @@ public class MatchSystem {
         areBlue=false;
         areRed=false;
         return;
+
     }
     public static boolean isRed() {
         return areRed;
@@ -53,24 +63,29 @@ public class MatchSystem {
         return areBlue;
     }
 
-    public static void init(){
+    public static void init() {
+
+        // init network table
         locNTSend = new Lib4150NetTableSystemSend("MatchSystem");
         locNTSend.addItemBoolean("isRed", MatchSystem::isRed);
-        locNTSend.addItemBoolean("isBlue", MatchSystem::isRed);
+        locNTSend.addItemBoolean("isBlue", MatchSystem::isBlue);
         locNTSend.addItemDouble("RobotCodePhase", MatchSystem::getRobotCodePhaseNumber);
+
+        // --------disable automatic REV logging
+        StatusLogger.disableAutoLogging();
 
         locNTSend.triggerUpdate();
     }
 
-    
-    //currently jsut returning if we are blue or not
     public static void disableExec() {
+
         skipCounter++;
-        if (skipCounter >= SKIP_INTERVAL){
-            skipCounter=0;
+
+        if ( skipCounter >= SKIP_INTERVAL) {
+            skipCounter = 0;
             Optional<Alliance> ourAlliance = DriverStation.getAlliance();
-            if(ourAlliance.isPresent()){
-                switch(ourAlliance.get()){
+            if ( ourAlliance.isPresent()) {
+                switch ( ourAlliance.get() ) {
                     case Red:
                         setRed();
                         break;
@@ -82,56 +97,60 @@ public class MatchSystem {
                         break;
                 }
             }
-            else{
+            else {
                 setUnknown();
             }
-            locRobotCodePhase=RobotCodePhase.Disabled;
+            locRobotCodePhase = RobotCodePhase.Disabled;
             locNTSend.triggerUpdate();
+
         }
+
         return;
     }
 
-    public static void setRobotPhaseInitialStartup(){
+
+    // --------setters for robot phase.
+    public static void setRobotPhaseInitialStartup() {
         locRobotCodePhase = RobotCodePhase.InitialStartup;
         locNTSend.triggerUpdate();
         return;
-    }    
-    public static void setRobotPhaseGyroCalibrated(){
+    } 
+    public static void setRobotPhaseGyroCalibrated() {
         locRobotCodePhase = RobotCodePhase.GyroCalibrated;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseTrajectoriesRead(){
+    }  
+    public static void setRobotPhaseTrajectoriesRead() {
         locRobotCodePhase = RobotCodePhase.TrajectoriesRead;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseAutosRead(){
+    } 
+    public static void setRobotPhaseAutosRead() {
         locRobotCodePhase = RobotCodePhase.AutosRead;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseStartupComplete(){
+    } 
+    public static void setRobotPhaseStartupComplete() {
         locRobotCodePhase = RobotCodePhase.StartupComplete;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseDisabled(){
+    } 
+    public static void setRobotPhaseDisabled() {
         locRobotCodePhase = RobotCodePhase.Disabled;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseAutoInitComplete(){
+    } 
+    public static void setRobotPhaseAutoInitComplete() {
         locRobotCodePhase = RobotCodePhase.AutoInitComplete;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseAutoRunning(){
+    } 
+    public static void setRobotPhaseAutoRunning() {
         locRobotCodePhase = RobotCodePhase.AutoRunning;
         locNTSend.triggerUpdate();
         return;
-    }
-    public static void setRobotPhaseTeleopRunning(){
+    } 
+    public static void setRobotPhaseTeleopRunning() {
         locRobotCodePhase = RobotCodePhase.TeleopRunning;
         locNTSend.triggerUpdate();
         return;
@@ -140,4 +159,5 @@ public class MatchSystem {
         return (double)locRobotCodePhase.ordinal();
     }
 
+    
 }

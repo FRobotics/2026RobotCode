@@ -18,7 +18,10 @@ public class SwerveTeleop {
     private static double YIn=0.0;
     private static double XIn=0.0;
     private static double RotIn=0.0;
-    
+    //measured in feet
+   // private static final double motorOffsetTotal=(Math.sqrt(Math.pow(motorOffsetX, 2) + Math.pow(motorOffsetY, 2)))/12;
+    //private static final double circumfrence=2*Math.PI*motorOffsetTotal;
+    //private static final double realRotSpeed = maxLinearSpeed/circumfrence * 360;
     // true is field orient false is robot orient
     private static boolean orient = true; //true is field false is robot oriented
     private static double exeTime=0.0;
@@ -38,7 +41,6 @@ public class SwerveTeleop {
         myXboxController2 = new XboxController(1);
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
-        // TODO: add driver button box - if you want one
         // TODO: add aux button box - if you want one.
 
         locNTsend = new Lib4150NetTableSystemSend("Teleop");
@@ -93,6 +95,7 @@ public class SwerveTeleop {
         //-----tell drive system our desired speed
         SwerveDrive.setDesiredSpeed(myChassisSpeeds);
 
+        // ==============================================================================
         //------- Second controller buttons
         if (myXboxController2.getAButtonPressed()){
             SupervisoryCmds.Collecting();
@@ -107,22 +110,26 @@ public class SwerveTeleop {
             SupervisoryCmds.BallsToAlliance();
         }
         if (myXboxController2.getYButtonPressed()){
-            SupervisoryCmds.Descend();
+            SupervisoryCmds.ClimbRetract();
         }
         if (myXboxController2.getXButtonPressed()){
-            SupervisoryCmds.Climb();
+            SupervisoryCmds.ClimbExtend();
         }
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
         }
-        
 
 
       
         endTime = Timer.getFPGATimestamp();
         exeTime = (endTime-startTime)*1000;
 
+        // --------Tell system teleop is running
+        MatchSystem.setRobotPhaseTeleopRunning();
+        
         locNTsend.triggerUpdate();
+
+        return;
     }
 
     public static boolean getFieldOrientedDriving(){

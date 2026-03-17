@@ -70,7 +70,6 @@ public class IntakeSystem {
         //SparkMaxConfig intake2Config = new SparkMaxConfig();
         
         //motor Config
-        //TODO: config values need to be changed/tuned
         /*intake1Config.idleMode(IdleMode.kBrake);
         intake2Config.idleMode(IdleMode.kBrake);
         intake1Config.smartCurrentLimit(50);
@@ -132,7 +131,7 @@ public class IntakeSystem {
 
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        // --------rev through bore encoder in absolute mode.
+        // --------rev through bore encoder in absolute mode. -- NOT USED FOR CONTROL YET.
         IntakeArmABSEncPos = IntakeArmABSEnc.get() * 360.0;
 
         // --------read the arm down limit switch..
@@ -224,6 +223,11 @@ public class IntakeSystem {
     //     intakeRockState = true;
     //     return;
     // }
+    //public static void setRockOffState(){
+    //    intakeState = 4;
+    //    intakeRockState = false;
+    //    return;
+    //}
     public static void setDownOffState(){
         intakeState=2;
         intakeRockState = false;
@@ -236,11 +240,6 @@ public class IntakeSystem {
     }
     public static void setUpOffState(){
         intakeState=1;
-        intakeRockState = false;
-        return;
-    }
-    public static void setRockOffState(){
-        intakeState = 4;
         intakeRockState = false;
         return;
     }

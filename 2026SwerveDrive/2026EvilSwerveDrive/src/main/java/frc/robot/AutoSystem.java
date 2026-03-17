@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
-//import edu.wpi.first.wpilibj.DigitalInput;
 
 import Lib4150.Lib4150NetTableSystemSend;
-///import choreo.trajectory.SwerveSample;
-//import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 public class AutoSystem {
@@ -57,7 +54,7 @@ public class AutoSystem {
      * @return
      */
     public static String[] availableAutos() {
-        List<String> autos = new ArrayList<>();
+        List<String> autos = new ArrayList<String>();
         File[] files = AUTO_DIR.listFiles();
         if (files != null) {
                 for (File file : files) {
@@ -162,55 +159,67 @@ public class AutoSystem {
                 // do step
                 switch (ourStep.getCmd()){
                         case DriveStraight:
-                        // -- p1 - how far m, p2 - how fast m/sec, p3 angle deg
-                        //locExecDoNextStep = AutoFunctions.autoDriveStraight(locExecInitStep, ourStep.getParam1(),ourStep.getParam2(),ourStep.getParam3());
+                                // -- p1 - how far m, p2 - how fast m/sec, p3 angle deg
+                                //locExecDoNextStep = AutoFunctions.autoDriveStraight(locExecInitStep, ourStep.getParam1(),ourStep.getParam2(),ourStep.getParam3());
+                                // NOT DONE
+                                AutoFunctions.autoWait();
+                                locExecDoNextStep = true;
                                 break;
                 
                         case DriveTurn:
-                        // -- p1 - how far - deg, p2 - how fast deg/sec
-                        //locExecDoNextStep = AutoFunctions.autoDriveSpin(locExecInitStep, ourStep.getParam1(),ourStep.getParam2());
+                                // -- p1 - how far - deg, p2 - how fast deg/sec
+                                //locExecDoNextStep = AutoFunctions.autoDriveSpin(locExecInitStep, ourStep.getParam1(),ourStep.getParam2());
+                                // NOT DONE
+                                AutoFunctions.autoWait();
+                                locExecDoNextStep = true;
                                 break;
 
-                         case FollowAbsTrajectory:
+                        case FollowAbsTrajectory:
                                 locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
                                 break;
 
                         case FollowRelTrajectory:
+                                // NOT DONE
+                                AutoFunctions.autoWait();
+                                locExecDoNextStep = true;
                                 break;
 
-                       case AutoWait:
+                        case AutoWait:
                                 locExecDoNextStep = AutoFunctions.autoWait();
-                               break;
+                                break;
 
                         case FollowAbsTrajWithTimedCmd:
                                 locExecDoNextStep = TrajectorySystem.FollowTrajectory(locExecInitStep, ourStep.getFunction(), SystemElapsedTime);
                                 break;
 
                         case FollowRelTrajWithTimedComd:
-                          break;
+                                // NOT DONE
+                                AutoFunctions.autoWait();
+                                locExecDoNextStep = true;
+                                break;
 
                         case Collect:
                                 SupervisoryCmds.Collecting();
-                           locExecDoNextStep = true;
-                               break;
+                                locExecDoNextStep = true;
+                                break;
 
                         case Shoot:
                                 SupervisoryCmds.Shooting();
-                               locExecDoNextStep = true;
+                                locExecDoNextStep = true;
                                 break;
 
-                       case Stop:
+                        case Stop:
                                 SupervisoryCmds.StopAction();
-                                      locExecDoNextStep = true;
+                                locExecDoNextStep = true;
                                 break;
 
                         case BallsToAlliance:
                                 SupervisoryCmds.BallsToAlliance();
                                 locExecDoNextStep = true;
-                               break;
+                                break;
                 
                         case Climb:
-                             SupervisoryCmds.ClimbExtend();
+                                SupervisoryCmds.ClimbExtend();
                                 locExecDoNextStep = true;
                                 break;
                 

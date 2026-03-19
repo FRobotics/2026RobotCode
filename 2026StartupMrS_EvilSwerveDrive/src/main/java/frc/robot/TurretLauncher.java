@@ -55,11 +55,11 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = Launcher_Kn *  2.0;       // was 0.7
+    private static final double Launcher_Kp = Launcher_Kn *  1.2;       // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Launcher_Ki = Launcher_Kn * 2.0;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = Launcher_Kn * 1E-5;
+    private static final double Launcher_Kd = Launcher_Kn * 1E-6;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Launcher_Izone = 60.0;
@@ -406,7 +406,7 @@ public class TurretLauncher {
         //check if within 75 RPM of target speed
         launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
         // launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
-        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 100.0 ) );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 120.0 ) );
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);

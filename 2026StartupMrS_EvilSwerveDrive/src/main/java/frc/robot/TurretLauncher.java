@@ -38,19 +38,24 @@ public class TurretLauncher {
     private static final double TURRET_FILTER_TIME_CONST = 0.100;   // seconds
 
     // --------LAUNCHER TUNING CONSTANTS
+    // --------based on data from girls of steel testing day 3/14/2026
+    private static final double Launcher_MaxRPM = 5678.93;
     // --------overall normalization
     // --------normalization is usually = Max motor output / max device RPM
-    private static final double Launcher_Kn = 1.0 / 5721.6;
+    //private static final double Launcher_Kn = 1.0 / 5721.6;
+    private static final double Launcher_Kn = 1.0 / Launcher_MaxRPM;
     // --------feedforward
     // --------Ks - static feedforward is the amount of motor output to get started moving
-    private static final double Launcher_Ks = 0.0149140408235032;
+    //private static final double Launcher_Ks = 0.0149140408235032;
+    private static final double Launcher_Ks = 0.0147960434685002;
     // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
-    private static final double Launcher_Kv = 0.000172170358450721;
+    //private static final double Launcher_Kv = 0.000172170358450721;
+    private static final double Launcher_Kv = ( 1.0 - Launcher_Ks ) / Launcher_MaxRPM;
     // --------Ka -- acceleration constant -- Helps to accelerate or decellerate to a paricular RPM (we are not changing must so 0.0 for now)
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp =Launcher_Kn *  4.0;       // was 0.7
+    private static final double Launcher_Kp = Launcher_Kn *  4.0;       // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Launcher_Ki = Launcher_Kn * 3.5;
     // --------kd = derivative constant     output = Kd * derivative( error )
@@ -60,7 +65,7 @@ public class TurretLauncher {
     private static final double Launcher_Izone = 60.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
-    //private static final double LAUNCHER_FILTER_TIME_CONST = 0.100;   // seconds
+    private static final double TARG_DISTANCE_FILTER_TIME_CONST = 0.100;   // seconds
     // private static final double LAUNCHER_M = 183.586426696663;   
     // private static final double LAUNCHER_B = 991.971428571429;
     private static final double LAUNCHER_M = 193.820210097687;
@@ -104,6 +109,7 @@ public class TurretLauncher {
     private static boolean clockwiseLimitSwitchValue = false;
     private static boolean counterclockwiseLimitSwitchValue = false;
     private static PIDController launcherPID;
+    private static Lib4150FilterLowPassBW1 TargetDistanceFilter;
     private static SimpleMotorFeedforward launcherFeedforward;
     private static double locLauncherSpeedActual = 0.0;
     private static double launchertargetSpeed= 100.0;
@@ -181,6 +187,7 @@ public class TurretLauncher {
         TurretPosFilter = new Lib4150FilterLowPassBW1(TURRET_FILTER_TIME_CONST, 0.020);
 
         //Speed control
+        TargetDistanceFilter = new Lib4150FilterLowPassBW1(TARG_DISTANCE_FILTER_TIME_CONST, 0.020);
         launcherFeedforward = new SimpleMotorFeedforward (Launcher_Ks, Launcher_Kv, Launcher_Ka);
         launcherPID = new PIDController ( Launcher_Kp, Launcher_Ki, Launcher_Kd);
         launcherPID.setIntegratorRange(-Launcher_Irange, Launcher_Irange);  // only allow integral to addd +/- this amount to output.
@@ -297,7 +304,7 @@ public class TurretLauncher {
             }
 
             // --------calculate distance to target.
-            TargetDistance=robotPose.getDistance(targetPose);
+            TargetDistance=TargetDistanceFilter.execFilter(robotPose.getDistance(targetPose), systemElapsedTimeSec);
 
             DesiredTurretAngle = (targetPose.minus(robotPose)).getAngle();
 

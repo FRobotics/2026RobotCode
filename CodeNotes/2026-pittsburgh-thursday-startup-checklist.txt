@@ -1,0 +1,57 @@
+thursday morning to do:
+
+0) Load latest code
+
+1) Exercise turret
+	a) smooth operation throughout range
+	b) good angle data
+	c) limit switch operation.
+
+2) Update agitator open loop ramp rate
+	assume it was seconds to full, but
+	it might be unit/second.  Invert
+	value and try it.
+
+3) Get Speed and Motor data for Agitator
+	run at 	0.2
+		0.4
+		0.6
+		0.8
+		1.0
+	create feedforward data and update code.
+
+4) Get intake angle data with new gear box
+	set at 90 see that it reads 90
+	set at 0 and see what it reads
+	if not zero, calc ratio and update code.
+
+5) test intake movement.
+	test intake rock
+
+6) test intake stall prevention
+
+
+7) If there is a new driver camera
+	- rename it.
+	- add it to photonvision
+	- calibrate for april tags
+	- update code with cam5 info.
+
+8) Go to field and calibrate existing cameras.
+
+9) If time - test drive distance....
+
+10) If drivers want button box, update code and test.
+
+11) test all functions
+	- stop
+	- intake
+	- shoot
+	- balls to alliance
+	- defense (never really tested)
+	- robot oriented / field oriented driving...
+
+
+
+
+	

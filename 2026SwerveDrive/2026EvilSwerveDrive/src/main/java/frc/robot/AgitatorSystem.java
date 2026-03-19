@@ -9,9 +9,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 
 public class AgitatorSystem {
 
@@ -22,18 +24,24 @@ public class AgitatorSystem {
     private static final double Agitator_Ks = 0.0;
     private static final double Agitator_Kv = Agitator_Kn;
     private static final double Agitator_Ka = 0.0;
-    private static final double Agitator_Kp = Agitator_Kn * 0.5;
+    private static final double Agitator_Kp = Agitator_Kn * 0.0;
     private static final double Agitator_Ki = Agitator_Kn * 0.0;
-    private static final double Agitator_Kd = Agitator_Kn * 1.0E-6;
-    private static final double Agitator_Izone = 200.0;  // Error RPM where I is used.
+    private static final double Agitator_Kd = Agitator_Kn * 0.0E-6;
+    private static final double Agitator_Izone = 400.0;  // Error RPM where I is used.
     private static final double Agitator_Imax = 0.30;    // Max output of integral term.
+
+    private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
+    private static final double STALL_DETECT_MIN_RPM = 120.0;   // RPM below this indicates stall.
+    private static final double STALL_DETECT_HYSTERESIS_RPM = 180.0;    // RPM indicates no longer stalled.
+    private static final double STALL_REVERSE_TIME = 0.60;      // seconds to go in reverse.
+    private static final double STALL_REVERSE_MOTOR = -1.00 / Agitator_Kn;    // motor output to un-jam things.
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
 
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
     private static boolean locAgitatorOn = false;
-    private static SparkMax AgitatorMotor;
+    private static TalonFX AgitatorMotor;
     private static RelativeEncoder AgitatorMotorEncoder;
     private static double AgitatorOutput = 0.0;
     private static double AgitatorRPM = 0.0;
@@ -57,8 +65,7 @@ public class AgitatorSystem {
 
 
         // init agitator motor
-        AgitatorMotor = new SparkMax(8,MotorType.kBrushless);
-        AgitatorMotorEncoder = AgitatorMotor.getEncoder();
+        AgitatorMotor = new TalonFX(8);
 
         //Speed control
         AgitatorFeedForward = new SimpleMotorFeedforward(Agitator_Ks, Agitator_Kv, Agitator_Ka);
@@ -83,7 +90,8 @@ public class AgitatorSystem {
         locNTSend.addItemDouble("AgitatorOutput", AgitatorSystem::getMotorOutput);
         locNTSend.addItemDouble("AgitatorRPM", AgitatorSystem::getMotorRPM);
         locNTSend.addItemDouble("AgitatorRPMTarget", AgitatorSystem::getMotorRPMTarget);
-        
+        locNTSend.addItemBoolean("Agitator Stalled",AgitatorSystem::getAgitatorStallState);
+
         locNTSend.triggerUpdate();
         
     }
@@ -218,6 +226,9 @@ public class AgitatorSystem {
      */
      public static double getMotorRPMTarget() {
         return locAgitatorSetpointRPM;
+    }
+    public static boolean getAgitatorStallState(){
+        return locFwdStalled;
     }
 
 }

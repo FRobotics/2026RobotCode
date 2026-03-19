@@ -6,7 +6,7 @@ import Lib4150.Lib4150NetTableSystemSend;
 
 import com.revrobotics.util.StatusLogger;
 
-import edu.wpi.first.wpilibj.DataLogManager;
+//import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -98,7 +98,7 @@ public class MatchSystem {
         locNTSend.addItemDouble("RobotCodePhase", MatchSystem::getRobotCodePhaseNumber);
         
         // --------enable data logging --- disable this for competition.
-        DataLogManager.start();
+        //DataLogManager.start();
 
         // --------disable automatic REV logging
         StatusLogger.disableAutoLogging();

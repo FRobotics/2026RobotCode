@@ -23,7 +23,7 @@ public class IntakeSystem {
     private static final double INTAKEDOWNANGLE = 0.0;
     private static final double INTAKEDOWNLIMITSWITCHANGLE = 0.9;
 
-    private static final double PICKUP_MOTOR_ON = 0.75;
+    private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     // class/object variables
@@ -44,7 +44,7 @@ public class IntakeSystem {
     private static double intakeAngleMotorDemand;
     private static DigitalInput IntakeArmLowLimitSwitch;
     // private static double intakeGearRatio = 36.0;
-    private static double intakeGearRatio = 32.2;
+    private static double intakeGearRatio = 53.6666;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
     // --------rev through bore encoder - abs mode
     private static DigitalInput IntakeArmABSEncDI;
@@ -178,7 +178,7 @@ public class IntakeSystem {
         // do arm position control - values in degrees
         // grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand=IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
-        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.13;
+        double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * 0.11;
         // --------gently remove the gravity constant
         if ( IntakeArmAngleActual <= 10.0 ) {
             intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 10.0;

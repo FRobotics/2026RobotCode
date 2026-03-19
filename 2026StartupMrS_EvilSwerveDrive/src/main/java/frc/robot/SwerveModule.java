@@ -38,12 +38,13 @@ public class SwerveModule {
     // when doing everything in meters then SparkFlex speed is 3.98670783
 
     //Now 15 ft/sec -> 4.572 m/s
+    // with correct gear ratio and test data max speed = 5.59721 M/S = 18.36 Ft/Sec
     // --------maximum velocity m/sec
-    private static final double Drive_MaxV = 4.572;
+    private static final double Drive_MaxV = 5.59721;
     // --------normalization constant max_motor_out / max_velocity
     private static final double Drive_Kn = 1.0 / Drive_MaxV;
     // --------feedforward static constant - minimum output
-    private static final double Drive_Ks = 0.0;
+    private static final double Drive_Ks = 0.00557890637944292;
     // --------feedforward velocity constant 
     private static final double Drive_Kv = ( 1.0 - Drive_Ks) / Drive_MaxV;
     // --------feedforward acceleration constant ( lead function, or kicker circuit )
@@ -122,8 +123,10 @@ public class SwerveModule {
 
         //position and velocity conversion
         //convert from rotations to feet
-        //4.01019527 in diameter * pi / 12 in to feet / 6.75 gear ratio
-        final double driveDistFactor = 0.155535671604;
+        //4.01019527 in diameter * pi / 12 in to feet / 6.75 gear ratio --- for Mark IVi
+        //final double driveDistFactor = 0.155535671604;
+        //4.01019527 in diameter * pi / 12 in to feet / 5.9 gear ratio --- for Mark IVn (what we have in 2026)
+        final double driveDistFactor = 0.177943502820516;
         driveConfig.encoder.positionConversionFactor(driveDistFactor);
         driveConfig.encoder.velocityConversionFactor(driveDistFactor/60.0);
 

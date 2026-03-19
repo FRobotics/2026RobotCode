@@ -148,6 +148,7 @@ public class AgitatorSystem {
                     locStallTimer = systemElapsedTimeSec;
                 }
                 break;
+            // --------we are stalled, reverse motor until timer expires
             case 2:
                 locFwdStalled = true;
                 if ( systemElapsedTimeSec > ( locStallTimer + STALL_REVERSE_TIME ) ) {

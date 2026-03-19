@@ -1,6 +1,7 @@
 package frc.robot;
 
 import Lib4150.Lib4150DigEdgeOn;
+import Lib4150.Lib4150DigOnDelay;
 import Lib4150.Lib4150NetTableSystemSend;
 import Lib4150.Lib4150PositionControl;
 
@@ -13,24 +14,33 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 
 public class IntakeSystem {
 
     private IntakeSystem(){}
 
     // contants
-    private static final double INTAKEUPANGLE = 90.0;
-    private static final double INTAKEDOWNANGLE = 0.0;
-    private static final double INTAKEDOWNLIMITSWITCHANGLE = 0.9;
+    private static final double INTAKEUP_ANGLE = 90.0;
+    private static final double INTAKEDOWN_ANGLE = 0.0;
+    private static final double INTAKEDOWN_LIMITSWITCH_ANGLE = 0.9;
 
-    private static final double ARM_GRAVITY_CONSTANT = 0.11;    // was 0.13
+    private static final double ARM_GRAVITY_CONSTANT = 0.12;    // was 0.13
 
     private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
-    private static final double ROCK_UP_TIME = 3.0;     // time arm is up - seconds
-    private static final double ROCK_UP_POS = 35.0;     // arm pos for up - degrees
+    private static final double ROCK_UP_TIME = 3.5;     // time arm is up - seconds
+    private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
+
+    // --------ball pickup motor stall constants
+    private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
+    private static final double STALL_DETECT_MIN_RPM = 90.0;   // RPM below this indicates stall.
+    private static final double STALL_DETECT_HYSTERESIS_RPM = 120.0;    // RPM indicates no longer stalled.
+    private static final double STALL_REVERSE_TIME = 0.60;      // seconds to go in reverse.
+    private static final double STALL_REVERSE_MOTOR = -1.00;    // motor output to un-jam things.
+
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -52,6 +62,7 @@ public class IntakeSystem {
     // private static double intakeGearRatio = 32.2;
     private static double intakeGearRatio = 53.6666666;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
+    private static Lib4150DigOnDelay IntakeArmLowLimitSwitchOnDelay;
     // --------rev through bore encoder - abs mode
     private static DigitalInput IntakeArmABSEncDI;
     private static DutyCycleEncoder IntakeArmABSEnc;
@@ -63,6 +74,9 @@ public class IntakeSystem {
     private static int intakeRockState = 0; // states - 0 - Off or Wait to Start, 1 - Start, set up, 2 - up, wait to finish
     private static double intakeRockStepTime = 0.0;
     //private static double locRockTargetAngle = 0.0;
+    private static boolean locPickupStalled = false;
+    private static int locPickupStallState = 0;
+    private static double locStallTimer = 0.0;
 
     
     public static void init() {
@@ -96,21 +110,29 @@ public class IntakeSystem {
         IntakeArmABSEnc = new DutyCycleEncoder(IntakeArmABSEncDI);
 
         //initial state
-        intakeAngleTarget=INTAKEUPANGLE;
-        IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUPANGLE));
+        intakeAngleTarget=INTAKEUP_ANGLE;
+        IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEUP_ANGLE));
         intakeSpeed=0.0;
         intakeState=1;
+
+        locPickupStallState = 0;
+        locPickupStalled = false;
+
         cmdRockDisable();
 
         IntakeArmLowLimitSwitchState = false;
         IntakeArmAngleActual = 0.0;
 
         IntakeArmLowLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        IntakeArmLowLimitSwitchOnDelay = new Lib4150DigOnDelay(1.5, Timer.getFPGATimestamp() );
 
         // position units are degrees.
         // was 30, now 35...
-        IntakePositionControl = new Lib4150PositionControl( 4.0, 35.0, 
-                            0.005, 0.25, 0.25, 1.0e-5, false, false);
+        // IntakePositionControl = new Lib4150PositionControl( 4.0, 35.0, 
+        //                     0.005, 0.25, 0.25, 1.0e-5, false, false);
+        // -------be more agressive for rocking...
+        IntakePositionControl = new Lib4150PositionControl( 4.0, 30.0, 
+                            0.005, 0.30, 0.35, 1.0e-5, false, false);
 
         IntakeArmRateLimit = new SlewRateLimiter(.75);  // 0 to full in 1.3 seconds.
 
@@ -131,6 +153,7 @@ public class IntakeSystem {
         locNTSend.addItemBoolean("BallIntakeOn", IntakeSystem::getBallIntakeState);
         locNTSend.addItemDouble("IntakeMotorOut", IntakeSystem::getIntakeSpeed);
         locNTSend.addItemDouble("IntakeMotorRPM", IntakeSystem::getIntakeMotorRPM);
+        locNTSend.addItemBoolean("BallMotorStalled", IntakeSystem::getPickupMotorStalled);
          
         locNTSend.triggerUpdate();
         return;
@@ -146,11 +169,12 @@ public class IntakeSystem {
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
         // --------Add a little hysteresis of 2.0 degrees for the IntakeArmAngleActual position.
         // --------This depends on the previous value of IntakeArmLowLimitSwitchState and IntakeArmAngleActual
-        IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get() || ( IntakeArmLowLimitSwitchState && ( IntakeArmAngleActual <= (INTAKEDOWNLIMITSWITCHANGLE+2.0)));
+        IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get() || ( IntakeArmLowLimitSwitchState && ( IntakeArmAngleActual <= (INTAKEDOWN_LIMITSWITCH_ANGLE+2.0)));
 
         // ---------if we just hit the limit switch, set the value of the encoder position.
-        if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn(IntakeArmLowLimitSwitchState) ) {
-            // TODO: DEBUG LEAVE THIS OUT FOR NOW IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWNLIMITSWITCHANGLE));
+        // ---------give the arm a little time to settle, then update value.
+        if ( IntakeArmLowLimitSwitchEdgeOn.execEdgeOn( IntakeArmLowLimitSwitchOnDelay.ExecOnDelay(IntakeArmLowLimitSwitchState, systemElapsedTimeSec) ) ) {
+            IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKEDOWN_LIMITSWITCH_ANGLE));
         }
         
         // --------read the arm position in degrees.
@@ -164,11 +188,11 @@ public class IntakeSystem {
 
         // down (on or off )
         if (intakeState>1){
-            intakeAngleTarget= INTAKEDOWNANGLE;
+            intakeAngleTarget= INTAKEDOWN_ANGLE;
         }
         // up
         else{
-            intakeAngleTarget= INTAKEUPANGLE;
+            intakeAngleTarget= INTAKEUP_ANGLE;
         }
 
         // on
@@ -178,6 +202,8 @@ public class IntakeSystem {
         // off
         else {
             intakeSpeed=PICKUP_MOTOR_OFF;
+            locPickupStallState = 0;
+            locPickupStalled = false;
         }
 
 
@@ -236,6 +262,50 @@ public class IntakeSystem {
         intakeAngleMotorDemand = MathUtil.clamp( IntakeArmRateLimit.calculate( intakeAngleMotorDemand + intakeAngleGravityConstant), tmpLowClamp, 1.0 );
         IntakeArmMotor.set(intakeAngleMotorDemand);
         
+        // ========Intake Ball Pickup Motor
+
+        // --------calculate values for reverse job when forward stalls
+        // --------turn rev stall prevention on
+        // --------process the "stall" state machine
+        // --------variable "intakeSpeed" is motor demand +/- 1.0.
+        switch ( locPickupStallState ) {
+            // --------wait for stall to occur
+            case 0:
+                locPickupStalled = false;
+                locStallTimer = systemElapsedTimeSec;
+                if ( (intakeSpeed > 0.0) && (Math.abs( intakeMotorRPM ) < STALL_DETECT_MIN_RPM) ) {
+                    locPickupStallState = 1;
+                } 
+                break;
+            // --------wait for timer to expire, then set stalled.
+            case 1:
+                locPickupStalled = false;
+                if ( (intakeSpeed <= 0.0) ) {
+                    locPickupStallState = 0;
+                } 
+                else if ( Math.abs( intakeMotorRPM ) > STALL_DETECT_HYSTERESIS_RPM ) {
+                    locPickupStallState = 0;
+                }
+                else if ( systemElapsedTimeSec > ( locStallTimer + STALL_DETECT_TIME ) ) {
+                    locPickupStallState = 2;
+                    locStallTimer = systemElapsedTimeSec;
+                }
+                break;
+            // --------we are stalled, reverse motor until timer expires
+            case 2:
+                locPickupStalled = true;
+                if ( systemElapsedTimeSec > ( locStallTimer + STALL_REVERSE_TIME ) ) {
+                    locPickupStallState = 0;
+                    locStallTimer = systemElapsedTimeSec;
+                }
+                break;
+        }
+
+        // -------- if stalled set speed.
+        if ( locPickupStalled ) {
+            intakeSpeed = STALL_REVERSE_MOTOR;
+         }
+
         // set output for ball intake motor.
         IntakeBallMotor.set(intakeSpeed);
 
@@ -318,5 +388,10 @@ public class IntakeSystem {
     // --------ball intake is on.
     public static boolean getBallIntakeState() {
         return ( intakeState == 3 );
+    }
+
+    // --------get pickup motor stalled
+    public static boolean getPickupMotorStalled() {
+        return locPickupStalled;
     }
 }

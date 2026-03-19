@@ -108,7 +108,7 @@ public class AgitatorSystem {
         // if off, output 0
 
         if (locAgitatorOn){
-            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 0.5);
+            double pctDmdFromDash = SmartDashboard.getNumber("AgitatorSystem/DashSpeedPct", 1.0);
             locAgitatorSetpointRPM = pctDmdFromDash / Agitator_Kn;
             // --------if launcher not up to speed set demand at zero.
             if ( !TurretLauncher.getAgitatorStartPermissive() ) {

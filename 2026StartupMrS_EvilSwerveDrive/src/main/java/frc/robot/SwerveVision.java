@@ -26,6 +26,7 @@ public class SwerveVision {
     private static Lib4150NetTableSystemSend    locNtSend;
     private static AprilTagFieldLayout fieldLayout;
     //cameras are ordered from left to right while looking at intake
+
     // --------camera 1---back left
     private static final String cam1name = "OV9281-2603";
     private static long locCam1Count = 0;
@@ -96,6 +97,25 @@ public class SwerveVision {
     private static double cam4Z = 0.0;
     private static double cam4orient = 0.0;
 
+
+    // --------camera 5----front middle driver camera
+    // if defined remove comment //--C5--
+    //--C5--private static final String cam5name = "XXXX";
+    //--C5--private static long locCam5Count = 0;
+    //--C5--private static PhotonCamera camera5;
+    //--C5--private static PhotonPoseEstimator photonPoseEstimator5;
+    //--C5--private static Transform3d robotToCamera5 = new Transform3d( Units.inchesToMeters(-1.0), 
+    //--C5--                                                            Units.inchesToMeters(-14.25), 
+    //--C5--                                                            Units.inchesToMeters(9.0), 
+    //--C5--                                            new Rotation3d( 0.0, 
+    //--C5--                                                            Units.degreesToRadians(20.0), 
+    //--C5--                                                            Units.degreesToRadians(-90.0)));
+    //--C5--private static double cam5X = 0.0;
+    //--C5--private static double cam5Y = 0.0;
+    //--C5--private static double cam5Z = 0.0;
+    //--C5--private static double cam5orient = 0.0;
+
+
     // --------private constructor
     private SwerveVision(){}
 
@@ -125,6 +145,10 @@ public class SwerveVision {
         camera4 = new PhotonCamera(cam4name);
         photonPoseEstimator4 = new PhotonPoseEstimator(fieldLayout,robotToCamera4);
 
+        // --------camera 5
+        //--C5--camera5 = new PhotonCamera(cam5name);
+        //--C5--photonPoseEstimator5 = new PhotonPoseEstimator(fieldLayout,robotToCamera5);
+
         
         //add items to push to network tables
         locNtSend = new Lib4150NetTableSystemSend("Vision");
@@ -153,6 +177,12 @@ public class SwerveVision {
         locNtSend.addItemDouble("Cam4Y", SwerveVision::getCam4Y);
         locNtSend.addItemDouble("Cam4Z", SwerveVision::getCam4Z);
         locNtSend.addItemDouble("Cam4Orientation", SwerveVision::getCam4Orient);
+ 
+        //--C5--locNtSend.addItemDouble("Cam5Count", SwerveVision::getCam5Count);
+        //--C5--locNtSend.addItemDouble("Cam5X", SwerveVision::getCam5X);
+        //--C5--locNtSend.addItemDouble("Cam5Y", SwerveVision::getCam5Y);
+        //--C5--locNtSend.addItemDouble("Cam5Z", SwerveVision::getCam5Z);
+        //--C5--locNtSend.addItemDouble("Cam5Orientation", SwerveVision::getCam5Orient);
            
     }
 
@@ -257,6 +287,29 @@ public class SwerveVision {
             }
         }
 
+        // --------camera 5
+        //--C5--photonPoseEstimator5.addHeadingData(systemElapsedTimeSec, new Rotation2d(SwerveOdometry.getrotposition())); // needed for trig/distance
+        //--C5--Optional<EstimatedRobotPose> visionEst5 = Optional.empty();
+
+        //--C5--for (var result : camera5.getAllUnreadResults()) {
+        //--C5--    visionEst5 = photonPoseEstimator5.estimateCoprocMultiTagPose(result);
+        //--C5--    if (visionEst5.isEmpty()) {
+        //--C5--        Optional<EstimatedRobotPose> tmpVisionEst5 = photonPoseEstimator5.estimatePnpDistanceTrigSolvePose(result);
+        //--C5--        if ( tmpVisionEst5.isPresent() ) {
+        //--C5--            if ( tmpVisionEst5.get().targetsUsed.get(0).poseAmbiguity <= MAX_ALLOWED_AMBIGUITY ) {
+        //--C5--                visionEst5 = tmpVisionEst5;
+        //--C5--            }
+        //--C5--        }
+        //--C5--    }
+        //--C5--    if ( visionEst5.isPresent() ) {
+        //--C5--        locCam5Count++;
+        //--C5--        SwerveOdometry.addVisionMeasurement(visionEst5.get().estimatedPose.toPose2d(), visionEst5.get().timestampSeconds);
+        //--C5--        cam5X = visionEst5.get().estimatedPose.getX();
+        //--C5--        cam5Y = visionEst5.get().estimatedPose.getY();
+        //--C5--        cam5Z = visionEst5.get().estimatedPose.getZ();
+        //--C5--        cam5orient = visionEst5.get().estimatedPose.getRotation().getZ();   // yaw
+        //--C5--    }
+        //--C5--}
         
 
         
@@ -330,8 +383,22 @@ public class SwerveVision {
     public static double getCam4Orient() {
         return cam4orient;
     }
-
-
+     // --------camera 5
+    //--C5--public static double getCam5Count() {
+    //--C5--    return (double)locCam5Count;
+    //--C5--}
+    //--C5--public static double getCam5X() {
+    //--C5--    return cam5X;
+    //--C5--}
+    //--C5--public static double getCam5Y() {
+    //--C5--    return cam5Y;
+    //--C5--}
+    //--C5--public static double getCam5Z() {
+    //--C5--    return cam5Z;
+    //--C5--}
+    //--C5--public static double getCam5Orient() {
+    //--C5--    return cam5orient;
+    //--C5--}
     
 
 }

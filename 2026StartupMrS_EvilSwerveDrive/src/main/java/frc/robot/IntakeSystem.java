@@ -33,7 +33,7 @@ public class IntakeSystem {
 
     private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
     private static final double ROCK_UP_TIME = 3.5;     // time arm is up - seconds
-    private static final double ROCK_UP_POS = 25.0;     // arm pos for up - degrees
+    private static final double ROCK_UP_POS = 32.0;     // arm pos for up - degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -135,7 +135,7 @@ public class IntakeSystem {
         IntakePositionControl = new Lib4150PositionControl( 4.0, 30.0, 
                             0.005, 0.30, 0.35, 1.0e-5, false, false);
 
-        IntakeArmRateLimit = new SlewRateLimiter(.75);  // 0 to full in 1.3 seconds.
+        IntakeArmRateLimit = new SlewRateLimiter(.50);  // 0 to full in 2.0 seconds.
 
 
         // init network table

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import Lib4150.Lib4150NetTableSystemSend;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.revrobotics.util.StatusLogger;
 
 //import edu.wpi.first.wpilibj.DataLogManager;
@@ -102,6 +103,9 @@ public class MatchSystem {
 
         // --------disable automatic REV logging
         StatusLogger.disableAutoLogging();
+
+        // --------disable automatic CTRE logging
+        SignalLogger.enableAutoLogging(false);
 
         locNTSend.triggerUpdate();
 

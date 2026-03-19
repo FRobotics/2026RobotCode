@@ -41,7 +41,7 @@ public class SwerveTeleop {
     public static void init() {
         myXboxController = new XboxController(0);
         myXboxController2 = new XboxController(1);
-        locAuxButtonBox = new GenericHID(2)
+        locAuxButtonBox = new GenericHID(2);
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
         // TODO: add aux button box - if you want one.

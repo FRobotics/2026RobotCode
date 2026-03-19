@@ -25,14 +25,15 @@ public class IntakeSystem {
     private static final double INTAKEDOWN_ANGLE = 0.0;
     private static final double INTAKEDOWN_LIMITSWITCH_ANGLE = 0.9;
 
-    private static final double ARM_GRAVITY_CONSTANT = 0.12;    // was 0.13
+    // private static final double ARM_GRAVITY_CONSTANT = 0.112;    // was 0.13
+    private static final double ARM_GRAVITY_CONSTANT = 0.09;    // was 0.13
 
     private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
     private static final double ROCK_UP_TIME = 3.5;     // time arm is up - seconds
-    private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
+    private static final double ROCK_UP_POS = 25.0;     // arm pos for up - degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -124,7 +125,7 @@ public class IntakeSystem {
         IntakeArmAngleActual = 0.0;
 
         IntakeArmLowLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
-        IntakeArmLowLimitSwitchOnDelay = new Lib4150DigOnDelay(1.5, Timer.getFPGATimestamp() );
+        IntakeArmLowLimitSwitchOnDelay = new Lib4150DigOnDelay(0.8, Timer.getFPGATimestamp() );
 
         // position units are degrees.
         // was 30, now 35...

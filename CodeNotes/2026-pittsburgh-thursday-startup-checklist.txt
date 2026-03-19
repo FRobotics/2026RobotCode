@@ -1,18 +1,23 @@
 thursday morning to do:
 
-0) Load latest code
+X 0) Load latest code
 
-1) Exercise turret
+X 1) Exercise turret
 	a) smooth operation throughout range
 	b) good angle data
 	c) limit switch operation.
 
-2) Update agitator open loop ramp rate
+-- 2) Update agitator open loop ramp rate
 	assume it was seconds to full, but
 	it might be unit/second.  Invert
 	value and try it.
 
-3) Get Speed and Motor data for Agitator
+	still doesn't work....
+
+	
+
+
+-- 3) Get Speed and Motor data for Agitator
 	run at 	0.2
 		0.4
 		0.6
@@ -20,15 +25,37 @@ thursday morning to do:
 		1.0
 	create feedforward data and update code.
 
-4) Get intake angle data with new gear box
+	speed varies...
+
+	4000-6000 at max output...
+
+-- 4) Get intake angle data with new gear box
 	set at 90 see that it reads 90
 	set at 0 and see what it reads
 	if not zero, calc ratio and update code.
 
-5) test intake movement.
+	-2 when down
+
+	88 when all the way up...
+
+	lowered rock angle to 25.
+
+	changed angle and gravity constant...
+
+	
+
+	
+
+-- 5) test intake movement.
 	test intake rock
 
-6) test intake stall prevention
+	- it still is an issue....
+
+	- lowered gravity constant and destination angle
+	- it seems to work okay now....
+
+
+-- 6) test intake stall prevention
 
 
 7) If there is a new driver camera
@@ -41,9 +68,17 @@ thursday morning to do:
 
 9) If time - test drive distance....
 
-10) If drivers want button box, update code and test.
+x 10) If drivers want button box, update code and test.
 
-11) test all functions
+	2 Climb out
+	3 Climb in
+	4 Stop
+	5 Defense
+	12 Collect
+	13 Shoot
+	14 Balls to Alliance
+
+X 11) test all functions
 	- stop
 	- intake
 	- shoot
@@ -51,7 +86,9 @@ thursday morning to do:
 	- defense (never really tested)
 	- robot oriented / field oriented driving...
 
+x 12) returned feeder and shoot PID..
 
+bbbbbbbbbbbbbbbbbbb
 
 
 	

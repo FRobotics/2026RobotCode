@@ -170,38 +170,38 @@ public class SwerveTeleop {
         // --------button indexes start at one
 
         // --------SOMETHING 1
-        if ( locAuxButtonBox.getRawButtonPressed(1)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(2)) {
+            SupervisoryCmds.ClimbExtend();
         }
  
         // --------SOMETHING 2
-        if ( locAuxButtonBox.getRawButtonPressed(2)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(3)) {
+            SupervisoryCmds.ClimbRetract();
         }
 
         // --------SOMETHING 3
-        if ( locAuxButtonBox.getRawButtonPressed(3)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(4)) {
+            SupervisoryCmds.StopAction();
         }
  
         // --------SOMETHING 4
-        if ( locAuxButtonBox.getRawButtonPressed(4)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(5)) {
+            SupervisoryCmds.Defense();
         }
 
         // --------SOMETHING 5
-        if ( locAuxButtonBox.getRawButtonPressed(5)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(12)) {
+            SupervisoryCmds.Collecting();
         }
  
         // --------SOMETHING 6
-        if ( locAuxButtonBox.getRawButtonPressed(6)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(13)) {
+            SupervisoryCmds.Shooting();
         }
 
         // --------SOMETHING 7
-        if ( locAuxButtonBox.getRawButtonPressed(7)) {
-
+        if ( locAuxButtonBox.getRawButtonPressed(14)) {
+            SupervisoryCmds.BallsToAlliance();
         }
  
         // --------SOMETHING 8

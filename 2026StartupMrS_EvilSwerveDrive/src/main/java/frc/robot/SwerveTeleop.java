@@ -7,6 +7,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -14,6 +15,7 @@ public class SwerveTeleop {
    
     private static XboxController myXboxController;
     private static XboxController myXboxController2;
+    private static GenericHID locAuxButtonBox;
     private static ChassisSpeeds myChassisSpeeds;
     private static double YIn=0.0;
     private static double XIn=0.0;
@@ -39,6 +41,7 @@ public class SwerveTeleop {
     public static void init() {
         myXboxController = new XboxController(0);
         myXboxController2 = new XboxController(1);
+        locAuxButtonBox = new GenericHID(2)
         myChassisSpeeds = new ChassisSpeeds(0,0,0);
 
         // TODO: add aux button box - if you want one.
@@ -156,7 +159,53 @@ public class SwerveTeleop {
             TurretLauncher.cmdLauncherIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getLeftY(),0.08) * 4.0 );
         }
 
-      
+        // ==============================================================================
+        //------- Third controller - aux button box.
+
+        // --------button indexes start at one
+
+        // --------SOMETHING 1
+        if ( locAuxButtonBox.getRawButtonPressed(1)) {
+
+        }
+ 
+        // --------SOMETHING 2
+        if ( locAuxButtonBox.getRawButtonPressed(2)) {
+
+        }
+
+        // --------SOMETHING 3
+        if ( locAuxButtonBox.getRawButtonPressed(3)) {
+
+        }
+ 
+        // --------SOMETHING 4
+        if ( locAuxButtonBox.getRawButtonPressed(4)) {
+
+        }
+
+        // --------SOMETHING 5
+        if ( locAuxButtonBox.getRawButtonPressed(5)) {
+
+        }
+ 
+        // --------SOMETHING 6
+        if ( locAuxButtonBox.getRawButtonPressed(6)) {
+
+        }
+
+        // --------SOMETHING 7
+        if ( locAuxButtonBox.getRawButtonPressed(7)) {
+
+        }
+ 
+        // --------SOMETHING 8
+        if ( locAuxButtonBox.getRawButtonPressed(8)) {
+
+        }
+
+        // ========
+        // --------generic end code.
         endTime = Timer.getFPGATimestamp();
         exeTime = (endTime-startTime)*1000;
 

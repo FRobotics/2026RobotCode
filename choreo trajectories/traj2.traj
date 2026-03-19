@@ -1,0 +1,54 @@
+{
+ "name":"traj2",
+ "version":3,
+ "snapshot":{
+  "waypoints":[],
+  "constraints":[],
+  "targetDt":0.05
+ },
+ "params":{
+  "waypoints":[
+    {"x":{"exp":"158.61 in", "val":4.028694}, "y":{"exp":"24 in", "val":0.6095999999999999}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"158.61 in", "val":4.028694}, "y":{"exp":"24 in", "val":0.6095999999999999}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"80.61 in", "val":2.047494}, "y":{"exp":"50 in", "val":1.27}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"0.8684 m", "val":0.8684}, "y":{"exp":"0.6725748181343079 m", "val":0.6725748181343079}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"0.8684 m", "val":0.8684}, "y":{"exp":"0.6725748181343079 m", "val":0.6725748181343079}, "heading":{"exp":"-2.3080114452458815 rad", "val":-2.3080114452458815}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+  "constraints":[
+    {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"16.541 m", "val":16.541}, "h":{"exp":"8.0692 m", "val":8.0692}}}, "enabled":false},
+    {"from":1, "to":2, "data":{"type":"PointAt", "props":{"x":{"exp":"1.275755524635315 m", "val":1.275755524635315}, "y":{"exp":"0.27194690704345703 m", "val":0.27194690704345703}, "tolerance":{"exp":"1 deg", "val":0.017453292519943295}, "flip":false}}, "enabled":true},
+    {"from":1, "to":2, "data":{"type":"KeepInLane", "props":{"tolerance":{"exp":"0.5608573391707203 m", "val":0.5608573391707203}}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"MaxVelocity", "props":{"max":{"exp":"2 m / s", "val":2.0}}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"MaxAcceleration", "props":{"max":{"exp":"4 m / s ^ 2", "val":4.0}}}, "enabled":true}],
+  "targetDt":{
+   "exp":"0.05 s",
+   "val":0.05
+  }
+ },
+ "trajectory":{
+  "config":null,
+  "sampleType":null,
+  "waypoints":[],
+  "samples":[],
+  "splits":[]
+ },
+ "events":[
+   {"name":"Collect", "from":{"target":0, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":2, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"Shoot", "from":{"target":4, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+}

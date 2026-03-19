@@ -33,11 +33,11 @@ public class FeederSystem {
     private static final double Feeder_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Feeder_Kp = Feeder_Kn * 2.0;    // was 0.6  
+    private static final double Feeder_Kp = Feeder_Kn * 1.2;    // was 0.6  
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Feeder_Ki = Feeder_Kn * 2.0;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Feeder_Kd = Feeder_Kn * 1.0E-5; 
+    private static final double Feeder_Kd = Feeder_Kn * 1.0E-6; 
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Feeder_Izone = 60.0;  // Error RPM where I is used.

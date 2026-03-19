@@ -92,7 +92,12 @@ public class SwerveTeleop {
         myChassisSpeeds.omegaRadiansPerSecond = Units.degreesToRadians(-RotInDeg);
 
         if (orient) {
-            myChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(myChassisSpeeds, new Rotation2d(SwerveOdometry.getrotposition()));
+            if ( MatchSystem.isRed() ) {
+                myChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(myChassisSpeeds, new Rotation2d(SwerveOdometry.getrotposition()).plus(Rotation2d.k180deg));
+            }
+            else {
+                myChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(myChassisSpeeds, new Rotation2d(SwerveOdometry.getrotposition()));
+            }
         }
 
         //-----tell drive system our desired speed

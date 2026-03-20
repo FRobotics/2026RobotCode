@@ -33,7 +33,7 @@ public class IntakeSystem {
 
     private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
     private static final double ROCK_UP_TIME = 3.5;     // time arm is up - seconds
-    private static final double ROCK_UP_POS = 32.0;     // arm pos for up - degrees
+    private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -125,7 +125,7 @@ public class IntakeSystem {
         IntakeArmAngleActual = 0.0;
 
         IntakeArmLowLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
-        IntakeArmLowLimitSwitchOnDelay = new Lib4150DigOnDelay(0.8, Timer.getFPGATimestamp() );
+        IntakeArmLowLimitSwitchOnDelay = new Lib4150DigOnDelay(0.5, Timer.getFPGATimestamp() );
 
         // position units are degrees.
         // was 30, now 35...
@@ -133,7 +133,7 @@ public class IntakeSystem {
         //                     0.005, 0.25, 0.25, 1.0e-5, false, false);
         // -------be more agressive for rocking...
         IntakePositionControl = new Lib4150PositionControl( 4.0, 30.0, 
-                            0.005, 0.30, 0.35, 1.0e-5, false, false);
+                            0.005, 0.30, 0.35, 1.0e-4, false, false);
 
         IntakeArmRateLimit = new SlewRateLimiter(.50);  // 0 to full in 2.0 seconds.
 
@@ -170,7 +170,8 @@ public class IntakeSystem {
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
         // --------Add a little hysteresis of 2.0 degrees for the IntakeArmAngleActual position.
         // --------This depends on the previous value of IntakeArmLowLimitSwitchState and IntakeArmAngleActual
-        IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get() || ( IntakeArmLowLimitSwitchState && ( IntakeArmAngleActual <= (INTAKEDOWN_LIMITSWITCH_ANGLE+2.0)));
+        //IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get() || ( IntakeArmLowLimitSwitchState && ( IntakeArmAngleActual <= (INTAKEDOWN_LIMITSWITCH_ANGLE+2.0)));
+        IntakeArmLowLimitSwitchState = !IntakeArmLowLimitSwitch.get();
 
         // ---------if we just hit the limit switch, set the value of the encoder position.
         // ---------give the arm a little time to settle, then update value.

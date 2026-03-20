@@ -71,21 +71,23 @@ public class SupervisoryCmds {
     public static void ClimbExtend(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
-        IntakeSystem.setUpOffState();
+        IntakeSystem.setDownOffState();
         IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
-        locMode = "Climb - Up";
+        Climb.cmdExtendInc();
+        locMode = "Climb - Extend";
         locNTSend.triggerUpdate();
     }
 
-    // --------climb dowm
+    // --------climb dowm (retract)
     public static void ClimbRetract(){
         AgitatorSystem.cmdAgitatorOff();
         FeederSystem.cmdFeederOff();
-        IntakeSystem.setUpOffState();
+        IntakeSystem.setDownOffState();
         IntakeSystem.cmdRockDisable();  // redundant.
         TurretLauncher.cmdLauncherOff();
-        locMode = "Climb - Down";
+        Climb.cmdRetractInc();
+        locMode = "Climb - Retract";
         locNTSend.triggerUpdate();
     }
 

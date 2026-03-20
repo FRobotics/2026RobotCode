@@ -13,8 +13,6 @@ public class CanId {
     public static final int TurretMotor = 10;
     public static final int LauncherMotor1 = 11;
     public static final int LauncherMotor2 = 12;
-    
-
-    public static final int Climb = 18;
+    public static final int ClimbMotor = 18;
 
 }

@@ -19,12 +19,12 @@ public class Climb {
     
     // -------- class constants
     private static final double RETRACT_ENC_VALUE = 0.0;
-    private static final double RETRACT_HYSTERESIS_ENC_VALUE = RETRACT_ENC_VALUE + 20.0;
-    private static final double EXTEND_ENC_VALUE = 300.0;
-    private static final double EXTEND_HYSTERESIS_ENC_VALUE = EXTEND_ENC_VALUE - 20.0;;
+    private static final double RETRACT_HYSTERESIS_ENC_VALUE = RETRACT_ENC_VALUE + 10.0;
+    private static final double EXTEND_ENC_VALUE = 172.0;
+    private static final double EXTEND_HYSTERESIS_ENC_VALUE = EXTEND_ENC_VALUE - 10.0;;
 
-    private static final double RETRACT_MOTOR_DMD = -0.40;
-    private static final double EXTEND_MOTOR_DMD = 0.20;
+    private static final double RETRACT_MOTOR_DMD = -1.00;
+    private static final double EXTEND_MOTOR_DMD = 1.00;
     private static final double OFF_MOTOR_DMD = 0.00;
 
     // -------- class variables
@@ -57,7 +57,7 @@ public class Climb {
      */
     public static void init() {
 
-        ClimbMotor1 = new SparkFlex(CanId.Climb, MotorType.kBrushless);
+        ClimbMotor1 = new SparkFlex(CanId.ClimbMotor, MotorType.kBrushless);
         ClimbEncoder1 = ClimbMotor1.getEncoder();
         ClimbEncoder1.setPosition(RETRACT_ENC_VALUE);
 
@@ -100,7 +100,7 @@ public class Climb {
         locClimbEncoder1Rotations = ClimbEncoder1.getPosition();
 
 		// -------- physical retract limit switch.
-        locRetractRawLimitSwitch = RetractLimitSwitch.get();
+        locRetractRawLimitSwitch = !RetractLimitSwitch.get();
 
 	    // -------- set soft retract limit switch
 		// --------     Turn on retract soft limit switch when physical switch is ON.

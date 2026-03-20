@@ -1,0 +1,39 @@
+# -------- An auto routine for testing
+# -- commands
+# 0:    DriveStraight, timeout, distance m, max speed m/s, angle deg
+# 1:    DriveTurn, timeout, degree, max speed deg/sec
+# 2:    FollowAbsTrajectory, timeout, n/a, n/a, n/a, "trajname"
+# 3:    FollowRelTrajectory -- not programmed.
+# 4:    AutoWait, timeout
+# 5:    FollowAbsTrajWithTimedCmd -- same as 2
+# 6:    FollowRelTrajWithTimedComd -- not programmed.
+# 7:    Collect;
+# 8:    Shoot;
+# 9:    Stop;
+# 10:   BallsToAlliance;
+# 11:   Climb;  -- not programmed yet.
+# 12:   Descend; -- not programmed yet.
+# 13:   Defense;
+#
+#cmd, Timeout, P1,      P2,        P3,     Func
+# -------- put intake down
+9,    0.0,     0.0,    0.0,        0.0,    "--"
+# -------- wait for intake to drop
+4,    0.4,     0.0,    0.0,        0.0,    "--"
+# -------- Move backwards
+0,    1.0,     1.0,    3.5,        0.0,     "--"
+# -------- shoot
+8,    0.0,     0.0,    0.0,        0.0,    "--"
+# -------- Trajectory to despot
+2,    3.5,     0.0,    0.0,        0.0,    "alignToBlueDespot"
+# -------- Intake
+7,    0.0,     0.0,    0.0,        0.0,    "--"
+# -------- Drive into despot
+2,    2.6,     0.0,    0.0,        0.0,    "blueDriveIntoDespot"
+# -------- Back up from despot
+0,    2.0,     -1.0,   3.0,        0.0,    "--"
+#------------shoot
+8,    0.0,     0.0,    0.0,        0.0,    "--"
+# -------- wait until auto end
+4,    99.0,    0.0,    0.0,        0.0,    "--"
+# --------end

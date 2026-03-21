@@ -89,7 +89,11 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
+<<<<<<< Updated upstream
 				<Property Name="Bld_version.build" Type="Int">64</Property>
+=======
+				<Property Name="Bld_version.build" Type="Int">65</Property>
+>>>>>>> Stashed changes
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>

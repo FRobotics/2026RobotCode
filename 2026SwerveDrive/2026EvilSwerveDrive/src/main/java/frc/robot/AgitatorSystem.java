@@ -10,7 +10,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -42,7 +41,6 @@ public class AgitatorSystem {
     // TRUE = we want agitator to be on.  FALSE = we want agitator to be off
     private static boolean locAgitatorOn = false;
     private static TalonFX AgitatorMotor;
-    private static RelativeEncoder AgitatorMotorEncoder;
     private static double AgitatorOutput = 0.0;
     private static double AgitatorRPM = 0.0;
 
@@ -66,6 +64,7 @@ public class AgitatorSystem {
 
         // init agitator motor
         AgitatorMotor = new TalonFX(8);
+
 
         //Speed control
         AgitatorFeedForward = new SimpleMotorFeedforward(Agitator_Ks, Agitator_Kv, Agitator_Ka);
@@ -103,7 +102,7 @@ public class AgitatorSystem {
      */
     public static void executeLogic(double systemElapsedTimeSec) {
 
-        AgitatorRPM = AgitatorMotorEncoder.getVelocity();
+        AgitatorRPM = AgitatorMotor.getVelocity().getValueAsDouble() * 60.0;
 
         // if on, output 0.2
         // if off, output 0

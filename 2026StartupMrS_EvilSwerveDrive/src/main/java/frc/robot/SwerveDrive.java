@@ -16,7 +16,7 @@ public class SwerveDrive {
     private static final double motorOffsetX=9.875; 
     private static final double motorOffsetY=13.375;
 
-    public static final double maxLinearSpeed = 15.0; // measured in fps
+    public static final double maxLinearSpeed = 17.0; // measured in fps - was 15
     public static final double maxRotSpeed = 360.0; //measured in degrees
 
     static private SwerveModule module1;    // front left

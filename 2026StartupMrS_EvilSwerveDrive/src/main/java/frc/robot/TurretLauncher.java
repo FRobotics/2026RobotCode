@@ -404,9 +404,9 @@ public class TurretLauncher {
         FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.95);
 
         //check if within 75 RPM of target speed
-        launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
+        launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 50.0 );
         // launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
-        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 120.0 ) );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 90.0 ) );
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);

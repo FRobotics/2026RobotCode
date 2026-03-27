@@ -26,10 +26,15 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 public class TurretLauncher {
 
 
+
     // --------CONSTANTS
 
+    // --------Launcher on target RPM
+    private static final double LAUNCHER_ON_TARGET_RPM = 50.0;      // within this RPM error launcher is considered on target.
+    // --------AGITATOR START PERMISSIVE
+    private static final double AGITATOR_START_PERM_RPM_ERR = 75.0;  // Err in launcher RPM that is okay to start sgitator
     // --------THESE WILL NEED TO BE TUNED...
-    private static final double MIN_INTAKE_ANGLE = 65.0;
+    private static final double MIN_INTAKE_ANGLE = 73.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
     private static final double MIN_ALLOWED_TURRET_ANGLE = 50.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
@@ -263,7 +268,7 @@ public class TurretLauncher {
         }
 
         // --------read the turret position and velocity
-        turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() ) - 3.7;
+        turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() );
         turretAngleVelDegSec = calcTurretVelFromRawEncoder(TurrentRotationMotorEncoder.getVelocity() );
 
         // ------------------------------------------------------------------------------------------------------------
@@ -403,10 +408,10 @@ public class TurretLauncher {
         // --------tell feeder how fast to go.   For now approx 80%
         FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.95);
 
-        //check if within 75 RPM of target speed
-        launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 75.0 );
+        //check if within xx RPM of target speed to indicate on target.
+        launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < LAUNCHER_ON_TARGET_RPM  );
         // launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
-        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 120.0 ) );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < AGITATOR_START_PERM_RPM_ERR ) );
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
@@ -444,7 +449,7 @@ public class TurretLauncher {
     // --------calculate turret position in degrees given the raw encoder value in rotations.
     // --------allow angle value to go 0 360.0
     private static double calcTurretDegFromRawEncoder( double parmEncoderRotations ) {
-        return 180.0+parmEncoderRotations*360.0/turretGearRatio;
+        return 180.0+parmEncoderRotations*360.0/turretGearRatio - 3.7;
     }
 
     
@@ -459,7 +464,7 @@ public class TurretLauncher {
     @SuppressWarnings("unused")
     private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
         double tmpTurretDeg = MathUtil.inputModulus(turretDeg, 0.0, 360.0);
-        return (tmpTurretDeg-180.0) / 360.0 * turretGearRatio;
+        return (tmpTurretDeg-180.0+3.7) / 360.0 * turretGearRatio;
     }
 
 

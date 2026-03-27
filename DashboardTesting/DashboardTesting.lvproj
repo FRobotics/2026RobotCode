@@ -60,6 +60,7 @@
 			<Item Name="TrajectoryTrend.vi" Type="VI" URL="../TrajectoryTrend.vi"/>
 			<Item Name="LauncherTrend.vi" Type="VI" URL="../LauncherTrend.vi"/>
 			<Item Name="FeederTrend.vi" Type="VI" URL="../FeederTrend.vi"/>
+			<Item Name="DriverCameraWindow.vi" Type="VI" URL="../DriverCameraWindow.vi"/>
 		</Item>
 		<Item Name="EnhancedWPI" Type="Folder" URL="../EnhancedWPI">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
@@ -71,7 +72,6 @@
 		<Item Name="subpanel_sizes.txt" Type="Document" URL="../subpanel_sizes.txt"/>
 		<Item Name="CopyExeToFinalLocation.bat" Type="Document" URL="../CopyExeToFinalLocation.bat"/>
 		<Item Name="Dashboard Main1920x1080fixed_ALT.vi" Type="VI" URL="../Dashboard Main1920x1080fixed_ALT.vi"/>
-		<Item Name="DriverCameraWindow.vi" Type="VI" URL="../DriverCameraWindow.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Property Name="NI.SortType" Type="Int">0</Property>
 		</Item>
@@ -91,7 +91,7 @@
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
 				<Property Name="Bld_previewCacheID" Type="Str">{97A92A64-867E-4C0B-9013-521F62B9881E}</Property>
-				<Property Name="Bld_version.build" Type="Int">63</Property>
+				<Property Name="Bld_version.build" Type="Int">66</Property>
 				<Property Name="Bld_version.major" Type="Int">17</Property>
 				<Property Name="Bld_version.patch" Type="Int">1</Property>
 				<Property Name="Destination[0].destName" Type="Str">Dashboard.exe</Property>
@@ -108,40 +108,36 @@
 				<Property Name="Destination[3].preserveHierarchy" Type="Bool">true</Property>
 				<Property Name="DestinationCount" Type="Int">4</Property>
 				<Property Name="Exe_iconItemID" Type="Ref">/My Computer/Support/App EXE.ico</Property>
-				<Property Name="Source[0].itemID" Type="Str">{C06A13B7-5EB8-4C72-8AB4-1FF8BDD2D78F}</Property>
+				<Property Name="Source[0].itemID" Type="Str">{1D4BE46E-95BF-4187-A2DE-49AEC91BB81A}</Property>
 				<Property Name="Source[0].type" Type="Str">Container</Property>
 				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
-				<Property Name="Source[1].itemID" Type="Ref"></Property>
+				<Property Name="Source[1].itemID" Type="Ref">/My Computer/Support/Panel Resized.vi</Property>
+				<Property Name="Source[1].sourceInclusion" Type="Str">Include</Property>
 				<Property Name="Source[1].type" Type="Str">VI</Property>
 				<Property Name="Source[2].destinationIndex" Type="Int">0</Property>
-				<Property Name="Source[2].itemID" Type="Ref">/My Computer/Support/Panel Resized.vi</Property>
-				<Property Name="Source[2].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="Source[2].itemID" Type="Ref">/My Computer/Dashboard Main1920x1080fixed.vi</Property>
 				<Property Name="Source[2].type" Type="Str">VI</Property>
-				<Property Name="Source[3].destinationIndex" Type="Int">0</Property>
-				<Property Name="Source[3].itemID" Type="Ref"></Property>
+				<Property Name="Source[3].Container.applyDestination" Type="Bool">true</Property>
+				<Property Name="Source[3].Container.applyInclusion" Type="Bool">true</Property>
+				<Property Name="Source[3].Container.depDestIndex" Type="Int">0</Property>
+				<Property Name="Source[3].destinationIndex" Type="Int">2</Property>
+				<Property Name="Source[3].itemID" Type="Ref">/My Computer/FieldInfo</Property>
 				<Property Name="Source[3].sourceInclusion" Type="Str">Include</Property>
-				<Property Name="Source[3].type" Type="Str">VI</Property>
-				<Property Name="Source[4].destinationIndex" Type="Int">0</Property>
-				<Property Name="Source[4].itemID" Type="Ref">/My Computer/Dashboard Main1920x1080fixed.vi</Property>
-				<Property Name="Source[4].sourceInclusion" Type="Str">TopLevel</Property>
-				<Property Name="Source[4].type" Type="Str">VI</Property>
-				<Property Name="Source[5].Container.applyDestination" Type="Bool">true</Property>
-				<Property Name="Source[5].Container.applyInclusion" Type="Bool">true</Property>
-				<Property Name="Source[5].Container.depDestIndex" Type="Int">0</Property>
-				<Property Name="Source[5].destinationIndex" Type="Int">2</Property>
-				<Property Name="Source[5].itemID" Type="Ref">/My Computer/FieldInfo</Property>
+				<Property Name="Source[3].type" Type="Str">Container</Property>
+				<Property Name="Source[4].destinationIndex" Type="Int">3</Property>
+				<Property Name="Source[4].itemID" Type="Ref">/My Computer/FieldElements/SmallDot.png</Property>
+				<Property Name="Source[4].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="Source[5].destinationIndex" Type="Int">3</Property>
+				<Property Name="Source[5].itemID" Type="Ref">/My Computer/FieldElements/Robot_kitbot_5.png</Property>
 				<Property Name="Source[5].sourceInclusion" Type="Str">Include</Property>
-				<Property Name="Source[5].type" Type="Str">Container</Property>
 				<Property Name="Source[6].destinationIndex" Type="Int">3</Property>
-				<Property Name="Source[6].itemID" Type="Ref">/My Computer/FieldElements/SmallDot.png</Property>
+				<Property Name="Source[6].itemID" Type="Ref">/My Computer/FieldElements/Robot_kitbot_4.png</Property>
 				<Property Name="Source[6].sourceInclusion" Type="Str">Include</Property>
-				<Property Name="Source[7].destinationIndex" Type="Int">3</Property>
-				<Property Name="Source[7].itemID" Type="Ref">/My Computer/FieldElements/Robot_kitbot_5.png</Property>
-				<Property Name="Source[7].sourceInclusion" Type="Str">Include</Property>
-				<Property Name="Source[8].destinationIndex" Type="Int">3</Property>
-				<Property Name="Source[8].itemID" Type="Ref">/My Computer/FieldElements/Robot_kitbot_4.png</Property>
-				<Property Name="Source[8].sourceInclusion" Type="Str">Include</Property>
-				<Property Name="SourceCount" Type="Int">9</Property>
+				<Property Name="Source[7].destinationIndex" Type="Int">0</Property>
+				<Property Name="Source[7].itemID" Type="Ref">/My Computer/Dashboard Main1920x1080fixed_ALT.vi</Property>
+				<Property Name="Source[7].sourceInclusion" Type="Str">TopLevel</Property>
+				<Property Name="Source[7].type" Type="Str">VI</Property>
+				<Property Name="SourceCount" Type="Int">8</Property>
 				<Property Name="TgtF_fileDescription" Type="Str">FRC_Dashboard</Property>
 				<Property Name="TgtF_internalName" Type="Str">FRC_Dashboard</Property>
 				<Property Name="TgtF_targetfileGUID" Type="Str">{5E4E6760-0A78-428A-ABCD-98D797FDE190}</Property>

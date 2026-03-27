@@ -437,6 +437,13 @@ public class IntakeSystem {
         if ( locPickupStalled ) {
             intakeSpeed = STALL_REVERSE_MOTOR;
         }
+
+        if(!intakeRockEnable && IntakeArmAngleActual> 5.0){
+            intakeAngleTarget = 0.0;
+
+
+        }
+
     }
 
 

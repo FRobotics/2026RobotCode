@@ -16,20 +16,4 @@
 # 13:   Defense;
 #
 #cmd, Timeout, P1,      P2,        P3,     Func
-# -------- put intake down
-9,    0.0,     0.0,    0.0,        0.0,    "--"
-# -------- wait for intake to drop
-4,    0.4,     0.0,    0.0,        0.0,    "--"
-# -------- shoot
-8,    0.0,     0.0,    0.0,        0.0,    "--"
-# -------- Trajectory to outpost
-2,    6.0,     0.0,    0.0,        0.0,    "blueOutpost"
-# -------- wait
-4,    5.0,     0.0,    0.0,        0.0,    "--"
-# -------- Back up from outpost
-0,    2.0,     -2.0,   3.0,        -150.0,    "--"
-# -------- Shoot
-8,    0.0,     0.0,    0.0,        0.0,    "--"
-# -------- wait until auto end
-4,    99.0,    0.0,    0.0,        0.0,    "--"
-# --------end
+2,    9.0,     0.0,     0.0,       0.0,    "redSweepMiddleFromOutpostBump"

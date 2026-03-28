@@ -226,12 +226,20 @@ public class AutoSystem {
                 
                 case Climb:
                         SupervisoryCmds.ClimbExtend();
-                        locExecDoNextStep = true;
+                        if(!Climb.getClimbExtended()){
+                            locExecDoNextStep = true;    
+                        }
+                        else {locExecDoNextStep = false;
+                        }
                         break;
                 
                 case Descend:
                         SupervisoryCmds.ClimbRetract();
-                        locExecDoNextStep = true;
+                        if(!Climb.getClimbRetracted()){
+                                locExecDoNextStep = true;
+                        }
+                        else {locExecDoNextStep = false;
+                        }
                         break;
                 
                 case Defense:

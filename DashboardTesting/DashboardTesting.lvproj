@@ -72,6 +72,7 @@
 		<Item Name="subpanel_sizes.txt" Type="Document" URL="../subpanel_sizes.txt"/>
 		<Item Name="CopyExeToFinalLocation.bat" Type="Document" URL="../CopyExeToFinalLocation.bat"/>
 		<Item Name="Dashboard Main1920x1080fixed_ALT.vi" Type="VI" URL="../Dashboard Main1920x1080fixed_ALT.vi"/>
+		<Item Name="testing.vi" Type="VI" URL="../testing.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Property Name="NI.SortType" Type="Int">0</Property>
 		</Item>

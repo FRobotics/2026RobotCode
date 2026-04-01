@@ -141,6 +141,9 @@ public class TurretLauncher {
     // private static Lib4150RateOfChange3 locTurretAngleROC = new Lib4150RateOfChange3();
     // private static double locTurretAngleRotVel = 0.0;
 
+    //Balls shot counter
+    private static boolean startBallCounter = false;
+    private static double ShotCounter = 0.0;
     
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
@@ -429,6 +432,16 @@ public class TurretLauncher {
             launcherPID.reset();
         }
 
+        //Ball Counter
+        if (locLauncherSpeedActual == launchertargetSpeed){
+            startBallCounter = true;
+        }
+        else if (locLauncherSpeedActual == 0.0){
+            startBallCounter = false;
+        }
+        if (!startBallCounter && locLauncherSpeedActual<=launchertargetSpeed){
+            ShotCounter = ShotCounter + 1.0;
+        }
 
         // ------------------------------------------------------------------------------------------------------------
         // --------output to actuators (motors)

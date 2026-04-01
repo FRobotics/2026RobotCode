@@ -98,7 +98,7 @@ public class SwerveVision {
     private static double cam4orient = 0.0;
 
     // --------camera 5----front middle driver camera
-        private static final String cam5name = "OV9782-2603";
+    /*     private static final String cam5name = "OV9782-2603";
     private static long locCam5Count = 0;
     private static PhotonCamera camera5;
     private static PhotonPoseEstimator photonPoseEstimator5;
@@ -112,7 +112,7 @@ public class SwerveVision {
     private static double cam5X = 0.0;
     private static double cam5Y = 0.0;
     private static double cam5Z = 0.0;
-    private static double cam5orient = 0.0;
+    private static double cam5orient = 0.0;*/
 
 
     // --------private constructor
@@ -144,12 +144,12 @@ public class SwerveVision {
         camera4 = new PhotonCamera(cam4name);
         photonPoseEstimator4 = new PhotonPoseEstimator(fieldLayout,robotToCamera4);
 
-        camera5 = new PhotonCamera(cam5name);
+        /*camera5 = new PhotonCamera(cam5name);
         photonPoseEstimator5 = new PhotonPoseEstimator(fieldLayout, robotToCamera5);
 
         // --------camera 5
         camera5 = new PhotonCamera(cam5name);
-        photonPoseEstimator5 = new PhotonPoseEstimator(fieldLayout,robotToCamera5);
+        photonPoseEstimator5 = new PhotonPoseEstimator(fieldLayout,robotToCamera5); */
 
         
         //add items to push to network tables
@@ -180,7 +180,7 @@ public class SwerveVision {
         locNtSend.addItemDouble("Cam4Z", SwerveVision::getCam4Z);
         locNtSend.addItemDouble("Cam4Orientation", SwerveVision::getCam4Orient);
 
-        locNtSend.addItemDouble("Cam4Count", SwerveVision::getCam5Count);
+        /*locNtSend.addItemDouble("Cam4Count", SwerveVision::getCam5Count);
         locNtSend.addItemDouble("Cam4X", SwerveVision::getCam5X);
         locNtSend.addItemDouble("Cam4Y", SwerveVision::getCam5Y);
         locNtSend.addItemDouble("Cam4Z", SwerveVision::getCam5Z);
@@ -190,7 +190,7 @@ public class SwerveVision {
         locNtSend.addItemDouble("Cam5X", SwerveVision::getCam5X);
         locNtSend.addItemDouble("Cam5Y", SwerveVision::getCam5Y);
         locNtSend.addItemDouble("Cam5Z", SwerveVision::getCam5Z);
-        locNtSend.addItemDouble("Cam5Orientation", SwerveVision::getCam5Orient);
+        locNtSend.addItemDouble("Cam5Orientation", SwerveVision::getCam5Orient);*/
            
     }
 
@@ -296,7 +296,7 @@ public class SwerveVision {
         }
 
         // --------camera 5
-        photonPoseEstimator5.addHeadingData(systemElapsedTimeSec, new Rotation2d(SwerveOdometry.getrotposition())); // needed for trig/distance
+        /*photonPoseEstimator5.addHeadingData(systemElapsedTimeSec, new Rotation2d(SwerveOdometry.getrotposition())); // needed for trig/distance
         Optional<EstimatedRobotPose> visionEst5 = Optional.empty();
 
         for (var result : camera5.getAllUnreadResults()) {
@@ -317,7 +317,7 @@ public class SwerveVision {
                 cam5Z = visionEst5.get().estimatedPose.getZ();
                 cam5orient = visionEst5.get().estimatedPose.getRotation().getZ();   // yaw
             }
-        }
+        }*/
         
 
         
@@ -393,7 +393,7 @@ public class SwerveVision {
     }
     
      // --------camera 5
-    public static double getCam5Count() {
+    /*public static double getCam5Count() {
        return (double)locCam5Count;
     }
     public static double getCam5X() {
@@ -407,7 +407,7 @@ public class SwerveVision {
     }
     public static double getCam5Orient() {
        return cam5orient;
-    }
+    }*/
     
 
 }

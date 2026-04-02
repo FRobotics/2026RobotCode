@@ -25,16 +25,16 @@ public class IntakeSystem {
     // --------intake arm positoin setpoints.
     private static final double INTAKESTART_ANGLE = 90.0;
     private static final double INTAKEUP_ANGLE = 85.0; // leave a little leeway for slippage and error setting angle at bottom.
-    private static final double INTAKEDOWN_ANGLE = 0.0;
-    private static final double INTAKEDOWN_LIMITSWITCH_ANGLE = 0.9;
+    private static final double INTAKEDOWN_ANGLE = 3.0;
+    private static final double INTAKEDOWN_LIMITSWITCH_ANGLE = 0.4;
 
     // --------intake arm positionm control
     private static final double INTAKEARM_ERR_DEADBAND = 4.0;       // degrees
-    private static final double INTAKEARM_ERR_THRESHOLD = 25.0;     // degrees
-    private static final double INTAKEARM_OUT_DEADBAND = 0.005;     // motor output units.
-    private static final double INTAKEARM_OUT_THRESHOLD = 0.30;     // motor output units.
-    private static final double INTAKEARM_OUT_MAX = 0.50;           // motor outpuot units.
-    private static final double INTAKEARM_KD =  0.0006;             // motor output units.  Assume 10 deg change, 
+    private static final double INTAKEARM_ERR_THRESHOLD = 40.0;     // degrees
+    private static final double INTAKEARM_OUT_DEADBAND = 0.0025;     // motor output units.
+    private static final double INTAKEARM_OUT_THRESHOLD = 0.25;     // motor output units.
+    private static final double INTAKEARM_OUT_MAX = 0.30;           // motor outpuot units.
+    private static final double INTAKEARM_KD =  0.0003;             // motor output units.  Assume 10 deg change, 
                                                                     // so averaged deriviative = 10/3/0.020 = 166.67.  Want extra output of 0.1
                                                                     // so Kd = 0.1 / 166.67 = 0.0006  (start with small change, increment as needed.)
     private static final boolean INTAKEARM_FILTER_DERIVATIVE = true;    // take average of last 3 derivatives.
@@ -54,12 +54,12 @@ public class IntakeSystem {
     private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
 
     // --------ball shooting pickup arm rocking alternate sitting up.
-    private static final double ROCK_ALT_DOWN_TIME = 1.0;   // time arm is down - seconds
-    private static final double ROCK_ALT_POS_1 = 20.0;      // first position degrees
+    private static final double ROCK_ALT_DOWN_TIME = 8.0;   // time arm is down - seconds
+    private static final double ROCK_ALT_POS_1 = 3.0;      // first position degrees
     private static final double ROCK_ALT_POS_1_TIME = 2.0;  // seconds
-    private static final double ROCK_ALT_POS_2 = 35.0;      // second position degrees
+    private static final double ROCK_ALT_POS_2 = 3.0;      // second position degrees
     private static final double ROCK_ALT_POS_2_TIME = 2.0;  // seconds
-    private static final double ROCK_ALT_POS_3 = 50.0;      // third positoin degrees
+    private static final double ROCK_ALT_POS_3 = 3.0;      // third positoin degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -87,7 +87,8 @@ public class IntakeSystem {
     private static DigitalInput IntakeArmLowLimitSwitch;
     // private static double intakeGearRatio = 36.0;
     // private static double intakeGearRatio = 32.2;
-    private static double intakeGearRatio = 53.6666666;
+    //private static double intakeGearRatio = 53.6666666;
+    private static double intakeGearRatio = 52.25;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
     private static Lib4150DigOnDelay IntakeArmLowLimitSwitchOnDelay;
     // --------rev through bore encoder - abs mode

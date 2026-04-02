@@ -31,7 +31,7 @@ public class IntakeSystem {
     // --------intake arm positionm control
     private static final double INTAKEARM_ERR_DEADBAND = 4.0;       // degrees
     private static final double INTAKEARM_ERR_THRESHOLD = 40.0;     // degrees
-    private static final double INTAKEARM_OUT_DEADBAND = 0.0025;     // motor output units.
+    private static final double INTAKEARM_OUT_DEADBAND = 0.0025;    // motor output units.
     private static final double INTAKEARM_OUT_THRESHOLD = 0.25;     // motor output units.
     private static final double INTAKEARM_OUT_MAX = 0.30;           // motor outpuot units.
     private static final double INTAKEARM_KD =  0.0003;             // motor output units.  Assume 10 deg change, 
@@ -68,6 +68,11 @@ public class IntakeSystem {
     private static final double STALL_REVERSE_TIME = 0.60;      // seconds to go in reverse.
     private static final double STALL_REVERSE_MOTOR = -1.00;    // motor output to un-jam things.
 
+    // --------intake system state
+    private static final int INTAKE_STATE_UP_OFF = 1;
+    private static final int INTAKE_STATE_DOWN_OFF = 2;
+    private static final int INTAKE_STATE_DOWN_ON = 3;
+    
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
@@ -87,7 +92,8 @@ public class IntakeSystem {
     private static DigitalInput IntakeArmLowLimitSwitch;
     // private static double intakeGearRatio = 36.0;
     // private static double intakeGearRatio = 32.2;
-    //private static double intakeGearRatio = 53.6666666;
+    // should be 60 now...
+    // private static double intakeGearRatio = 53.6666666;
     private static double intakeGearRatio = 52.25;
     private static Lib4150DigEdgeOn IntakeArmLowLimitSwitchEdgeOn;
     private static Lib4150DigOnDelay IntakeArmLowLimitSwitchOnDelay;
@@ -141,7 +147,7 @@ public class IntakeSystem {
         intakeAngleTarget=INTAKESTART_ANGLE;
         IntakeArmMotorEncoder.setPosition( calcEncoderRawValueFromArmDeg(INTAKESTART_ANGLE));
         intakeSpeed=0.0;
-        intakeState=1;
+        intakeState=INTAKE_STATE_UP_OFF;
 
         locPickupStallState = 0;
         locPickupStalled = false;
@@ -217,7 +223,7 @@ public class IntakeSystem {
         //1 is up off 2 is down off 3 is down on
 
         // down (on or off )
-        if (intakeState>1){
+        if (intakeState>INTAKE_STATE_UP_OFF){
             intakeAngleTarget= INTAKEDOWN_ANGLE;
         }
         // up
@@ -226,7 +232,7 @@ public class IntakeSystem {
         }
 
         // on
-        if (intakeState==3){
+        if (intakeState==INTAKE_STATE_DOWN_ON){
             intakeSpeed=PICKUP_MOTOR_ON;
         }
         // off
@@ -246,7 +252,10 @@ public class IntakeSystem {
         intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * ARM_GRAVITY_CONSTANT;
         // --------gently remove the gravity constant
-        if ( IntakeArmAngleActual <= 10.0 ) {
+        if ( IntakeArmAngleActual < 0.0 ) {
+            intakeAngleGravityConstant = 0.0;
+        }
+        else if ( IntakeArmAngleActual <= 10.0 ) {
             intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 10.0;
         }
         // --------clamp and rate limit final output
@@ -257,15 +266,21 @@ public class IntakeSystem {
         IntakeArmMotor.set(intakeAngleMotorDemand);
         
         // ========Intake Ball Pickup Motor
-        process_ball_intake_stall_detect( systemElapsedTimeSec );
+
         // --------do motor stall processing
+        process_ball_intake_stall_detect( systemElapsedTimeSec );
+
+        // --------UNCERTAIN WHAT THIS IS FOR.  IT DOESN'T APPEAR TO DO ANYTHING.  COMMENT OUT FOR NOW.
+        // if(!intakeRockEnable && IntakeArmAngleActual> 5.0){
+        //    intakeAngleTarget = 0.0;
+        //}
 
 
         // set output for ball intake motor.
         IntakeBallMotor.set(intakeSpeed);
 
         // ---------set local variable if arm extended for network tables.
-        if (intakeState==1){
+        if (intakeState==INTAKE_STATE_UP_OFF){
             locIntakeExtended=false;
         }else{
             locIntakeExtended=true;
@@ -292,7 +307,7 @@ public class IntakeSystem {
     private static void process_intake_arm_rocking(double mySystemElapsedTimeSec) {
         // --------should we rock ??? -- if so, process..
         // --------regardless of enable - only rock if state is 2 (down, off)
-        if ( intakeState == 2 && intakeRockEnable ) {
+        if ( intakeState == INTAKE_STATE_DOWN_OFF && intakeRockEnable ) {
             // --------process rock state machine
             switch ( intakeRockState ) {
                 // --------remember start time.  Leave angle which should be down, alone
@@ -329,6 +344,7 @@ public class IntakeSystem {
         else {
             intakeRockState = 0;
         }
+        return;
     }
 
 
@@ -338,7 +354,7 @@ public class IntakeSystem {
     private static void process_intake_arm_rocking_ALT(double mySystemElapsedTimeSec) {
         // --------should we rock ??? -- if so, process..
         // --------regardless of enable - only rock if state is 2 (down, off)
-        if ( intakeState == 2 && intakeRockEnable ) {
+        if ( intakeState == INTAKE_STATE_DOWN_OFF && intakeRockEnable ) {
             // --------process rock state machine
             switch ( intakeRockState ) {
                 // --------remember start time.  Leave angle which should be down, alone
@@ -392,6 +408,7 @@ public class IntakeSystem {
         else {
             intakeRockState = 0;
         }
+        return;
     }
 
 
@@ -439,12 +456,8 @@ public class IntakeSystem {
             intakeSpeed = STALL_REVERSE_MOTOR;
         }
 
-        if(!intakeRockEnable && IntakeArmAngleActual> 5.0){
-            intakeAngleTarget = 0.0;
 
-
-        }
-
+        return;
     }
 
 
@@ -458,16 +471,16 @@ public class IntakeSystem {
         return;
     }
     public static void setDownOffState(){
-        intakeState=2;
+        intakeState=INTAKE_STATE_DOWN_OFF;
         cmdRockDisable();    // also set rock state off.
         return;
     }
     public static void setDownOnState(){
-        intakeState=3;
+        intakeState=INTAKE_STATE_DOWN_ON;
         return;
     }
     public static void setUpOffState(){
-        intakeState=1;
+        intakeState=INTAKE_STATE_UP_OFF;
         cmdRockDisable();    // also set rock state off.
         return;
     }
@@ -502,7 +515,7 @@ public class IntakeSystem {
     }
     // --------ball intake is on.
     public static boolean getBallIntakeState() {
-        return ( intakeState == 3 );
+        return ( intakeState == INTAKE_STATE_DOWN_ON );
     }
 
     // --------get pickup motor stalled

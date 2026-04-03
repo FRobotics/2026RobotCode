@@ -32,7 +32,7 @@ public class SwerveTeleop {
     private static double periodicTime=0.0;
     private static double startTime=0.0;
     private static boolean leftStickPressed = false;
-    private static boolean leftStickButtonPressed = myXboxController2.getLeftStickButtonPressed();
+    private static boolean leftStickButtonPressed;
 
     private static Lib4150NetTableSystemSend locNTsend;
 
@@ -129,6 +129,9 @@ public class SwerveTeleop {
             SupervisoryCmds.Defense();
         }
         
+        // --------process rock
+        leftStickButtonPressed = myXboxController2.getLeftStickButtonPressed();
+
         if (leftStickButtonPressed && !leftStickPressed){
             IntakeSystem.cmdRockEnable();
             leftStickPressed = true;

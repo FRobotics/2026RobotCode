@@ -31,6 +31,8 @@ public class SwerveTeleop {
     private static double lastStartTime=0.0;
     private static double periodicTime=0.0;
     private static double startTime=0.0;
+    private static boolean leftStickPressed = false;
+    private static boolean leftStickButtonPressed = myXboxController2.getLeftStickButtonPressed();
 
     private static Lib4150NetTableSystemSend locNTsend;
 
@@ -126,7 +128,14 @@ public class SwerveTeleop {
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
         }
-
+        
+        if (leftStickButtonPressed && !leftStickPressed){
+            IntakeSystem.cmdRockEnable();
+            leftStickPressed = true;
+        } else if (leftStickButtonPressed && leftStickPressed){
+            IntakeSystem.cmdRockDisable();
+            leftStickPressed = false;
+        }
         // --------toggle turret manual mode.
         if ( myXboxController2.getBackButtonPressed()) {
             // --------in manual, set auto

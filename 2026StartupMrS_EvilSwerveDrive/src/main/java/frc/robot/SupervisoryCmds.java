@@ -35,7 +35,7 @@ public class SupervisoryCmds {
         FeederSystem.cmdFeederOn();
         // IntakeSystem.setDownOffState();
         IntakeSystem.setDownOffState();
-        IntakeSystem.cmdRockEnable();   // enable intake rocking... 
+        //IntakeSystem.cmdRockEnable();   // enable intake rocking... 
         TurretLauncher.cmdLauncherOn();
         TurretLauncher.cmdBallsToHub();
         locMode = "Shooting";

@@ -55,11 +55,11 @@ public class IntakeSystem {
 
     // --------ball shooting pickup arm rocking alternate sitting up.
     private static final double ROCK_ALT_DOWN_TIME = 8.0;   // time arm is down - seconds
-    private static final double ROCK_ALT_POS_1 = 3.0;      // first position degrees
-    private static final double ROCK_ALT_POS_1_TIME = 2.0;  // seconds
-    private static final double ROCK_ALT_POS_2 = 3.0;      // second position degrees
-    private static final double ROCK_ALT_POS_2_TIME = 2.0;  // seconds
-    private static final double ROCK_ALT_POS_3 = 3.0;      // third positoin degrees
+    private static final double ROCK_ALT_POS_1 = 15.0;      // first position degrees
+    private static final double ROCK_ALT_POS_1_TIME = 3.0;  // seconds
+    private static final double ROCK_ALT_POS_2 = 30.0;      // second position degrees
+    private static final double ROCK_ALT_POS_2_TIME = 3.0;  // seconds
+    private static final double ROCK_ALT_POS_3 = 50.0;      // third positoin degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall

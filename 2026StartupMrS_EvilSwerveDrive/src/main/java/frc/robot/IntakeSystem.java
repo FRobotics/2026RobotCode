@@ -30,7 +30,7 @@ public class IntakeSystem {
 
     // --------intake arm positionm control
     private static final double INTAKEARM_ERR_DEADBAND = 4.0;       // degrees
-    private static final double INTAKEARM_ERR_THRESHOLD = 40.0;     // degrees
+    private static final double INTAKEARM_ERR_THRESHOLD = 30.0;     // degrees
     private static final double INTAKEARM_OUT_DEADBAND = 0.0025;    // motor output units.
     private static final double INTAKEARM_OUT_THRESHOLD = 0.25;     // motor output units.
     private static final double INTAKEARM_OUT_MAX = 0.30;           // motor outpuot units.
@@ -54,11 +54,11 @@ public class IntakeSystem {
     private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
 
     // --------ball shooting pickup arm rocking alternate sitting up.
-    private static final double ROCK_ALT_DOWN_TIME = 8.0;   // time arm is down - seconds
-    private static final double ROCK_ALT_POS_1 = 15.0;      // first position degrees
-    private static final double ROCK_ALT_POS_1_TIME = 3.0;  // seconds
+    private static final double ROCK_ALT_DOWN_TIME = 1.0;   // time arm is down - seconds
+    private static final double ROCK_ALT_POS_1 = 3.0;      // first position degrees
+    private static final double ROCK_ALT_POS_1_TIME = 1.0;  // seconds
     private static final double ROCK_ALT_POS_2 = 30.0;      // second position degrees
-    private static final double ROCK_ALT_POS_2_TIME = 3.0;  // seconds
+    private static final double ROCK_ALT_POS_2_TIME = 1.0;  // seconds
     private static final double ROCK_ALT_POS_3 = 50.0;      // third positoin degrees
 
     // --------ball pickup motor stall constants

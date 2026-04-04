@@ -122,13 +122,13 @@ public class SwerveTeleop {
         // if (myXboxController2.getYButton()){
         //     SupervisoryCmds.ClimbRetract();
         // }
-        // if (myXboxController2.getXButton()){
-        //     SupervisoryCmds.ClimbExtend();
-        // }
+       
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
         }
-        
+        if (myXboxController2.getXButton()){
+            SupervisoryCmds.ToggleAgitatorReverse();
+        }
         // --------process rock
         leftStickButtonPressed = myXboxController2.getLeftStickButtonPressed();
 

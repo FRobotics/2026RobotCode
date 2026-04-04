@@ -53,7 +53,7 @@ public class AgitatorSystem {
     private static boolean locFwdStalled = false;
     private static int locStallStateNumb = 0;   // -- 0 - no stall, 1 - stall wait, 2 - reverse wait
     private static double locStallTimer = 0.0;
-
+    private static boolean locAgitatorReverse = false;
 
 
     /**
@@ -176,6 +176,10 @@ public class AgitatorSystem {
         // --------rate limit and clamp the motor output.
         AgitatorOutput = MathUtil.clamp( AgitatorRateLimit.calculate( locAgitatorFFoutput+locAgitatorPIDoutput ), -1.0, 1.0 );
 
+        if (locAgitatorReverse){
+            AgitatorOutput = -AgitatorOutput;
+        }
+
         // --------send demand to motor.
         AgitatorMotor.set(AgitatorOutput);
 
@@ -245,5 +249,7 @@ public class AgitatorSystem {
      public static double getMotorRPMTarget() {
         return locAgitatorSetpointRPM;
     }
-
+    public static void togglelocAgitatorReverse(){
+        locAgitatorReverse = !locAgitatorReverse;
+    }
 }

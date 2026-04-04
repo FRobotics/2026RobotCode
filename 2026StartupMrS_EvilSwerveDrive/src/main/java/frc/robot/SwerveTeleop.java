@@ -129,6 +129,7 @@ public class SwerveTeleop {
             SupervisoryCmds.Defense();
         }
         
+        // --------process rock
         leftStickButtonPressed = myXboxController2.getLeftStickButtonPressed();
 
         if (leftStickButtonPressed && !leftStickPressed){

@@ -128,7 +128,9 @@ public class SwerveTeleop {
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
         }
+        
         leftStickButtonPressed = myXboxController2.getLeftStickButtonPressed();
+
         if (leftStickButtonPressed && !leftStickPressed){
             IntakeSystem.cmdRockEnable();
             leftStickPressed = true;

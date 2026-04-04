@@ -119,12 +119,12 @@ public class SwerveTeleop {
         if (myXboxController2.getRightBumperButtonPressed()){
             SupervisoryCmds.BallsToAlliance();
         }
-        if (myXboxController2.getYButton()){
-            SupervisoryCmds.ClimbRetract();
-        }
-        if (myXboxController2.getXButton()){
-            SupervisoryCmds.ClimbExtend();
-        }
+        // if (myXboxController2.getYButton()){
+        //     SupervisoryCmds.ClimbRetract();
+        // }
+        // if (myXboxController2.getXButton()){
+        //     SupervisoryCmds.ClimbExtend();
+        // }
         if (myXboxController2.getRightStickButtonPressed()){
             SupervisoryCmds.Defense();
         }
@@ -182,14 +182,14 @@ public class SwerveTeleop {
         // --------button indexes start at one
 
         // --------SOMETHING 1
-        if ( locAuxButtonBox.getRawButton(2)) {
-            SupervisoryCmds.ClimbExtend();
-        }
+        // if ( locAuxButtonBox.getRawButton(2)) {
+        //     SupervisoryCmds.ClimbExtend();
+        // }
  
-        // --------SOMETHING 2
-        if ( locAuxButtonBox.getRawButton(3)) {
-            SupervisoryCmds.ClimbRetract();
-        }
+        // // --------SOMETHING 2
+        // if ( locAuxButtonBox.getRawButton(3)) {
+        //     SupervisoryCmds.ClimbRetract();
+        
 
         // --------SOMETHING 3
         if ( locAuxButtonBox.getRawButtonPressed(4)) {

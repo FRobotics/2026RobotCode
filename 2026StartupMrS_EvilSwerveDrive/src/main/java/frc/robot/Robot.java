@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
     TrajectorySystem.TrajectoryInit();
     String[] ourautos = AutoSystem.init();
     TurretLauncher.init();
-    Climb.init();
+    //Climb.init();
     SupervisoryCmds.init();
  
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
     AgitatorSystem.executeLogic(systemElapsedTimeSec);
     FeederSystem.executeLogic(systemElapsedTimeSec);
     TurretLauncher.executeLogic(systemElapsedTimeSec);
-    Climb.executeLogic(systemElapsedTimeSec);
+    //Climb.executeLogic(systemElapsedTimeSec);
     return;    
   }
 

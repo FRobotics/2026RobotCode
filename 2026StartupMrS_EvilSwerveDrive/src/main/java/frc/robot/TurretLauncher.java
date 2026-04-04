@@ -34,7 +34,7 @@ public class TurretLauncher {
     // --------AGITATOR START PERMISSIVE
     private static final double AGITATOR_START_PERM_RPM_ERR = 75.0;  // Err in launcher RPM that is okay to start sgitator
     // --------THESE WILL NEED TO BE TUNED...
-    private static final double MIN_INTAKE_ANGLE = 79.0;
+    //private static final double MIN_INTAKE_ANGLE = 79.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
     private static final double MIN_ALLOWED_TURRET_ANGLE = 50.0;
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
@@ -355,9 +355,9 @@ public class TurretLauncher {
         }
 
         // --------if intake arm is still up, don't move turret!!
-        if ( IntakeSystem.getIntakeArmAngleActual() > MIN_INTAKE_ANGLE ) {
-            desiredTurretAngleDegrees = 180.0;
-        }
+        // if ( IntakeSystem.getIntakeArmAngleActual() > MIN_INTAKE_ANGLE ) {
+        //     desiredTurretAngleDegrees = 180.0;
+        // }
 
         // --------calculate the first derivative (rate of change) of the turret deg setpoint, giving us Deg/Sec.
         // --------Smooth it a little.

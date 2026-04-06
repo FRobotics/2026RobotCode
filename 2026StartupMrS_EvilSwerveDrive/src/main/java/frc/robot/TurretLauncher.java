@@ -73,9 +73,10 @@ public class TurretLauncher {
     private static final double TARG_DISTANCE_FILTER_TIME_CONST = 0.100;   // seconds
     // private static final double LAUNCHER_M = 183.586426696663;   
     // private static final double LAUNCHER_B = 991.971428571429;
-    private static final double LAUNCHER_M = 193.820210097687;
-    private static final double LAUNCHER_B = 1030.12111625272;
-
+    // private static final double LAUNCHER_M = 193.820210097687;
+    // private static final double LAUNCHER_B = 1030.12111625272;
+    private static final double LAUNCHER_M = 144.61;
+    private static final double LAUNCHER_B = 1146.4;
 
 
     //private double TURRETOFFSET;

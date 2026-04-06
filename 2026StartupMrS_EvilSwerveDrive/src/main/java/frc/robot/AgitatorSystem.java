@@ -176,12 +176,14 @@ public class AgitatorSystem {
         // --------rate limit and clamp the motor output.
         AgitatorOutput = MathUtil.clamp( AgitatorRateLimit.calculate( locAgitatorFFoutput+locAgitatorPIDoutput ), -1.0, 1.0 );
 
-        if (locAgitatorReverse){
-            AgitatorOutput = -AgitatorOutput;
+        if (locAgitatorReverse==true){
+            AgitatorMotor.set(-AgitatorOutput);
+        } else if (locAgitatorReverse==false) {
+            AgitatorMotor.set(AgitatorOutput);
         }
 
         // --------send demand to motor.
-        AgitatorMotor.set(AgitatorOutput);
+        
 
         // ---------update network tables.
         locNTSend.triggerUpdate();
@@ -249,7 +251,10 @@ public class AgitatorSystem {
      public static double getMotorRPMTarget() {
         return locAgitatorSetpointRPM;
     }
-    public static void togglelocAgitatorReverse(){
-        locAgitatorReverse = !locAgitatorReverse;
+    public static void cmdAgitatorReverse(){
+        locAgitatorReverse = true;
+    }
+    public static void cmdAgitatorForward(){
+        locAgitatorReverse = false;
     }
 }

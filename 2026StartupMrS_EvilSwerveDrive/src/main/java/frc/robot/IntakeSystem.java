@@ -43,7 +43,7 @@ public class IntakeSystem {
     private static final double INTAKEARM_RATELIMIT = 10.0;         // motor units/second
   
     // private static final double ARM_GRAVITY_CONSTANT = 0.112;    // was 0.13
-    private static final double ARM_GRAVITY_CONSTANT = 0.025;    // was 0.13
+    private static final double ARM_GRAVITY_CONSTANT = 0.06;    // was 0.13
 
     private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;

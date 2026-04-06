@@ -100,10 +100,6 @@ public class SupervisoryCmds {
         // TurretLauncher.cmdLauncherOff();
     }
 
-    public static void ToggleAgitatorReverse(){
-        AgitatorSystem.togglelocAgitatorReverse();
-    }
-
 
     // --------get the string describing our mode.
     public static String getMode() {
@@ -134,9 +130,6 @@ public class SupervisoryCmds {
         }
         else if ( cmdName.equalsIgnoreCase("defense")) {
             Defense();
-        }
-         else if ( cmdName.equalsIgnoreCase("toggleagitatorreverse")) {
-            ToggleAgitatorReverse();
         }
         return;
 

@@ -146,11 +146,6 @@ public class SwerveVision {
 
         camera5 = new PhotonCamera(cam5name);
         photonPoseEstimator5 = new PhotonPoseEstimator(fieldLayout, robotToCamera5);
-
-        // --------camera 5
-        camera5 = new PhotonCamera(cam5name);
-        photonPoseEstimator5 = new PhotonPoseEstimator(fieldLayout,robotToCamera5);
-
         
         //add items to push to network tables
         locNtSend = new Lib4150NetTableSystemSend("Vision");

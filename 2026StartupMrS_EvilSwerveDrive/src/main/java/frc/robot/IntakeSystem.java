@@ -25,15 +25,15 @@ public class IntakeSystem {
     // --------intake arm positoin setpoints.
     private static final double INTAKESTART_ANGLE = 90.0;
     private static final double INTAKEUP_ANGLE = 85.0; // leave a little leeway for slippage and error setting angle at bottom.
-    private static final double INTAKEDOWN_ANGLE = 3.0;
+    private static final double INTAKEDOWN_ANGLE = 0.0;
     private static final double INTAKEDOWN_LIMITSWITCH_ANGLE = 0.4;
 
     // --------intake arm positionm control
     private static final double INTAKEARM_ERR_DEADBAND = 4.0;       // degrees
-    private static final double INTAKEARM_ERR_THRESHOLD = 40.0;     // degrees (changed from 30 to 40 because the arm was not fully going down)
+    private static final double INTAKEARM_ERR_THRESHOLD = 35.0;     // degrees (changed from 30 to 40 because the arm was not fully going down)
     private static final double INTAKEARM_OUT_DEADBAND = 0.0025;    // motor output units.
     private static final double INTAKEARM_OUT_THRESHOLD = 0.25;     // motor output units.
-    private static final double INTAKEARM_OUT_MAX = 0.30;           // motor outpuot units.
+    private static final double INTAKEARM_OUT_MAX = 0.25;           // motor outpuot units.
     private static final double INTAKEARM_KD =  0.0003;             // motor output units.  Assume 10 deg change, 
                                                                     // so averaged deriviative = 10/3/0.020 = 166.67.  Want extra output of 0.1
                                                                     // so Kd = 0.1 / 166.67 = 0.0006  (start with small change, increment as needed.)
@@ -43,7 +43,7 @@ public class IntakeSystem {
     private static final double INTAKEARM_RATELIMIT = 10.0;         // motor units/second
   
     // private static final double ARM_GRAVITY_CONSTANT = 0.112;    // was 0.13
-    private static final double ARM_GRAVITY_CONSTANT = 0.09;    // was 0.13
+    private static final double ARM_GRAVITY_CONSTANT = 0.025;    // was 0.13
 
     private static final double PICKUP_MOTOR_ON = 1.00;
     private static final double PICKUP_MOTOR_OFF = 0.0;
@@ -55,11 +55,11 @@ public class IntakeSystem {
 
     // --------ball shooting pickup arm rocking alternate sitting up.
     private static final double ROCK_ALT_DOWN_TIME = 0.1;   // time arm is down - seconds
-    private static final double ROCK_ALT_POS_1 = 3.0;      // first position degrees
+    private static final double ROCK_ALT_POS_1 = 15.0;      // first position degrees
     private static final double ROCK_ALT_POS_1_TIME = 1.0;  // seconds
-    private static final double ROCK_ALT_POS_2 = 30.0;      // second position degrees
+    private static final double ROCK_ALT_POS_2 = 50.0;      // second position degrees
     private static final double ROCK_ALT_POS_2_TIME = 1.0;  // seconds
-    private static final double ROCK_ALT_POS_3 = 50.0;      // third positoin degrees
+    private static final double ROCK_ALT_POS_3 = 80.0;      // third positoin degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -251,13 +251,13 @@ public class IntakeSystem {
         // --------grav constant was 0.10, now 0.13.
         intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * ARM_GRAVITY_CONSTANT;
+
+
         // --------gently remove the gravity constant
-        if ( IntakeArmAngleActual < 0.0 ) {
+        if ( IntakeArmAngleActual < ( 0.0 + INTAKEARM_ERR_DEADBAND) && intakeAngleTarget < ( 0.0 + INTAKEARM_ERR_DEADBAND) ) {
             intakeAngleGravityConstant = 0.0;
         }
-        else if ( IntakeArmAngleActual <= 10.0 ) {
-            intakeAngleGravityConstant = intakeAngleGravityConstant * IntakeArmAngleActual / 10.0;
-        }
+        
         // --------clamp and rate limit final output
         double tmpLowClamp = (IntakeArmLowLimitSwitchState) ? 0.0 : -1.0;
 

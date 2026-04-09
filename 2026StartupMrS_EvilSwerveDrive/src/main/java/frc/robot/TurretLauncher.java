@@ -40,7 +40,7 @@ public class TurretLauncher {
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 310.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
-    private static final double TURRET_FILTER_TIME_CONST = 0.100;   // seconds
+    private static final double TURRET_FILTER_TIME_CONST = 0.120;   // seconds
 
     // --------LAUNCHER TUNING CONSTANTS
     // --------based on data from girls of steel testing day 3/14/2026
@@ -60,23 +60,23 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = Launcher_Kn *  1.2;       // was 0.7
+    private static final double Launcher_Kp = Launcher_Kn *  1.35;       // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = Launcher_Kn * 2.0;
+    private static final double Launcher_Ki = Launcher_Kn * 2.25;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = Launcher_Kn * 1E-6;
+    private static final double Launcher_Kd = Launcher_Kn * 3.0E-4;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Launcher_Izone = 60.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
-    private static final double TARG_DISTANCE_FILTER_TIME_CONST = 0.100;   // seconds
+    private static final double TARG_DISTANCE_FILTER_TIME_CONST = 0.120;   // seconds
     // private static final double LAUNCHER_M = 183.586426696663;   
     // private static final double LAUNCHER_B = 991.971428571429;
     // private static final double LAUNCHER_M = 193.820210097687;
     // private static final double LAUNCHER_B = 1030.12111625272;
     private static final double LAUNCHER_M = 144.61;
-    private static final double LAUNCHER_B = 1146.4;
+    private static final double LAUNCHER_B = 1146.4-15.0;
 
 
     //private double TURRETOFFSET;

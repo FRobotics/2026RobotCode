@@ -99,7 +99,7 @@ public class MatchSystem {
         locNTSend.addItemDouble("RobotCodePhase", MatchSystem::getRobotCodePhaseNumber);
         
         // --------enable data logging --- disable this for competition.
-        //DataLogManager.start();
+        DataLogManager.start();
 
         // --------disable automatic REV logging
         StatusLogger.disableAutoLogging();

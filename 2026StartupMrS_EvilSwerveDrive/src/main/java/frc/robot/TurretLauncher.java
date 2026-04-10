@@ -149,6 +149,9 @@ public class TurretLauncher {
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
     private static double desiredTurretAngleDegRaw;    
+
+    private static double locTotalBallsLaunched = 0;
+    private static int locTotalBallsState = 0;
     
     public static void init() {
 
@@ -210,6 +213,9 @@ public class TurretLauncher {
 
         //encoder
 
+        // --------ball totalizer
+        locTotalBallsState = 0;
+
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
 
@@ -236,6 +242,7 @@ public class TurretLauncher {
         locNTSend.addItemBoolean("LauncherSpeedOnTarget", TurretLauncher::getLauncherSpeedOnTarget);
         locNTSend.addItemBoolean("LauncherOn", TurretLauncher::getLauncherOn);
         locNTSend.addItemBoolean("LauncherManualMode", TurretLauncher::getLauncherManualMode);
+        locNTSend.addItemDouble("BallsLaunched", TurretLauncher::getBallsLaunched);
 
 
 
@@ -444,6 +451,9 @@ public class TurretLauncher {
             ShotCounter = ShotCounter + 1.0;
         }
 
+        // --------determine number of balls launched.
+        calc_number_of_balls_launched( useSpeedTarget );
+
         // ------------------------------------------------------------------------------------------------------------
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
@@ -479,6 +489,65 @@ public class TurretLauncher {
     private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
         double tmpTurretDeg = MathUtil.inputModulus(turretDeg, 0.0, 360.0);
         return (tmpTurretDeg-180.0+3.7) / 360.0 * turretGearRatio;
+    }
+
+    // --------state machine to calculate number of balls launched.
+    private static void calc_number_of_balls_launched( double speedTarget) {
+
+        //  locLauncherSpeedActual 
+        //  useSpeedTarget
+
+        double speedDev = Math.abs( speedTarget - locLauncherSpeedActual );
+        boolean inRange = ( speedDev < 40.0 );
+        boolean speedDrop = ( ( speedTarget - locLauncherSpeedActual) > 60.0 );
+        boolean shooterOn = ( speedTarget > 900.0 );
+
+        // --------process state machine to count balls launched.
+        switch ( locTotalBallsState ) {
+
+            // --------shooter off waiting for shooter to turn on.
+            case 0:
+                if ( shooterOn ) {
+                    locTotalBallsState = 1;
+                }
+                break;
+
+            // --------shooter on, waiting to come up to speed.
+            case 1:
+                if ( !shooterOn ) {
+                    locTotalBallsState = 0;
+                }
+                else if ( inRange ) {
+                    locTotalBallsState = 2;
+                }
+                break;
+
+            // --------up to speed, detect shooting speed drop..
+            case 2:
+                if ( !shooterOn ) {
+                    locTotalBallsState = 0;
+                }
+                else if ( speedDrop ) {
+                    locTotalBallsLaunched++;
+                    locTotalBallsState = 3;
+                }
+                break;
+
+            // --------shoot detected, wait for speed to recover.
+            case 3:
+                if ( !shooterOn ) {
+                    locTotalBallsState = 0;
+                }
+                else if ( inRange ) {
+                    locTotalBallsState = 2;
+                }
+                break;
+
+            // ---------something bad.. recycle
+            default:
+                locTotalBallsState = 0;
+        }
+        return;
     }
 
 
@@ -604,6 +673,10 @@ public class TurretLauncher {
         return TargetDistance;    
     }
 
+    // --------get total balls launched
+    public static double getBallsLaunched() {
+        return locTotalBallsLaunched;    
+    }
     
 }
 

@@ -40,7 +40,7 @@ public class TurretLauncher {
     private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 310.0;
     private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
-    private static final double TURRET_FILTER_TIME_CONST = 0.100;   // seconds
+    private static final double TURRET_FILTER_TIME_CONST = 0.120;   // seconds
 
     // --------LAUNCHER TUNING CONSTANTS
     // --------based on data from girls of steel testing day 3/14/2026
@@ -60,23 +60,23 @@ public class TurretLauncher {
     private static final double Launcher_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Launcher_Kp = Launcher_Kn *  1.2;       // was 0.7
+    private static final double Launcher_Kp = Launcher_Kn *  1.35;       // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
-    private static final double Launcher_Ki = Launcher_Kn * 2.0;
+    private static final double Launcher_Ki = Launcher_Kn * 2.25;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Launcher_Kd = Launcher_Kn * 1E-6;
+    private static final double Launcher_Kd = Launcher_Kn * 3.0E-4;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Launcher_Izone = 60.0;
     // --------Irange - -min/max value that the integral PID term can have.
     private static final double Launcher_Irange = 0.3;
-    private static final double TARG_DISTANCE_FILTER_TIME_CONST = 0.100;   // seconds
+    private static final double TARG_DISTANCE_FILTER_TIME_CONST = 0.120;   // seconds
     // private static final double LAUNCHER_M = 183.586426696663;   
     // private static final double LAUNCHER_B = 991.971428571429;
     // private static final double LAUNCHER_M = 193.820210097687;
     // private static final double LAUNCHER_B = 1030.12111625272;
-    private static final double LAUNCHER_M = 144.61;
-    private static final double LAUNCHER_B = 1146.4;
+    private static final double LAUNCHER_M = 227.7412241;
+    private static final double LAUNCHER_B = 960.283105;
 
 
     //private double TURRETOFFSET;
@@ -149,6 +149,9 @@ public class TurretLauncher {
     //private static SparkMax turretEncoder;
     private static double desiredTurretAngleDegrees;
     private static double desiredTurretAngleDegRaw;    
+
+    private static double locTotalBallsLaunched = 0;
+    private static int locTotalBallsState = 0;
     
     public static void init() {
 
@@ -210,6 +213,9 @@ public class TurretLauncher {
 
         //encoder
 
+        // --------ball totalizer
+        locTotalBallsState = 0;
+
         // init network table
         locNTSend = new Lib4150NetTableSystemSend("TurretLauncher");
 
@@ -236,6 +242,7 @@ public class TurretLauncher {
         locNTSend.addItemBoolean("LauncherSpeedOnTarget", TurretLauncher::getLauncherSpeedOnTarget);
         locNTSend.addItemBoolean("LauncherOn", TurretLauncher::getLauncherOn);
         locNTSend.addItemBoolean("LauncherManualMode", TurretLauncher::getLauncherManualMode);
+        locNTSend.addItemDouble("BallsLaunched", TurretLauncher::getBallsLaunched);
 
 
 
@@ -444,6 +451,9 @@ public class TurretLauncher {
             ShotCounter = ShotCounter + 1.0;
         }
 
+        // --------determine number of balls launched.
+        calc_number_of_balls_launched( useSpeedTarget );
+
         // ------------------------------------------------------------------------------------------------------------
         // --------output to actuators (motors)
         TurretRotationMotor.set(TurretMotorDemand);
@@ -479,6 +489,65 @@ public class TurretLauncher {
     private static double calcEncoderRawValueFromTurretDeg( double turretDeg ) {
         double tmpTurretDeg = MathUtil.inputModulus(turretDeg, 0.0, 360.0);
         return (tmpTurretDeg-180.0+3.7) / 360.0 * turretGearRatio;
+    }
+
+    // --------state machine to calculate number of balls launched.
+    private static void calc_number_of_balls_launched( double speedTarget) {
+
+        //  locLauncherSpeedActual 
+        //  useSpeedTarget
+
+        double speedDev = Math.abs( speedTarget - locLauncherSpeedActual );
+        boolean inRange = ( speedDev < 40.0 );
+        boolean speedDrop = ( ( speedTarget - locLauncherSpeedActual) > 60.0 );
+        boolean shooterOn = ( speedTarget > 900.0 );
+
+        // --------process state machine to count balls launched.
+        switch ( locTotalBallsState ) {
+
+            // --------shooter off waiting for shooter to turn on.
+            case 0:
+                if ( shooterOn ) {
+                    locTotalBallsState = 1;
+                }
+                break;
+
+            // --------shooter on, waiting to come up to speed.
+            case 1:
+                if ( !shooterOn ) {
+                    locTotalBallsState = 0;
+                }
+                else if ( inRange ) {
+                    locTotalBallsState = 2;
+                }
+                break;
+
+            // --------up to speed, detect shooting speed drop..
+            case 2:
+                if ( !shooterOn ) {
+                    locTotalBallsState = 0;
+                }
+                else if ( speedDrop ) {
+                    locTotalBallsLaunched++;
+                    locTotalBallsState = 3;
+                }
+                break;
+
+            // --------shoot detected, wait for speed to recover.
+            case 3:
+                if ( !shooterOn ) {
+                    locTotalBallsState = 0;
+                }
+                else if ( inRange ) {
+                    locTotalBallsState = 2;
+                }
+                break;
+
+            // ---------something bad.. recycle
+            default:
+                locTotalBallsState = 0;
+        }
+        return;
     }
 
 
@@ -604,6 +673,10 @@ public class TurretLauncher {
         return TargetDistance;    
     }
 
+    // --------get total balls launched
+    public static double getBallsLaunched() {
+        return locTotalBallsLaunched;    
+    }
     
 }
 

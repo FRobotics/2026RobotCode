@@ -42,6 +42,18 @@ public class SupervisoryCmds {
         locNTSend.triggerUpdate();
     }
 
+    public static void RevShooter(){
+        AgitatorSystem.cmdAgitatorOff();
+        FeederSystem.cmdFeederOn();
+        // IntakeSystem.setDownOffState();
+        IntakeSystem.setDownOffState();
+        //IntakeSystem.cmdRockEnable();   // enable intake rocking... 
+        TurretLauncher.cmdLauncherOn();
+        TurretLauncher.cmdBallsToHub();
+        locMode = "Shooting";
+        locNTSend.triggerUpdate();
+    }
+
     // --------do nothing -- normal driving with intake down.
     public static void StopAction(){
         AgitatorSystem.cmdAgitatorOff();

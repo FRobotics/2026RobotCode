@@ -154,6 +154,10 @@ public class SwerveTeleop {
             }
         }
 
+        if (myXboxController2.getRightTriggerAxis()>=.8){
+            SupervisoryCmds.RevShooter();
+        }
+
         // --------turret manual inc/dec
         // --------This is approx 50 deg/second at maximum joystick value.
         if ( TurretLauncher.getTurretManualMode()) {

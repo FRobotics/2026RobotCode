@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import static edu.wpi.first.units.Units.Degrees;
+
 //import com.ctre.phoenix6.StatusSignal;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -37,9 +40,9 @@ public class TurretLauncher {
     //private static final double MIN_INTAKE_ANGLE = 79.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
     private static final double MIN_ALLOWED_TURRET_ANGLE = 50.0;
-    private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
+    //private static final double MIN_LIMIT_SWITCH_TURRET_ANGLE = MIN_ALLOWED_TURRET_ANGLE;
     private static final double MAX_ALLOWED_TURRET_ANGLE = 310.0;
-    private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
+    //private static final double MAX_LIMIT_SWITCH_TURRET_ANGLE = MAX_ALLOWED_TURRET_ANGLE;
     private static final double TURRET_FILTER_TIME_CONST = 0.120;   // seconds
 
     // --------LAUNCHER TUNING CONSTANTS
@@ -158,8 +161,8 @@ public class TurretLauncher {
         //get team side from MatchSystem  -- also need to call in execute method
         isRed = MatchSystem.isRed();
 
-        TurretRotationMotor = new SparkMax(CanId.TurretMotor,MotorType.kBrushless);
-        TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
+        //TurretRotationMotor = new SparkMax(CanId.TurretMotor,MotorType.kBrushless);
+        //TurrentRotationMotorEncoder = TurretRotationMotor.getEncoder();
         LauncherMotor = new SparkMax(CanId.LauncherMotor1,MotorType.kBrushless);
         LauncherMotorEncoder = LauncherMotor.getEncoder();
         LauncherMotor2 = new SparkMax(CanId.LauncherMotor2,MotorType.kBrushless);
@@ -181,7 +184,7 @@ public class TurretLauncher {
       
         //set initial system state
         // offset is 5.75 inches from the center of the robot or 0.14605 meters.
-        TurretOffset = new Translation2d( -0.14605 , 0);
+        //TurretOffset = new Translation2d( -0.14605 , 0);
 
 
         //Blue: x: 11.92m y: 4.03m  (is this really red??)
@@ -260,27 +263,27 @@ public class TurretLauncher {
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
         // --------Add a little hysteresis of 2.0 degrees for the Turret actual position.
         // --------This depends on the previous value of clockwiseLimitSwitchValue and turretAngleEncoder
-        clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get() || ( clockwiseLimitSwitchValue && ( turretAngleEncoder <= (MIN_LIMIT_SWITCH_TURRET_ANGLE+3.0)));
+        //clockwiseLimitSwitchValue = !clockwiseLimitSwitch.get() || ( clockwiseLimitSwitchValue && ( turretAngleEncoder <= (MIN_LIMIT_SWITCH_TURRET_ANGLE+3.0)));
 
         // --------read the counter clock wise limit switch.... (This is the high value)
         // --------if we hit the limit switch once, keep it on until the angle is above the limit switch value....
         // --------Add a little hysteresis of 2.0 degrees for the Turret actual position.
         // --------This depends on the previous value of clockwiseLimitSwitchValue and turretAngleEncoder
-        counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get() || ( counterclockwiseLimitSwitchValue && ( turretAngleEncoder >= (MAX_LIMIT_SWITCH_TURRET_ANGLE-3.0)));
+        //counterclockwiseLimitSwitchValue = !counterclockwiseLimitSwitch.get() || ( counterclockwiseLimitSwitchValue && ( turretAngleEncoder >= (MAX_LIMIT_SWITCH_TURRET_ANGLE-3.0)));
 
-        // ---------if we just hit the high limit switch, set the value of the encoder position.
-        if ( TurretCCWLimitSwitchEdgeOn.execEdgeOn(counterclockwiseLimitSwitchValue) ) {
+        // ---------if we just hit the high limit switch, set the value of the encoder position. 
+        //if ( TurretCCWLimitSwitchEdgeOn.execEdgeOn(counterclockwiseLimitSwitchValue) ) {
             //TODO: after char -- TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MAX_LIMIT_SWITCH_TURRET_ANGLE));
-        }
+        //}
 
         // ---------if we just hit the low limit switch, set the value of the encoder position.
-        if ( TurretCWLimitSwitchEdgeOn.execEdgeOn(clockwiseLimitSwitchValue) ) {
+       // if ( TurretCWLimitSwitchEdgeOn.execEdgeOn(clockwiseLimitSwitchValue) ) {
             //TODO: after char -- TurrentRotationMotorEncoder.setPosition( calcEncoderRawValueFromTurretDeg(MIN_LIMIT_SWITCH_TURRET_ANGLE));
-        }
+       // }
 
         // --------read the turret position and velocity
-        turretAngleEncoder = calcTurretDegFromRawEncoder( TurrentRotationMotorEncoder.getPosition() );
-        turretAngleVelDegSec = calcTurretVelFromRawEncoder(TurrentRotationMotorEncoder.getVelocity() );
+        turretAngleEncoder = Math.toDegrees(SwerveOdometry.getrotposition());
+       // turretAngleVelDegSec = calcTurretVelFromRawEncoder(TurrentRotationMotorEncoder.getVelocity() );
 
         // ------------------------------------------------------------------------------------------------------------
         // --------AUTO SETPOINT CALCULATIONS.
@@ -295,9 +298,9 @@ public class TurretLauncher {
             // --------where the center of the robot is on the field.
             robotPose = new Translation2d(SwerveOdometry.getxposition(),SwerveOdometry.getyposition());
             // --------turret relative position to center of robot.
-            TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
+            //TurretOffset= TurretOffset.rotateBy(new Rotation2d(SwerveOdometry.getrotposition()));
             // --------turret absolute field position.
-            robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
+            //robotPose = robotPose.minus(TurretOffset);  // TODO: Should this be add
 
             // --------get the position of our target..  Alliance or goal, red or blue...
             Translation2d targetPose = goalPoseRED;
@@ -327,7 +330,7 @@ public class TurretLauncher {
             DesiredTurretAngle = DesiredTurretAngle.minus(new Rotation2d(SwerveOdometry.getrotposition()) );
             desiredTurretAngleDegRaw = TurretPosFilter.execFilter( MathUtil.inputModulus( DesiredTurretAngle.getDegrees(), 0.0, 360.0),
                                         systemElapsedTimeSec);
-            desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
+            //desiredTurretAngleDegrees = MathUtil.clamp( desiredTurretAngleDegRaw, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
 
         }
         // --------no valid odometry, set default turret position and distance to target.
@@ -352,7 +355,7 @@ public class TurretLauncher {
             }
             else {                              // has been manual mode for a while.
                 desiredTurretAngleDegRaw = locTurretCmdSetpoint;
-                desiredTurretAngleDegrees = MathUtil.clamp( locTurretCmdSetpoint, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
+                //desiredTurretAngleDegrees = MathUtil.clamp( locTurretCmdSetpoint, MIN_ALLOWED_TURRET_ANGLE, MAX_ALLOWED_TURRET_ANGLE);
             }
         }
         // --------want auto mode
@@ -379,9 +382,10 @@ public class TurretLauncher {
         double tmpTurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
 
         // --------now clamp output based on limit switches...
-        double tmpLow = ( clockwiseLimitSwitchValue ) ? 0.0 : -1.0;
-        double tmpHigh = ( counterclockwiseLimitSwitchValue ) ? 0.0 : 1.0;
-        TurretMotorDemand = MathUtil.clamp(tmpTurretMotorDemand, tmpLow, tmpHigh );
+        //double tmpLow = ( clockwiseLimitSwitchValue ) ? 0.0 : -1.0;
+        //double tmpHigh = ( counterclockwiseLimitSwitchValue ) ? 0.0 : 1.0;
+        //TurretMotorDemand = MathUtil.clamp(tmpTurretMotorDemand, tmpLow, tmpHigh );
+        TurretMotorDemand = tmpTurretMotorDemand;
 
         // --------calculate if we on target ... use raw position before clamping to get accurate result.
         double turretRawError = desiredTurretAngleDegRaw - turretAngleEncoder;
@@ -456,7 +460,7 @@ public class TurretLauncher {
 
         // ------------------------------------------------------------------------------------------------------------
         // --------output to actuators (motors)
-        TurretRotationMotor.set(TurretMotorDemand);
+        //TurretRotationMotor.set(TurretMotorDemand);
 
         LauncherMotor.set(LauncherMotorDemand); 
         LauncherMotor2.set(LauncherMotorDemand);
@@ -554,10 +558,10 @@ public class TurretLauncher {
     
               //METERS      
 
-    private static double getTurretMotorDemand() {
+    public static double getTurretMotorDemand() {
         return TurretMotorDemand;
     }
-    private static double getLauncherMotorDemand(){
+    public static double getLauncherMotorDemand(){
         return LauncherMotorDemand;
     }
         public static double getturretAngleEncoder() {

@@ -91,14 +91,14 @@ public class TurretLauncher {
 
     // class/object variables
     private static Lib4150NetTableSystemSend locNTSend;
-    private static SparkMax TurretRotationMotor;
+    //private static SparkMax TurretRotationMotor;
     private static SparkMax LauncherMotor;
     private static SparkMax LauncherMotor2; 
-    private static RelativeEncoder TurrentRotationMotorEncoder;  // sample....
+    //private static RelativeEncoder TurrentRotationMotorEncoder;  // sample....
     private static RelativeEncoder LauncherMotorEncoder;
     private static RelativeEncoder LauncherMotorEncoder2;
     private static Translation2d robotPose;
-    private static Translation2d TurretOffset;
+    //private static Translation2d TurretOffset;
     private static Translation2d goalPoseRED;
     private static Translation2d zonePoseRED;
     private static Translation2d goalPoseBLUE;
@@ -111,10 +111,10 @@ public class TurretLauncher {
     private static Lib4150PositionControl TurretPositionControl;
     private static double turretAngleEncoder;
     private static double turretAngleVelDegSec = 0.0;
-    private static DigitalInput clockwiseLimitSwitch;
-    private static DigitalInput counterclockwiseLimitSwitch;
-    private static Lib4150DigEdgeOn TurretCWLimitSwitchEdgeOn;
-    private static Lib4150DigEdgeOn TurretCCWLimitSwitchEdgeOn;
+    //private static DigitalInput clockwiseLimitSwitch;
+    //private static DigitalInput counterclockwiseLimitSwitch;
+    //private static Lib4150DigEdgeOn TurretCWLimitSwitchEdgeOn;
+    //private static Lib4150DigEdgeOn TurretCCWLimitSwitchEdgeOn;
     private static boolean clockwiseLimitSwitchValue = false;
     private static boolean counterclockwiseLimitSwitchValue = false;
     private static PIDController launcherPID;
@@ -209,10 +209,10 @@ public class TurretLauncher {
         launcherPID.setIZone(Launcher_Izone);        // only do integration when within this many RPMs.
 
         //limit switches
-        clockwiseLimitSwitch = new DigitalInput(1);
+        /*clockwiseLimitSwitch = new DigitalInput(1);
         counterclockwiseLimitSwitch = new DigitalInput(2);
         TurretCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
-        TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();
+        TurretCCWLimitSwitchEdgeOn = new Lib4150DigEdgeOn();*/
 
         //encoder
 
@@ -476,16 +476,16 @@ public class TurretLauncher {
     
     // --------calculate turret position in degrees given the raw encoder value in rotations.
     // --------allow angle value to go 0 360.0
-    private static double calcTurretDegFromRawEncoder( double parmEncoderRotations ) {
+    /*private static double calcTurretDegFromRawEncoder( double parmEncoderRotations ) {
         return 180.0+parmEncoderRotations*360.0/turretGearRatio - 3.7;
-    }
+    }*/
 
     
     // --------calculate turret velocity in degrees/sec given the raw encoder value in rotations.
     // --------allow angle value to go 0 360.0
-    private static double calcTurretVelFromRawEncoder( double parmEncoderVelRPM ) {
+    /*private static double calcTurretVelFromRawEncoder( double parmEncoderVelRPM ) {
         return parmEncoderVelRPM*360.0/turretGearRatio/60.0;
-    }
+    }*/
 
     // ---------calculate the raw encoder value in rotations given the arm position in degrees
     // --------allow angle value to go 0 360.0

@@ -32,7 +32,7 @@ public class TurretLauncher {
     // --------Launcher on target RPM
     private static final double LAUNCHER_ON_TARGET_RPM = 50.0;      // within this RPM error launcher is considered on target.
     // --------AGITATOR START PERMISSIVE
-    private static final double AGITATOR_START_PERM_RPM_ERR = 75.0;  // Err in launcher RPM that is okay to start sgitator
+    private static final double AGITATOR_START_PERM_RPM_ERR = 120.0;  // Err in launcher RPM that is okay to start sgitator
     // --------THESE WILL NEED TO BE TUNED...
     //private static final double MIN_INTAKE_ANGLE = 79.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
@@ -76,7 +76,7 @@ public class TurretLauncher {
     // private static final double LAUNCHER_M = 193.820210097687;
     // private static final double LAUNCHER_B = 1030.12111625272;
     private static final double LAUNCHER_M = 227.7412241;
-    private static final double LAUNCHER_B = 960.283105;
+    private static final double LAUNCHER_B = 925.283105;
 
 
     //private double TURRETOFFSET;

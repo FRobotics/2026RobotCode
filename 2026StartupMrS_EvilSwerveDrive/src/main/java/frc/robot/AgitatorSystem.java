@@ -114,11 +114,19 @@ public class AgitatorSystem {
             if ( !TurretLauncher.getAgitatorStartPermissive() ) {
                 locAgitatorSetpointRPM = 0.0;
             }
+
+            boolean shooterOn = TurretLauncher.getLauncherOn();
+            if (shooterOn){
+                FeederSystem.setFeederReverse(false);
+            } else {
+                FeederSystem.setFeederReverse(true);
+            }
         }
         else {
             locAgitatorSetpointRPM = 0.0;
             locFwdStalled = false;
             locStallStateNumb = 0;
+            FeederSystem.setFeederReverse(false);
         };
 
 

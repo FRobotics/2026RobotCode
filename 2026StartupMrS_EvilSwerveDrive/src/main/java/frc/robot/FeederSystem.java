@@ -37,7 +37,7 @@ public class FeederSystem {
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Feeder_Ki = Feeder_Kn * 2.0;
     // --------kd = derivative constant     output = Kd * derivative( error )
-    private static final double Feeder_Kd = Feeder_Kn * 1.0E-6; 
+    private static final double Feeder_Kd = Feeder_Kn * 1.0E-4; 
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Feeder_Izone = 60.0;  // Error RPM where I is used.
@@ -60,7 +60,7 @@ public class FeederSystem {
     private static double locFeederPIDOutput = 0.0;
     private static SimpleMotorFeedforward FeederFeedForward;
     private static PIDController FeederPID;
-
+    private static boolean FeederReverse = true;
 
 
     public static void init() {
@@ -146,8 +146,17 @@ public class FeederSystem {
         return locFeederSetpointRPM;
     }
 
+    public static void setFeederReverse( boolean val) {
+        FeederReverse = val;
+    }
+
     public static void setMotorRPMTarget( double parmRPM) {
-        locCmdFeederSetpointRPM = parmRPM;
+        if (FeederReverse){
+            locCmdFeederSetpointRPM = parmRPM * -1;
+        }
+        else {
+            locCmdFeederSetpointRPM = parmRPM;
+        }
     }
 
 }

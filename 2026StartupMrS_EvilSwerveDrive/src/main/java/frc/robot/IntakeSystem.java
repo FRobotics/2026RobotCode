@@ -233,6 +233,12 @@ public class IntakeSystem {
 
         // on
         if (intakeState==INTAKE_STATE_DOWN_ON){
+            //set motor demand so the arm stays down
+            //TODO: Test this for right demand & angle oofset
+            if (IntakeArmAngleActual >  INTAKEDOWN_ANGLE + 1){
+                intakeAngleTarget = INTAKEDOWN_ANGLE;
+            }
+
             intakeSpeed=PICKUP_MOTOR_ON;
         }
         // off

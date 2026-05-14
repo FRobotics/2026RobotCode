@@ -210,7 +210,12 @@ public class SwerveDrive {
      */
     static public void setDesiredSpeed(ChassisSpeeds speeds)
     {
-        locSpeedTarget = speeds;
+        if(TurretLauncher.getTurretManualMode()){
+            locSpeedTarget = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, Math.toRadians(TurretLauncher.getTurretMotorDemand()));
+        }else{
+            locSpeedTarget = speeds;
+        }
+        
     }
 
     

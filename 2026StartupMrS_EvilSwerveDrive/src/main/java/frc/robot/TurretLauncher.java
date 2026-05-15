@@ -127,7 +127,7 @@ public class TurretLauncher {
     private static double turretGearRatio = 160.0;
     private static double locLauncherSpeed1;
     private static double locLauncherSpeed2;
-    private static boolean locLauncherOn=false;
+    public static boolean locLauncherOn=false;
     private static boolean turretMode=false;    // false = hub, true = zone
     private static boolean isRed;
     private static boolean turretPositionOnTarget = false;
@@ -576,7 +576,7 @@ public class TurretLauncher {
     public static boolean getAgitatorStartPermissive() {
         return launcherAgitatorPermissive;
     }
-    private static boolean getLauncherOn() {
+    public static boolean getLauncherOn() {
         return locLauncherOn;
     }
     public static double getTurretMotorDegSec() {

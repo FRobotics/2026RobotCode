@@ -116,8 +116,8 @@ public class FeederSystem {
             FeederPID.reset();      // reset integral.
             locFeederPIDOutput = 0.0;
         }
-        FeederOutput = MathUtil.clamp(locFeederFFOutput+locFeederPIDOutput, -1.0, 1.0);
-
+        //FeederOutput = -(MathUtil.clamp(locFeederFFOutput+locFeederPIDOutput, -1.0, 1.0));
+        FeederOutput=-1.0;
         FeederMotor.set(FeederOutput);
 
         locNTSend.triggerUpdate();

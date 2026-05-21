@@ -54,7 +54,7 @@ public class SwerveTeleop {
         locNTsend.addItemDouble("DriveSpeedTarg_Rot", SwerveTeleop::getDriveSpeedTargRot);
         locNTsend.addItemBoolean("FieldOriented", SwerveTeleop::getFieldOrientedDriving); 
         locNTsend.triggerUpdate();
-        
+        SupervisoryCmds.StopAction();
     }
     
     public static void SwerveExecute(){

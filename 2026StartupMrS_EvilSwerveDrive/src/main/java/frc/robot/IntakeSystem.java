@@ -111,6 +111,7 @@ public class IntakeSystem {
     private static boolean locPickupStalled = false;
     private static int locPickupStallState = 0;
     private static double locStallTimer = 0.0;
+    private static double intakePushDown = -0.15;
 
     
     public static void init() {
@@ -225,6 +226,7 @@ public class IntakeSystem {
         // down (on or off )
         if (intakeState>INTAKE_STATE_UP_OFF){
             intakeAngleTarget= INTAKEDOWN_ANGLE;
+            intakeSpeed=PICKUP_MOTOR_OFF;
         }
         // up
         else{
@@ -246,6 +248,7 @@ public class IntakeSystem {
             intakeSpeed=PICKUP_MOTOR_OFF;
             locPickupStallState = 0;
             locPickupStalled = false;
+            
         }
 
 
@@ -255,7 +258,11 @@ public class IntakeSystem {
      
         // --------do arm position control - values in degrees
         // --------grav constant was 0.10, now 0.13.
-        intakeAngleMotorDemand= IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual) ;
+        if(intakeState==INTAKE_STATE_DOWN_ON){
+            intakeAngleMotorDemand = intakePushDown;
+        }else{
+            intakeAngleMotorDemand = IntakePositionControl.PosCtrlExec(intakeAngleTarget, IntakeArmAngleActual);
+        }
         double intakeAngleGravityConstant = Math.cos(Units.degreesToRadians(IntakeArmAngleActual)) * ARM_GRAVITY_CONSTANT;
 
 
@@ -292,6 +299,7 @@ public class IntakeSystem {
             locIntakeExtended=true;
         }
 
+        
         locNTSend.triggerUpdate();
         return;
     }
@@ -417,7 +425,6 @@ public class IntakeSystem {
         return;
     }
 
-
     // --------process ball install stall detection
     private static void process_ball_intake_stall_detect( double mySystemElapsedTimeSec ) {
         // --------calculate values for reverse jog when forward stalls
@@ -464,6 +471,8 @@ public class IntakeSystem {
 
 
         return;
+
+        
     }
 
 

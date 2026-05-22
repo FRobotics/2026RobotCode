@@ -115,19 +115,19 @@ public class AgitatorSystem {
                 locAgitatorSetpointRPM = 0.0;
             }
 
-            boolean shooterOn = TurretLauncher.getLauncherOn();
+           /*  boolean shooterOn = TurretLauncher.getLauncherOn();
             if (shooterOn){
                 FeederSystem.setFeederReverse(false);
             } else {
                 FeederSystem.setFeederReverse(true);
-            }
+            }*/
         }
-        else {
+       /*  else {
             locAgitatorSetpointRPM = 0.0;
             locFwdStalled = false;
             locStallStateNumb = 0;
             FeederSystem.setFeederReverse(false);
-        };
+        };*/
 
 
         // --------calculate values for reverse job when forward stalls

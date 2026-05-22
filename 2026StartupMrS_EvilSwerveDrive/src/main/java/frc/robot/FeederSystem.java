@@ -60,7 +60,7 @@ public class FeederSystem {
     private static double locFeederPIDOutput = 0.0;
     private static SimpleMotorFeedforward FeederFeedForward;
     private static PIDController FeederPID;
-    private static boolean FeederReverse = true;
+    // private static boolean FeederReverse = true;
 
 
     public static void init() {
@@ -146,15 +146,12 @@ public class FeederSystem {
         return locFeederSetpointRPM;
     }
 
-    public static void setFeederReverse( boolean val) {
+    /*public static void setFeederReverse( boolean val) {
         FeederReverse = val;
-    }
+    }*/
 
-    public static void setMotorRPMTarget( double parmRPM) {
-        if (FeederReverse){
-            locCmdFeederSetpointRPM = parmRPM * -1;
-        }
-        else {
+     public static void setMotorRPMTarget( double parmRPM) {
+        if (locFeederOn) {
             locCmdFeederSetpointRPM = parmRPM;
         }
     }

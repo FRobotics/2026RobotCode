@@ -122,12 +122,12 @@ public class AgitatorSystem {
                 FeederSystem.setFeederReverse(true);
             }*/
         }
-       /*  else {
+         else {
             locAgitatorSetpointRPM = 0.0;
-            locFwdStalled = false;
-            locStallStateNumb = 0;
-            FeederSystem.setFeederReverse(false);
-        };*/
+            //locFwdStalled = false;
+            //locStallStateNumb = 0;
+            //FeederSystem.setFeederReverse(false);
+        };
 
 
         // --------calculate values for reverse job when forward stalls
@@ -184,9 +184,9 @@ public class AgitatorSystem {
         // --------rate limit and clamp the motor output.
         AgitatorOutput = MathUtil.clamp( AgitatorRateLimit.calculate( locAgitatorFFoutput+locAgitatorPIDoutput ), -1.0, 1.0 );
 
-        if (locAgitatorReverse==true){
+        if (locAgitatorReverse==false){
             AgitatorMotor.set(-AgitatorOutput);
-        } else if (locAgitatorReverse==false) {
+        } else if (locAgitatorReverse==true) {
             AgitatorMotor.set(AgitatorOutput);
         }
 

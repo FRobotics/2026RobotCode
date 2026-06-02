@@ -55,7 +55,8 @@ public class TurretLauncher {
     // --------feedforward
     // --------Ks - static feedforward is the amount of motor output to get started moving
     //private static final double Launcher_Ks = 0.0149140408235032;
-    private static final double Launcher_Ks = 0.0147960434685002;
+    // was 0.0147960434685002
+    private static final double Launcher_Ks = 0.009229318;
     // --------Kv -- velocity feedforward is the slope of the motor output to get a particular RPM ( + Ks )
     //private static final double Launcher_Kv = 0.000172170358450721;
     private static final double Launcher_Kv = ( 1.0 - Launcher_Ks ) / Launcher_MaxRPM;

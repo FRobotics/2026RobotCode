@@ -33,12 +33,12 @@ public class SwerveVision {
     private static PhotonCamera camera1;
     private static PhotonPoseEstimator photonPoseEstimator1;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(-9.5), 
-                                                                Units.inchesToMeters(7.5), 
-                                                                Units.inchesToMeters(16.5), 
+    private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(-9.0), 
+                                                                Units.inchesToMeters(-13.625), 
+                                                                Units.inchesToMeters(13.0), 
                                                 new Rotation3d( 0.0, 
                                                                 Units.degreesToRadians(20.0), 
-                                                                Units.degreesToRadians(150.0-3.7)));
+                                                                Units.degreesToRadians(-30)));
     private static double cam1X = 0.0;
     private static double cam1Y = 0.0;
     private static double cam1Z = 0.0;
@@ -51,12 +51,12 @@ public class SwerveVision {
     private static PhotonCamera camera2;
     private static PhotonPoseEstimator photonPoseEstimator2;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(-9.5), 
-                                                                Units.inchesToMeters(-7.5), 
-                                                                Units.inchesToMeters(16.5), 
+    private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(-9.0), 
+                                                                Units.inchesToMeters(13.625), 
+                                                                Units.inchesToMeters(13.0), 
                                                 new Rotation3d( 0.0, 
                                                                 Units.degreesToRadians(20.0), 
-                                                                Units.degreesToRadians(-150.0-3.7)));
+                                                                Units.degreesToRadians(30)));
 
     private static double cam2X = 0.0;
     private static double cam2Y = 0.0;
@@ -69,9 +69,9 @@ public class SwerveVision {
     private static PhotonCamera camera3;
     private static PhotonPoseEstimator photonPoseEstimator3;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(-1.0), 
-                                                                Units.inchesToMeters(14.25), 
-                                                                Units.inchesToMeters(9.0), 
+    private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(-0.875), 
+                                                                Units.inchesToMeters(-13.9375), 
+                                                                Units.inchesToMeters(8.125), 
                                                 new Rotation3d( 0.0, 
                                                                 Units.degreesToRadians(20.0), 
                                                                 Units.degreesToRadians(90.0)));
@@ -86,9 +86,9 @@ public class SwerveVision {
     private static PhotonCamera camera4;
     private static PhotonPoseEstimator photonPoseEstimator4;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(-1.0), 
-                                                                Units.inchesToMeters(-14.25), 
-                                                                Units.inchesToMeters(9.0), 
+    private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(-0.875), 
+                                                                Units.inchesToMeters(13.9375), 
+                                                                Units.inchesToMeters(8.125), 
                                                 new Rotation3d( 0.0, 
                                                                 Units.degreesToRadians(20.0), 
                                                                 Units.degreesToRadians(-90.0)));

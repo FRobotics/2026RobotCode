@@ -17,7 +17,7 @@ import Lib4150.Lib4150FilterLowPassBW1;
 import Lib4150.Lib4150NetTableSystemSend;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-//import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.util.Units;
 //import edu.wpi.first.units.measure.Angle;
 //import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -136,6 +136,7 @@ public class TurretLauncher {
     private static boolean locTurretManualMode = true;
     private static boolean locTurretCmdManualMode = true;
     private static double locTurretCmdSetpoint = 180.0;
+    private static double locSpinErr = 0.0;
 
     private static boolean locLauncherManualMode = false;
     private static boolean locLauncherCmdManualMode = false;
@@ -380,7 +381,9 @@ public class TurretLauncher {
         locTargetAngleRotVel = locTargetAngleROC.ExecROC3( desiredTurretAngleDegrees, systemElapsedTimeSec );
 
         //------Position Control
-        double tmpTurretMotorDemand = TurretPositionControl.PosCtrlExec(desiredTurretAngleDegrees, turretAngleEncoder);
+        locSpinErr = MathUtil.inputModulus( desiredTurretAngleDegrees - turretAngleEncoder, -90.0, 90.0 );
+
+        double tmpTurretMotorDemand = TurretPositionControl.PosCtrlExec( locSpinErr, 0.0);
 
         // --------now clamp output based on limit switches...
         //double tmpLow = ( clockwiseLimitSwitchValue ) ? 0.0 : -1.0;

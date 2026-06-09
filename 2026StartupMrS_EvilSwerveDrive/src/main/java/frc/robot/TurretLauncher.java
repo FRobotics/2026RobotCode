@@ -35,7 +35,7 @@ public class TurretLauncher {
     // --------Launcher on target RPM
     private static final double LAUNCHER_ON_TARGET_RPM = 50.0;      // within this RPM error launcher is considered on target.
     // --------AGITATOR START PERMISSIVE
-    private static final double AGITATOR_START_PERM_RPM_ERR = 120.0;  // Err in launcher RPM that is okay to start sgitator
+    private static final double AGITATOR_START_PERM_RPM_ERR = 60.0;  // Err in launcher RPM that is okay to start sgitator
     // --------THESE WILL NEED TO BE TUNED...
     //private static final double MIN_INTAKE_ANGLE = 79.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
@@ -421,9 +421,9 @@ public class TurretLauncher {
         // --------tell feeder how fast to go.   For now approx 80%
         FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.95);
 
-        //check if within xx RPM of target speed to indicate on target.
+        //--------check if within xx RPM of target speed to indicate on target.
         launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < LAUNCHER_ON_TARGET_RPM  );
-        // launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < 200.0 ) && locLauncherSpeedActual > 500.0);
+        // --------is is okay to start agitator and feeder.
         launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < AGITATOR_START_PERM_RPM_ERR ) );
 
         // Set launcher motor demand

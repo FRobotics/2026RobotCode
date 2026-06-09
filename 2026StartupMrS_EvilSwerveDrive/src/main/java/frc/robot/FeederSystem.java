@@ -98,7 +98,7 @@ public class FeederSystem {
 
         // if on, output 0.2
         // if off, output 0
-        if (locFeederOn){
+        if (locFeederOn  && TurretLauncher.getAgitatorStartPermissive() ){
             //FeederOutput=0.2;
             //locFeederSetpointRPM = 0.2 / Feeder_Kn;
             locFeederSetpointRPM = locCmdFeederSetpointRPM;

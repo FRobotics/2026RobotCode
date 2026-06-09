@@ -33,7 +33,7 @@ public class SwerveDrive {
     static private boolean gyroConnected = false;
     static private Lib4150NetTableSystemSend sender;
     //multiplier for auto turning
-    static private double Kg = 1.0;
+    static private double Kg = 1.5;
     
 
 
@@ -213,7 +213,7 @@ public class SwerveDrive {
     static public void setDesiredSpeed(ChassisSpeeds speeds)
     {
         if(TurretLauncher.getTurretManualMode()){
-            locSpeedTarget = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, Kg * TurretLauncher.getTurretMotorDemand());
+            locSpeedTarget = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, Kg * TurretLauncher.getRobotPositionDemand());
         }else{
             locSpeedTarget = speeds;
         }

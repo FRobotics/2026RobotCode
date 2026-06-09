@@ -161,7 +161,7 @@ public class SwerveTeleop {
         // --------turret manual inc/dec
         // --------This is approx 50 deg/second at maximum joystick value.
         if ( TurretLauncher.getTurretManualMode()) {
-            TurretLauncher.cmdTurretIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController2.getRightX(),0.10) * 3.0 );
+            TurretLauncher.cmdTurretIncDecManualSetpoint( -MathUtil.applyDeadband(myXboxController.getRightX(),0.10) * 3.0 );
         }
 
 

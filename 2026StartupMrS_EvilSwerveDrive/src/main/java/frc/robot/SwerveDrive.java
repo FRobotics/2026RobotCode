@@ -184,6 +184,11 @@ public class SwerveDrive {
         gyroYawDeg  = swerveGyro.getAngle(ADIS16470_IMU.IMUAxis.kYaw);
         gyroConnected = swerveGyro.isConnected();
 
+        //-------if we are auto aiming, then adjust the auto aim
+        if( !TurretLauncher.getTurretManualMode()){
+            locSpeedTarget = new ChassisSpeeds(locSpeedTarget.vxMetersPerSecond, locSpeedTarget.vyMetersPerSecond, Kg * TurretLauncher.getRobotPositionDemand());
+        }
+
         //-------calc swerve module states from chassis speed
         SwerveModuleState[] desiredModStates = publicDriveKinematics.toSwerveModuleStates( locSpeedTarget);
 
@@ -212,11 +217,11 @@ public class SwerveDrive {
      */
     static public void setDesiredSpeed(ChassisSpeeds speeds)
     {
-        if(TurretLauncher.getTurretManualMode()){
-            locSpeedTarget = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, Kg * TurretLauncher.getRobotPositionDemand());
-        }else{
-            locSpeedTarget = speeds;
-        }
+        //if(TurretLauncher.getTurretManualMode()){
+        //    locSpeedTarget = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, Kg * TurretLauncher.getRobotPositionDemand());
+        //}else{
+        locSpeedTarget = speeds;
+        //}
         
     }
 

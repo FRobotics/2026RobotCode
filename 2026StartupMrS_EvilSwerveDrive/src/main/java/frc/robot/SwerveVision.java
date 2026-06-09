@@ -27,75 +27,75 @@ public class SwerveVision {
     private static AprilTagFieldLayout fieldLayout;
     //cameras are ordered from left to right while looking at intake
 
-    // --------camera 1---back left
-    private static final String cam1name = "OV9281-2603";
-    private static long locCam1Count = 0;
-    private static PhotonCamera camera1;
-    private static PhotonPoseEstimator photonPoseEstimator1;
-    // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(-9.0), 
-                                                                Units.inchesToMeters(-13.625), //changed -13.625 to +
-                                                                Units.inchesToMeters(14.0), //13 -> 14
-                                                new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(20.0), 
-                                                                Units.degreesToRadians(30)));
-    private static double cam1X = 0.0;
-    private static double cam1Y = 0.0;
-    private static double cam1Z = 0.0;
-    private static double cam1orient = 0.0;
-
-
-     // --------camera 2----back right
-    private static final String cam2name = "OV9782-2602";
+    // --------camera 2---left rear
+    private static final String cam2name = "OV9281-2603";
     private static long locCam2Count = 0;
     private static PhotonCamera camera2;
     private static PhotonPoseEstimator photonPoseEstimator2;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(-9.0), 
-                                                                Units.inchesToMeters(13.625), //changed to negative
-                                                                Units.inchesToMeters(14.0), 
+    private static Transform3d robotToCamera2 = new Transform3d( Units.inchesToMeters(-8.75), 
+                                                                Units.inchesToMeters(13.0), //changed -13.625 to +
+                                                                Units.inchesToMeters(14.0), //13 -> 14
                                                 new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(-20.0), 
-                                                                Units.degreesToRadians(-30)));
-
+                                                                Units.degreesToRadians(20.0), 
+                                                                Units.degreesToRadians(30)));
     private static double cam2X = 0.0;
     private static double cam2Y = 0.0;
     private static double cam2Z = 0.0;
     private static double cam2orient = 0.0;
 
-     // --------camera 3----middle left
-    private static final String cam3name = "OV9782-2604";
-    private static long locCam3Count = 0;
-    private static PhotonCamera camera3;
-    private static PhotonPoseEstimator photonPoseEstimator3;
-    // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(-0.5), 
-                                                                Units.inchesToMeters(-13.9375), //changed 
-                                                                Units.inchesToMeters(9.25), //8.1 -> 9.25
-                                                new Rotation3d( 0.0, 
-                                                                Units.degreesToRadians(20.0), 
-                                                                Units.degreesToRadians(90.0)));
-    private static double cam3X = 0.0;
-    private static double cam3Y = 0.0;
-    private static double cam3Z = 0.0;
-    private static double cam3orient = 0.0;
 
-     // --------camera 4----middle right
-    private static final String cam4name = "OV9281-2601";
+     // --------camera 1 - right rear
+    private static final String cam1name = "OV9782-2602";
+    private static long locCam1Count = 0;
+    private static PhotonCamera camera1;
+    private static PhotonPoseEstimator photonPoseEstimator1;
+    // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
+    private static Transform3d robotToCamera1 = new Transform3d( Units.inchesToMeters(-8.75), 
+                                                                Units.inchesToMeters(-13.0), //changed to negative
+                                                                Units.inchesToMeters(14.0), 
+                                                new Rotation3d( 0.0, 
+                                                                Units.degreesToRadians(20), 
+                                                                Units.degreesToRadians(-30)));
+
+    private static double cam1X = 0.0;
+    private static double cam1Y = 0.0;
+    private static double cam1Z = 0.0;
+    private static double cam1orient = 0.0;
+
+     // --------camera 4----middle left
+    private static final String cam4name = "OV9782-2604";
     private static long locCam4Count = 0;
     private static PhotonCamera camera4;
     private static PhotonPoseEstimator photonPoseEstimator4;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(-0.5), //changed -0.875 
-                                                                Units.inchesToMeters(13.9375), 
-                                                                Units.inchesToMeters(12), //8.1 -> 12
+    private static Transform3d robotToCamera4 = new Transform3d( Units.inchesToMeters(-0.5), 
+                                                                Units.inchesToMeters(13.9375), //changed 
+                                                                Units.inchesToMeters(9.25), //8.1 -> 9.25
                                                 new Rotation3d( 0.0, 
                                                                 Units.degreesToRadians(20.0), 
-                                                                Units.degreesToRadians(-90.0)));
+                                                                Units.degreesToRadians(90.0)));
     private static double cam4X = 0.0;
     private static double cam4Y = 0.0;
     private static double cam4Z = 0.0;
     private static double cam4orient = 0.0;
+
+     // --------camera 3 - middle right
+    private static final String cam3name = "OV9281-2601";
+    private static long locCam3Count = 0;
+    private static PhotonCamera camera3;
+    private static PhotonPoseEstimator photonPoseEstimator3;
+    // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
+    private static Transform3d robotToCamera3 = new Transform3d( Units.inchesToMeters(-0.5), //changed -0.875 
+                                                                Units.inchesToMeters(-13.9375), 
+                                                                Units.inchesToMeters(12), //8.1 -> 12
+                                                new Rotation3d( 0.0, 
+                                                                Units.degreesToRadians(20.0), 
+                                                                Units.degreesToRadians(-90.0)));
+    private static double cam3X = 0.0;
+    private static double cam3Y = 0.0;
+    private static double cam3Z = 0.0;
+    private static double cam3orient = 0.0;
 
     // --------camera 5----front middle driver camera
          private static final String cam5name = "OV9782-2603";
@@ -103,9 +103,9 @@ public class SwerveVision {
     private static PhotonCamera camera5;
     private static PhotonPoseEstimator photonPoseEstimator5;
     // KEN x = 10.0, Y = 11.0 Z = 8.5, Roll = 0.0, Pitch = 15.0, yaw = -25.0 
-    private static Transform3d robotToCamera5 = new Transform3d( Units.inchesToMeters(15.0625), 
-                                                                Units.inchesToMeters(9.25), 
-                                                                Units.inchesToMeters(19.625), 
+    private static Transform3d robotToCamera5 = new Transform3d( Units.inchesToMeters(1.5), 
+                                                                Units.inchesToMeters(0), 
+                                                                Units.inchesToMeters(20), 
                                                 new Rotation3d( 0.0, 
                                                                 Units.degreesToRadians(0.0), 
                                                                 Units.degreesToRadians(0.0)));

@@ -246,6 +246,17 @@ public class AutoSystem {
                         SupervisoryCmds.Defense();
                         locExecDoNextStep = true;
                         break;
+                
+                case AutoAimOn:
+                        TurretLauncher.cmdTurretAutoMode();
+                        locExecDoNextStep = true;
+                        break;
+                
+                case AutoAimOff:
+                        TurretLauncher.cmdTurretManualMode();
+                        locExecDoNextStep = true;
+                        break;
+
                
         }
 

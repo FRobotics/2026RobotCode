@@ -33,7 +33,7 @@ public class SwerveDrive {
     static private boolean gyroConnected = false;
     static private Lib4150NetTableSystemSend sender;
     //multiplier for auto turning
-    static private double Kg = 1.5;
+    static private double Kg = 2.5;
     
 
 

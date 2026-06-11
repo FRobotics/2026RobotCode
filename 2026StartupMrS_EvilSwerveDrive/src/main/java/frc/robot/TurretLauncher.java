@@ -84,7 +84,7 @@ public class TurretLauncher {
     // private static final double LAUNCHER_B = 1030.12111625272;
     //private static final double LAUNCHER_M = 227.7412241;
     //private static final double LAUNCHER_B = 925.283105;
-    private static double Launcher0 = 877.765376188954;
+    private static double Launcher0 = 877.765376188954 + 50.0;
     private static double Launcher1 = 219.715690998354;
     private static double Launcher2 = -46.5021653445572;
     private static double Launcher3 = 8.23797175884111;
@@ -349,7 +349,7 @@ public class TurretLauncher {
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
-        launchertargetSpeed  = Math.pow(TargetDistance, 3.0 ) * Launcher3 + Math.pow(TargetDistance, 2.0) * Launcher2 + (TargetDistance * Launcher1) + Launcher0;
+        launchertargetSpeed  = (((TargetDistance*Launcher3+Launcher2)*TargetDistance+Launcher1)*TargetDistance+Launcher0);
 
 
         // ------------------------------------------------------------------------------------------------------------

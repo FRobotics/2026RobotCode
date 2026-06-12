@@ -14,20 +14,33 @@
 # 11:   Climb;  -- not programmed yet.
 # 12:   Descend; -- not programmed yet.
 # 13:   Defense;
+# 14:   AutoAimOn
+# 15:	AutoAimOff
 #
 #cmd, Timeout, P1,      P2,        P3,     Func
-# -------- put intake down
-9,    0.0,     0.0,    0.0,        0.0,    "--"
-# -------- wait for intake to drop
-4,    0.4,     0.0,    0.0,        0.0,    "--"
-# -------- Trajectory to outpost
-2,    6.0,     0.0,    0.0,        0.0,    "redOutpost"
-# -------- wait
-4,    5.0,     0.0,    0.0,        0.0,    "--"
-# -------- Back up from outpost
-0,    2.0,     2.0,   3.0,        -135.0,    "--"
-# -------- Shoot
-8,    0.0,     0.0,    0.0,        0.0,    "--"
-# -------- wait until auto end
-4,    99.0,    0.0,    0.0,        0.0,    "--"
-# --------end
+# ---- drive towards driver station.
+0,    3.0,     1.5,    2.0,       0.0,    "--"
+# ---- put intake down.
+9,    0.0,     0.0,    0.0,       0.0,    "--"
+# ---- Auto Aim On
+14,   0.0,     0.0,    0.0,       0.0,    "--"
+# ---- wait 1 second
+4,    1.0,     0.0,    0.0,       0.0,    "--"
+# ---- Shoot
+8,    0.0,     0.0,    0.0,       0.0,    "--"
+# ---- Wait
+4,    3.0,     0.0,    0.0,       0.0,    "--"
+# ---- Auto Aim Off
+15,   0.0,     0.0,    0.0,       0.0,    "--"
+# ---- Traj to Station
+5,    5.0,     0.0,    0.0,       0.0,    "RS2"
+# ---- Wait 4 secs
+4,    4.0,     0.0,    0.0,       0.0,    "--"
+# ---- Traj to shoot
+2,    4.0,     0.0,    0.0,       0.0,    "RS2S"
+# ---- Auto Aim On
+14,   0.0,     0.0,    0.0,       0.0,    "--"
+# ---- Shoot
+8,    0.0,     0.0,    0.0,       0.0,    "--"
+# ---- Wait until Auto end
+4,    99.0,    0.0,    0.0,       0.0,    "--"  

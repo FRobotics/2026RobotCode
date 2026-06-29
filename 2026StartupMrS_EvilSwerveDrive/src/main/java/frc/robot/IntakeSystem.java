@@ -33,7 +33,7 @@ public class IntakeSystem {
     private static final double INTAKEARM_ERR_THRESHOLD = 25.0;     // degrees (changed from 30 to 40 because the arm was not fully going down)
     private static final double INTAKEARM_OUT_DEADBAND = 0.01;      // motor output units.
     private static final double INTAKEARM_OUT_THRESHOLD = 0.25;     // motor output units.
-    private static final double INTAKEARM_OUT_MAX = 0.25;           // motor outpuot units.
+    private static final double INTAKEARM_OUT_MAX = 0.75;           // motor outpuot units.
     private static final double INTAKEARM_KD =  0.0008;             // motor output units.  Assume 10 deg change, 
                                                                     // so averaged deriviative = 10/3/0.020 = 166.67.  Want extra output of 0.1
                                                                     // so Kd = 0.1 / 166.67 = 0.0006  (start with small change, increment as needed.)

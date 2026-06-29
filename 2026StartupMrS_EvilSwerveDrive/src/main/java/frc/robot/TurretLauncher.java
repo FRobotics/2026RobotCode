@@ -84,7 +84,7 @@ public class TurretLauncher {
     // private static final double LAUNCHER_B = 1030.12111625272;
     //private static final double LAUNCHER_M = 227.7412241;
     //private static final double LAUNCHER_B = 925.283105;
-    private static double Launcher0 = 877.765376188954 + 50.0;
+    private static double Launcher0 = 877.765376188954 + 100.0;
     private static double Launcher1 = 219.715690998354;
     private static double Launcher2 = -46.5021653445572;
     private static double Launcher3 = 8.23797175884111;
@@ -349,7 +349,7 @@ public class TurretLauncher {
 
         // -------calculate launcher speed demand from distance to target....
         // -------move after the calculation for turret distance...
-        launchertargetSpeed  = (((TargetDistance*Launcher3+Launcher2)*TargetDistance+Launcher1)*TargetDistance+Launcher0);
+        launchertargetSpeed  = MathUtil.clamp( (((TargetDistance*Launcher3+Launcher2)*TargetDistance+Launcher1)*TargetDistance+Launcher0), 0.0, 3300.0 );
 
 
         // ------------------------------------------------------------------------------------------------------------
@@ -406,7 +406,7 @@ public class TurretLauncher {
                 locLauncherManualMode = true;
             }
             else {                              // has been manual mode for a while.
-                launchertargetSpeed = MathUtil.clamp( locLauncherCmdSetpoint, 0.0, 6000.0);
+                launchertargetSpeed = MathUtil.clamp( locLauncherCmdSetpoint, 0.0, 3300.0);
             }
         }
         // --------want auto mode
@@ -418,16 +418,16 @@ public class TurretLauncher {
         
         double useSpeedTarget = launchertargetSpeed;
         if ( !locLauncherOn ) {
-            useSpeedTarget = 0.0;
+             useSpeedTarget = Math.min( launchertargetSpeed, 1200.0 );    
         }
 
         // --------tell feeder how fast to go.   For now approx 80%
         FeederSystem.setMotorRPMTarget(useSpeedTarget * 1.3333333 * 2.0 * 0.95);
 
         //--------check if within xx RPM of target speed to indicate on target.
-        launcherSpeedOnTarget = (Math.abs(locLauncherSpeedActual - launchertargetSpeed) < LAUNCHER_ON_TARGET_RPM  );
+        launcherSpeedOnTarget = ( (Math.abs(locLauncherSpeedActual - useSpeedTarget ) < LAUNCHER_ON_TARGET_RPM  ) ) && locLauncherOn;
         // --------is is okay to start agitator and feeder.
-        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - launchertargetSpeed) < AGITATOR_START_PERM_RPM_ERR ) );
+        launcherAgitatorPermissive = (( Math.abs(locLauncherSpeedActual - useSpeedTarget) < AGITATOR_START_PERM_RPM_ERR ) ) && locLauncherOn;
 
         // Set launcher motor demand
         double launchFeedForward = launcherFeedforward.calculate(useSpeedTarget);
@@ -441,8 +441,9 @@ public class TurretLauncher {
         LauncherMotorDemand = MathUtil.clamp(launchFeedForward+launcherPIDOutput, -1.0, 1.0);
         // --------this could be redundant.
         if ( !locLauncherOn ) {
-            LauncherMotorDemand = 0;
-            launcherPID.reset();
+            // NO NO NO --- motor outpuot must be between 0 and 1
+            // LauncherMotorDemand = MathUtil.clamp(useSpeedTarget, 0, 1200);
+            //launcherPID.reset();
         }
 
         //Ball Counter
@@ -648,7 +649,7 @@ public class TurretLauncher {
 
     // --------increment or decrement the launcher manual setpoint
     public static void cmdLauncherIncDecManualSetpoint( double chgAmount ) {
-        locLauncherCmdSetpoint = MathUtil.clamp( locLauncherCmdSetpoint + chgAmount, 0.0, 5000.0) ;
+        locLauncherCmdSetpoint = MathUtil.clamp( locLauncherCmdSetpoint + chgAmount, 0.0, 3300.0) ;
     }
 
     // --------get Launcher manual mode.

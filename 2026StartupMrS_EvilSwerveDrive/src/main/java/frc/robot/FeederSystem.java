@@ -33,7 +33,7 @@ public class FeederSystem {
     private static final double Feeder_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Feeder_Kp = Feeder_Kn * 3.0;    // was 0.6  
+    private static final double Feeder_Kp = Feeder_Kn * 6.0;    // was 0.6  
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Feeder_Ki = Feeder_Kn * 2.0;
     // --------kd = derivative constant     output = Kd * derivative( error )
@@ -102,7 +102,7 @@ public class FeederSystem {
         if (locFeederOn  && TurretLauncher.getAgitatorStartPermissive() ){
             //FeederOutput=0.2;
             //locFeederSetpointRPM = 0.2 / Feeder_Kn;
-            if (RevCount < 40){
+            if (RevCount < 20){
                 RevCount ++;
                 locFeederSetpointRPM = -500.0;
             }

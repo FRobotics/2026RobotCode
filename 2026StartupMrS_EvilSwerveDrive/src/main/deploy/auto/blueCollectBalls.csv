@@ -1,11 +1,39 @@
+# -- commands
+# 0:    DriveStraight, timeout, distance m, max speed m/s, angle deg
+# 1:    DriveTurn, timeout, degree, max speed deg/sec
+# 2:    FollowAbsTrajectory, timeout, n/a, n/a, n/a, "trajname"
+# 3:    FollowRelTrajectory -- not programmed.
+# 4:    AutoWait, timeout
+# 5:    FollowAbsTrajWithTimedCmd -- same as 2
+# 6:    FollowRelTrajWithTimedComd -- not programmed.
+# 7:    Collect;
+# 8:    Shoot;
+# 9:    Stop;
+# 10:   BallsToAlliance;
+# 11:   Climb;  -- not programmed yet.
+# 12:   Descend; -- not programmed yet.
+# 13:   Defense;
+# 14:   AutoAimOn
+# 15:	AutoAimOff
+#
 # -------- Shoot, then collect balls, then shoot
 #cmd, Timeout, P1,      P2,        P3,     Func
 # -------- shoot for 4 seconds.
 8,    0.0,     0.0,     0.0,       0.0,    "--"
-4,    4.0,     1.5,     1.0,      90.0,    "--"
+4,    4.0,     0.0,     0.0,       0.0,    "--"
 # -------- execute trajectory.
-5,   10.0,     0.0,     0.0,       0.0,    "blueCollectBalls"
+3,    5.0,     0.0,     0.0,       0.0,    "blueCollectBalls1"
+# -------- drive and collect .
+7,    0.0,     0.0,     0.0,       0.0,    "--"
+1,    3.0,     6.0,     3.0,       0.0,    "--"
+9,    0.0,     0.0,     0.0,       0.0,    "--"
+# -------- traj 2 back .
+3,    5.0,     0.0,     0.0,       0.0,    "blueCollectBalls2"
 # -------- continue shooting for 5 seconds
+
+8,    0.0,     0.0,     0.0,       0.0,    "--"
 4,    5.0,     0.0,     0.0,       0.0,    "--"
+
+9,    0.0,     0.0,     0.0,       0.0,    "--"
 4, 9999.0,     0.0,     0.0,       0,0,    "--"
 # --------end

@@ -84,7 +84,7 @@ public class TurretLauncher {
     // private static final double LAUNCHER_B = 1030.12111625272;
     //private static final double LAUNCHER_M = 227.7412241;
     //private static final double LAUNCHER_B = 925.283105;
-    private static double Launcher0 = 877.765376188954 + 100.0;
+    private static double Launcher0 = 877.765376188954 + 170.0;
     private static double Launcher1 = 219.715690998354;
     private static double Launcher2 = -46.5021653445572;
     private static double Launcher3 = 8.23797175884111;

@@ -30,7 +30,7 @@ public class IntakeSystem {
 
     // --------intake arm positionm control
     private static final double INTAKEARM_ERR_DEADBAND = 2.0;       // degrees
-    private static final double INTAKEARM_ERR_THRESHOLD = 25.0;     // degrees (changed from 30 to 40 because the arm was not fully going down)
+    private static final double INTAKEARM_ERR_THRESHOLD = 35.0;     // degrees (changed from 30 to 40 because the arm was not fully going down)
     private static final double INTAKEARM_OUT_DEADBAND = 0.01;      // motor output units.
     private static final double INTAKEARM_OUT_THRESHOLD = 0.25;     // motor output units.
     private static final double INTAKEARM_OUT_MAX = 0.75;           // motor outpuot units.
@@ -40,7 +40,7 @@ public class IntakeSystem {
     private static final boolean INTAKEARM_FILTER_DERIVATIVE = true;    // take average of last 3 derivatives.
     private static final boolean INTAKEARM_REVERSE = false;         // invert motor outpuot.
     // --------intake arm output rate limiter
-    private static final double INTAKEARM_RATELIMIT = 10.0;         // motor units/second
+    private static final double INTAKEARM_RATELIMIT = 3.0;         // motor units/second
   
     // private static final double ARM_GRAVITY_CONSTANT = 0.112;    // was 0.13
     private static final double ARM_GRAVITY_CONSTANT = 0.06;    // was 0.13
@@ -49,17 +49,17 @@ public class IntakeSystem {
     private static final double PICKUP_MOTOR_OFF = 0.0;
 
     // --------ball shooting pickup arm rocking...
-    private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
-    private static final double ROCK_UP_TIME = 3.5;     // time arm is up - seconds
-    private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
+    //private static final double ROCK_DOWN_TIME = 2.0;   // time arm is down - seconds
+    //private static final double ROCK_UP_TIME = 3.5;     // time arm is up - seconds
+    //private static final double ROCK_UP_POS = 40.0;     // arm pos for up - degrees
 
     // --------ball shooting pickup arm rocking alternate sitting up.
-    private static final double ROCK_ALT_DOWN_TIME = 0.1;   // time arm is down - seconds
-    private static final double ROCK_ALT_POS_1 = 15.0;      // first position degrees
-    private static final double ROCK_ALT_POS_1_TIME = 1.0;  // seconds
-    private static final double ROCK_ALT_POS_2 = 50.0;      // second position degrees
-    private static final double ROCK_ALT_POS_2_TIME = 1.0;  // seconds
-    private static final double ROCK_ALT_POS_3 = 80.0;      // third positoin degrees
+    //private static final double ROCK_ALT_DOWN_TIME = 0.1;   // time arm is down - seconds
+    //private static final double ROCK_ALT_POS_1 = 15.0;      // first position degrees
+    //private static final double ROCK_ALT_POS_1_TIME = 1.0;  // seconds
+    //private static final double ROCK_ALT_POS_2 = 50.0;      // second position degrees
+    //private static final double ROCK_ALT_POS_2_TIME = 1.0;  // seconds
+    //private static final double ROCK_ALT_POS_3 = 80.0;      // third positoin degrees
 
     // --------ball pickup motor stall constants
     private static final double STALL_DETECT_TIME = 0.40;       // seconds to detect stall
@@ -244,17 +244,37 @@ public class IntakeSystem {
             intakeSpeed=PICKUP_MOTOR_ON;
         }
         // off
-        else {
-            intakeSpeed=PICKUP_MOTOR_OFF;
-            locPickupStallState = 0;
-            locPickupStalled = false;
+      //  else {
+        //    intakeSpeed=PICKUP_MOTOR_OFF;
+          //  locPickupStallState = 0;
+           // locPickupStalled = false;
             
-        }
+       // }
 
+        if (intakeState==INTAKE_STATE_DOWN_OFF){
+            //set motor demand so the arm stays down
+            
+            if (IntakeArmAngleActual >  INTAKEDOWN_ANGLE + 1){
+                intakeAngleTarget = INTAKEDOWN_ANGLE;
+            }
+
+            intakeSpeed=PICKUP_MOTOR_OFF;
+        }
+        
+        if (intakeState==INTAKE_STATE_UP_OFF){
+            //set motor demand so the arm stays down
+            
+            if (IntakeArmAngleActual <  INTAKEUP_ANGLE + 1){
+                intakeAngleTarget = INTAKEUP_ANGLE;
+            }
+
+            intakeSpeed=PICKUP_MOTOR_OFF;
+        }
+     
 
         // --------process intake arm rocking (or just sitting up)
         // process_intake_arm_rocking(systemElapsedTimeSec);
-        process_intake_arm_rocking_ALT(systemElapsedTimeSec);
+        //process_intake_arm_rocking_ALT(systemElapsedTimeSec);
      
         // --------do arm position control - values in degrees
         // --------grav constant was 0.10, now 0.13.
@@ -275,6 +295,7 @@ public class IntakeSystem {
         double tmpLowClamp = (IntakeArmLowLimitSwitchState) ? 0.0 : -1.0;
 
         // --------rate limit then clamp.
+
         intakeAngleMotorDemand = MathUtil.clamp( IntakeArmRateLimit.calculate( intakeAngleMotorDemand + intakeAngleGravityConstant), tmpLowClamp, 1.0 );
         IntakeArmMotor.set(intakeAngleMotorDemand);
         
@@ -321,7 +342,7 @@ public class IntakeSystem {
     private static void process_intake_arm_rocking(double mySystemElapsedTimeSec) {
         // --------should we rock ??? -- if so, process..
         // --------regardless of enable - only rock if state is 2 (down, off)
-        if ( intakeState == INTAKE_STATE_DOWN_OFF && intakeRockEnable ) {
+       /* if ( intakeState == INTAKE_STATE_DOWN_OFF && intakeRockEnable ) {
             // --------process rock state machine
             switch ( intakeRockState ) {
                 // --------remember start time.  Leave angle which should be down, alone
@@ -358,17 +379,17 @@ public class IntakeSystem {
         else {
             intakeRockState = 0;
         }
-        return;
+        return;*/
     }
 
 
 
     // --------process intake arm alternate rocking (sitting up) state machine
     @SuppressWarnings("unused")
-    private static void process_intake_arm_rocking_ALT(double mySystemElapsedTimeSec) {
+   // private static void process_intake_arm_rocking_ALT(double mySystemElapsedTimeSec) 
         // --------should we rock ??? -- if so, process..
         // --------regardless of enable - only rock if state is 2 (down, off)
-        if ( intakeState == INTAKE_STATE_DOWN_OFF && intakeRockEnable ) {
+        /*if ( intakeState == INTAKE_STATE_DOWN_OFF && intakeRockEnable ) {
             // --------process rock state machine
             switch ( intakeRockState ) {
                 // --------remember start time.  Leave angle which should be down, alone
@@ -423,7 +444,7 @@ public class IntakeSystem {
             intakeRockState = 0;
         }
         return;
-    }
+    }*/
 
     // --------process ball install stall detection
     private static void process_ball_intake_stall_detect( double mySystemElapsedTimeSec ) {
@@ -492,6 +513,7 @@ public class IntakeSystem {
     }
     public static void setDownOnState(){
         intakeState=INTAKE_STATE_DOWN_ON;
+        cmdRockDisable();    // also set rock state off.
         return;
     }
     public static void setUpOffState(){

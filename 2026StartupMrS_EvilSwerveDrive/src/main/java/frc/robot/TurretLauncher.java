@@ -35,7 +35,7 @@ public class TurretLauncher {
     // --------Launcher on target RPM
     private static final double LAUNCHER_ON_TARGET_RPM = 50.0;      // within this RPM error launcher is considered on target.
     // --------AGITATOR START PERMISSIVE
-    private static final double AGITATOR_START_PERM_RPM_ERR = 30.0;  // Err in launcher RPM that is okay to start sgitator
+    private static final double AGITATOR_START_PERM_RPM_ERR = 65.0; // was 30// Err in launcher RPM that is okay to start sgitator
     // --------THESE WILL NEED TO BE TUNED...
     //private static final double MIN_INTAKE_ANGLE = 79.0;
     // --------Turret angle range is 0.0 - 360.0 degrees.
@@ -65,13 +65,13 @@ public class TurretLauncher {
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
     // private static final double Launcher_Kp = Launcher_Kn *  1.35;       // was 0.7
-    private static final double Launcher_Kp = Launcher_Kn *  1.60;       // was 0.7
+    private static final double Launcher_Kp = Launcher_Kn *  4.0;     //was 3.10 // was 1.60 // was 0.7
     // --------Ki - integral constant   output  = Ki x integral( error )
     //private static final double Launcher_Ki = Launcher_Kn * 2.25;
     private static final double Launcher_Ki = Launcher_Kn * 1.75;
     // --------kd = derivative constant     output = Kd * derivative( error )
     //private static final double Launcher_Kd = Launcher_Kn * 3.0E-4;
-    private static final double Launcher_Kd = Launcher_Kn * 4.0E-4;
+    private static final double Launcher_Kd = Launcher_Kn * 5.6E-4;
     // --------integral zone ( in sp/pv units )
     // --------Izone -- Error has to be within this amount to be used.
     private static final double Launcher_Izone = 60.0;
@@ -84,7 +84,7 @@ public class TurretLauncher {
     // private static final double LAUNCHER_B = 1030.12111625272;
     //private static final double LAUNCHER_M = 227.7412241;
     //private static final double LAUNCHER_B = 925.283105;
-    private static double Launcher0 = 877.765376188954 + 170.0;
+    private static double Launcher0 = 877.765376188954 + 190.0;
     private static double Launcher1 = 219.715690998354;
     private static double Launcher2 = -46.5021653445572;
     private static double Launcher3 = 8.23797175884111;

@@ -33,7 +33,7 @@ public class FeederSystem {
     private static final double Feeder_Ka = 0.0;
     // --------PID
     // --------Kp - proportional constant    output =  error * Kp
-    private static final double Feeder_Kp = Feeder_Kn * 6.0;    // was 0.6  
+    private static final double Feeder_Kp = Feeder_Kn * 7.5;  //was 6.0  // was 0.6  
     // --------Ki - integral constant   output  = Ki x integral( error )
     private static final double Feeder_Ki = Feeder_Kn * 2.0;
     // --------kd = derivative constant     output = Kd * derivative( error )

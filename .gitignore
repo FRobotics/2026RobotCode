@@ -211,3 +211,12 @@ compile_commands.json
 # Eclipse generated file for annotation processors
 .factorypath
 
+#--------for java test....
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore Kotlin plugin data
+.kotlin

@@ -1,0 +1,114 @@
+
+########################
+Week 1
+########################
+
+ ==============
+ lecture / demo
+ ==============
+ - Quick Intro to Visual Studio Code
+	- general info - smart editor, project organizer, code builder
+	- areas of screen
+	- menus
+	- bottom left (working on stuff)
+	- build system for java is gradle using groovy
+
+ - Make your first java program
+	Palette -> Gradle: make new java project.
+	- look at the parts of the program.
+	- build (from palette, and from terminal .\gradlew build)
+	- run the program.
+
+ - Introduce a new java class.
+	- copy SampleSystem.java to directory where App.java also lives..
+	- discuss object orientation (code and data, instatiation vs static)
+	- discuss all parts of this file...
+
+ - Variable Types
+	- bool true/false
+	- double numeric, floating point, 15 digits of accuracy
+	- int - whole numbers +/- 2 billion (give or take)
+
+ - Variable names
+	- start with letter, case senstive, must be exact!!!
+	- make the names mean something to everyone!!!
+
+ - Boolean expressions
+	- mix variables and constants.
+	- operators: and, or, exclusive or, not (unary)
+	- precedence and parenthesis
+
+ - Boolean assignment
+	- assign the result of a boolean expression to a variable.
+	var = expression;
+
+ - Numeric expression
+	- same - mix constants and variables.
+	- can created named constants.  public/private static final double var = value;
+	- operators: +, -, *, /, % (remainder)
+	- precedence and paranthesis
+
+ - Numeric assignments
+	- assign the result of a boolean expression to a variable.
+	var = expression;
+
+ - Creating getter methods
+        - output type
+        - no input parameters
+        - return a value.
+
+ ==============
+ lab - extend your first java program
+ ==============
+ Start with SampleSystem
+ - rename to <something>System 
+ - add a numberic constant 
+ - add a classwide, not global, boolean variable
+ - add a classwide, not global, double variable.
+ - in your init method intialize the boolean and double variables.
+ - in your execute method add a boolean and double assignment statement.
+ - add a getter method for your boolean
+ - add a getter method for your 
+ - call init from your main program
+ - call your execute method from your main program.
+ - call your getter methods from your main program.
+ - in your main program printout the value of the boolean and double.
+
+
+ ==============
+ controls training - combinatorial logic.
+ ==============
+	- show presentation - don't do exersize..
+
+ ==============
+ lab / demo - create your first robot program.
+ ==============
+ - close folder
+ - palete - wpilib create robot project.  Java, timed robot.
+ - add SampleSystem.java template file.
+ - change robot.java
+	- call your init method
+	- call your execute method
+ - change your init method
+	- show how to look for documentation!!!
+	- initialize 3 digital inputs (dio 1,2,3)
+ 	- initialize 1 digital output (dio 5)
+ - change your execute method
+	- read each digital input
+	- calculate a boolean that is true if any 2, and only 2, inputs are true.
+	- write the result of this calculation to the digital output.
+ - simulate this on your laptop
+	- use the built-in display to change digital inputs and see digital outputs
+ - time permitting
+	- deploy to real robot and run.
+ - extra credit....
+	- add 4150 library files to project
+	- create a network tables helper
+	- create getters for all 3 digital inputs, and the digital output
+	- modify your init routine to initialize the network tables helper
+	- modify your execute method to trigger updating network tables.
+	- test these changes with a real dashboard..
+
+	
+
+ 

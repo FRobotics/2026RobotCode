@@ -1,0 +1,16 @@
+1) install visual studio code extension
+	Extension Pack for Java
+	from Microsoft
+
+
+2) command palette 
+	preferences: user settings (json)
+	ensure java.jdt.java.home is set....
+	it should be
+
+3) open terminal window and type
+	java -version
+
+4) DONE
+
+

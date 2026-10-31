@@ -3,7 +3,7 @@
 // --------this is the name of a group of files that go together.  
 // --------In our case, all files residing under the same directory
 // --------need to have the same package name.
-package frc.robot;
+package Systems;
 
 // --------This imports definitions of library routines that this file
 // --------uses.  These include standard java things, and WPILIB robotics
@@ -33,15 +33,14 @@ import Lib4150.Lib4150NetTableSystemSend;
  *  Notes:<br>
  *<br>
  * ========================== Version History ==================================================<br>
- *  1.00    mm/dd/yyyy  Your name     Created.<br>
- *  1.01    mm/dd/yyyy  Your name     Description of what changed...<br>
+ *  1.01    10/18/2026  Jim Simpson     Combinatorial Digital Logic Robot Example first try..
  * =============================================================================================<br>
  *<br>
  * @author     Jim Simpson
  * @version    1.01
- * @since      yyyy-mm-dd
+ * @since      2026-10-18
 */
-public class SampleSystem {
+public class DigInSystem {
 
     // =============================================================================================
     // --------public/global data types go here...  These are available outside of this file.
@@ -56,21 +55,6 @@ public class SampleSystem {
     // =============================================================================================
     // --------private constants go here.  These are only available inside this file.
     // --------These should be defined as "private static final"
-    private static DigitalInput dig_in_a;
-    private static DigitalInput dig_in_b;
-    private static DigitalInput dig_in_c;
-    private static DigitalOutput dig_out;
-
-    private static boolean dig_a = false;
-    private static boolean dig_b = false;
-    private static boolean dig_c = false;
-
-    private static boolean calc_1 = false;
-    private static boolean calc_2 = false;
-    private static boolean calc_3 = false;
-    private static boolean calc_out = false;
-
-    private static Lib4150NetTableSystemSend ntvals;
 
 
     // =============================================================================================
@@ -90,6 +74,21 @@ public class SampleSystem {
     // --------objects from standard java libraries can be instantiated here.   It is better
     // --------to instantiate WPILIB objects in the Init method in this class and not in
     // --------the variable declaration here.
+    private static DigitalInput dig_in_a;
+    private static DigitalInput dig_in_b;
+    private static DigitalInput dig_in_c;
+    private static DigitalOutput dig_out;
+
+    private static boolean dig_a = false;
+    private static boolean dig_b = false;
+    private static boolean dig_c = false;
+
+    private static boolean calc_1 = false;
+    private static boolean calc_2 = false;
+    private static boolean calc_3 = false;
+    private static boolean calc_out = false;
+
+    private static Lib4150NetTableSystemSend ntvals;
 
     // =============================================================================================
     /**
@@ -98,7 +97,7 @@ public class SampleSystem {
      * --------this must be defined as "private", so that others can't try and instantiate
      * --------an object of this class.
      */
-    private SampleSystem( ) {
+    private DigInSystem( ) {
         return;
     }
 
@@ -124,10 +123,10 @@ public class SampleSystem {
         // --------create all network table variables.
         ntvals = new Lib4150NetTableSystemSend( "SampleSystem" );
 
-        ntvals.addItemBoolean("DigIn01", SampleSystem::getDigA );
-        ntvals.addItemBoolean("DigIn02", SampleSystem::getDigB );
-        ntvals.addItemBoolean("DigIn03", SampleSystem::getDigC );
-        ntvals.addItemBoolean("DigOut", SampleSystem::getDigOut );
+        ntvals.addItemBoolean("DigIn01", DigInSystem::getDigA );
+        ntvals.addItemBoolean("DigIn02", DigInSystem::getDigB );
+        ntvals.addItemBoolean("DigIn03", DigInSystem::getDigC );
+        ntvals.addItemBoolean("DigOut", DigInSystem::getDigOut );
 
         // --------back to the main robot code.
         return;

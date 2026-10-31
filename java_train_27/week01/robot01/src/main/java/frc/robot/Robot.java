@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import Systems.DigInSystem;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -29,7 +30,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     // --------our sample system
-    SampleSystem.init();
+    DigInSystem.init();
   }
 
   /**
@@ -43,7 +44,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
 
     // --------Run our sample system execute code
-    SampleSystem.execute();
+    DigInSystem.execute();
     
   }
 

@@ -258,27 +258,36 @@ Week 2
  robot - position control -- extend first robot...
  ==============
 
- - goal:
+	 - goal:
+		- use 1 absolute encoder input - DIO 7
+		- use one CTRE TALON SRX motor controller - CAN 22
+		- use one LIB4150 position control object
+		- set initial tuning for the position control object.  For now use constants.
+		- read and scale the encoder value to get +/- 180 degrees or 0-360 degrees
+		- create a setter method to allow others to set the position setpoint.
+			- to start with set it to a constant
+			- later tie it to a numberic expression based on FPGA elapsed seconds.
+			( or something like that )
+		- execute the position control object
+		- output the result to the motor controller as voltage percent or percent output.
+		- write the values of the scaled encoder and motor controller output
+			to network tables.
+		- learn how to add third party libraries to visual studio code.
+
 	- add a new system, (recopy the SampleSystem.Java file and rename the symbol.)
 	- add a sensor input to read a REV through bore encoder - DIO 7
+		- This uses the DutyCycle input class not the encoder class.
+		- google SHOW FRC JAVA EXAMPLE TO READ ABSOLUTE REV THROUGH BORE ENCODER
 	- add a CTRE Talon SRX motor controller.
-	- add a Lib4150
-
-
-
- Start with SampleSystem
- - rename to <something>System 
- - add a numberic constant 
- - add a classwide, not global, boolean variable
- - add a classwide, not global, double variable.
- - in your init method intialize the boolean and double variables.
- - in your execute method add a boolean and double assignment statement.
- - add a getter method for your boolean
- - add a getter method for your 
- - call init from your main program
- - call your execute method from your main program.
- - call your getter methods from your main program.
- - in your main program printout the value of the boolean and double.
+		- You may have to add Phoenix 5 (no replay) to visual studio code.
+	- add a Lib4150 Position control object
+	- write init code.
+	- write execute code.
+	- write getters
+	- write setter for setpoint
+	- test with constant setpoint
+	- revise so setpoint changes (slowly!!)
+	- test
 
 
 

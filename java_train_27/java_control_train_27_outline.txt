@@ -42,6 +42,181 @@ Week 1
 	- assign the result of a boolean expression to a variable.
 	var = expression;
 
+ ==============
+ combinatorial logic training - Module 04
+ ==============
+
+
+
+########################
+Week 2
+########################
+
+ Before training - when logged in as FROBOTICS - pull 2026RobotCode from github.
+
+ Logoff and have everyone login as TRAIN.
+
+ ==============
+ Review - if any questions from first week.
+ ==============
+
+ ==============
+ JAVA - create "getter" methods - IF NEEDED.
+ ==============
+
+ - Creating getter methods
+        - output type
+        - no input parameters
+        - return a value.
+
+ ==============
+ LAB - first robot -- digital inputs / digital output
+ ==============
+
+	- goal:
+		- use 3 digital inputs - DIO 1, 2, 3
+		- use 1 digital output - DIO 5
+		- read the 3 digital inputs.
+		- create a combinatorial assignment statement to be true
+			when 2 and only 2 of the inputs are true.
+		- output the result to the digital output.
+		- write the values of the digital inputs and digital outputs
+			to network tables.
+		- how to look at FRC documentation to find things!
+
+	- Open visual studio code  
+	- Close any open folder
+	- View -> Palette -> WPILIB Create A New Project
+		- Template project Type
+			- Java
+			- Timed Robot
+	- Click "Select A new Project Folder"
+		- create a new folder.  --> remember where this is!
+		- select this folder
+	- Enter a project name -- Simple, no spaces, 
+	- UN-CHECK - create a new folder -- you already did that.
+	- team number - 4150
+	- CHECK - enable desktop support.
+	- Click on Generate Project
+	- Open project in current window
+	- YES - trust the authors.
+
+	- In Windows Explorer navigate to the java_train_27 folder.
+		( I like to have 2 explorer windows open.  One in github
+		and one in the project folder.)
+		- Copy SampleSystem.java to the folder.
+			<project_folder>\src\main\java\frc\robot\
+		Note: You could choose to create a Systems folder and copy
+		there instead.  Example:
+			<project_folder>\src\main\java\Systems\	     
+	
+		- Copy the Lib4150 folder to:
+			<project_folder>\src\main\java\	
+		- These should show up in Visual Studio Code.
+			
+	- Fix the package statement in SampleSystem.Java
+
+	- In SampleSystem.java find and highlight the class name in the class statement.
+		Right click and select "Rename Symbol F2".  Choose a new name for this 
+		class, such as DigitalLogicSystem, or whatever.  (I like the names to
+		end with System so we know what they are...)
+
+	- Make sure things complile (and build the java docs...)
+		- in a terminal window do the following commands.
+		.\gradlew clean
+		.\gradlew build
+		.\gradlew javadoc
+
+	- navigate to build\docs\index.html
+		- right click and select "reveal in file explorer"
+		- when explorer opens, double click on index.html.
+		- look at the documentation...
+		- specifically look at Lib4150\Lib4150NetTableSystemSend - we will be
+			using this.
+
+	- create class wide private static variables for a number of things....
+		- 3 digital input IO objects
+		- 3 digital input boolean values.
+		- 1 boolean calculation value.  (additional values if you want to save
+			intermediate results too.)
+		- 1 digital output IO object
+		- 1 NT helper object
+
+	- in the init method.
+		- create the 3 digital input IO objects
+		- create the digital output IO object
+		- create the NT helper object
+
+	- in the "execute" method"
+		- read each of the 3 digital inputs into class wide private static boolean values.
+
+		- calculate a class wide private static boolean value that is true when any two, 
+			and only two of the inputs are true.  Follow the sum-of-products process
+			completely: 1) create a truth table, 2) create product (and) equations for 
+			each ouput that that is true, 3) create an overall equation that is the 
+			sum (or) of the product equations.
+
+		- output the value of this equation to the digital output.
+
+		- trigger the network table helper output.
+
+	- create "getter" functions for each digital input, the digital output.
+
+	- in the "init" method after the creation of the Lib4150NetTableSystemSend object
+		call the methods to add all digital inputs, and the digital output to the
+		the things to be written to network tables.
+
+	
+	- in robot.java
+		- add an import for your system.  Example import Systems.DigInSystem;
+		- at the end of the robot constructor method, add a call to your system's
+			init method.
+
+		- in the robotPeriodic() method, add a call to your system's execute
+			method.  Note that robotPeriodic executes regardles of the
+			mode of the robot.  There is underlying code in the output
+			objects that blocks outputs unless the robot is enabled.  All
+			the calculation code runs all the time.
+
+	- Your robot should be complete.  Lets build.  In a terminal window
+
+		.\gradlew build
+
+		- If there are errors fix them.
+	
+		- this function is also available from View->palette->WPILIB: Build Robot Code
+
+	- Lets test by simulating on the PC.
+
+		- View -> palette -> WPILIB: Hardware Sim Robot Code
+
+		- Check both check boxes: SIM GUI, Use Real Driver Station
+		- Select OK
+		
+		- Start the Real Driver Station.  It should then start a dashboard.
+
+		- In the "Robot Simulation Window" menu Hardware -> DIO
+			This should show a sub-window that allows you
+			to toggle the digital inputs and see the digital
+			output.
+
+		- Look at the dashboard to see your network table values.
+
+		- To test your digital output, select Teleop Enable in the driver station.
+
+		- One way to stop simulation is to select the terminal window and Ctrl-C.
+
+		- Close dashboard and driver station.
+
+	- Close folder
+
+	- Close visual studio code.
+
+
+ ==============
+ JAVA - numeric expressions / assignment statements.
+ ==============
+
  - Numeric expression
 	- same - mix constants and variables.
 	- can created named constants.  public/private static final double var = value;
@@ -52,14 +227,45 @@ Week 1
 	- assign the result of a boolean expression to a variable.
 	var = expression;
 
- - Creating getter methods
-        - output type
-        - no input parameters
-        - return a value.
+ ==============
+ (Maybe) JAVA - boolean expressions using comparison operators, and conditional IF, ELSEIF, ELSE statements.
+ ==============
+
+ - Boolean expressions using comparison operators
+	>, >= , <, <=, ==
+
+ - Conditional statements ( If, ElseIf, Else )
+
+	if (condition1) {
+	    // Executes if condition1 is true
+	} else if (condition2) {
+	    // Executes if condition1 is false AND condition2 is true
+	} else if (condition3) {
+	    // Executes if previous conditions are false AND condition3 is true
+	} else {
+	    // Executes only if ALL preceding conditions are false
+	}
 
  ==============
- lab - extend your first java program
+ CONTROL TRAINING - MODULE 10 - Analog Control Basics
  ==============
+
+ ==============
+ CONTROL TRAINING - MODULE 11 - Position Control
+ ==============
+
+ ==============
+ robot - position control -- extend first robot...
+ ==============
+
+ - goal:
+	- add a new system, (recopy the SampleSystem.Java file and rename the symbol.)
+	- add a sensor input to read a REV through bore encoder - DIO 7
+	- add a CTRE Talon SRX motor controller.
+	- add a Lib4150
+
+
+
  Start with SampleSystem
  - rename to <something>System 
  - add a numberic constant 
@@ -75,40 +281,9 @@ Week 1
  - in your main program printout the value of the boolean and double.
 
 
- ==============
- controls training - combinatorial logic.
- ==============
-	- show presentation - don't do exersize..
 
- ==============
- lab / demo - create your first robot program.
- ==============
- - close folder
- - palete - wpilib create robot project.  Java, timed robot.
- - add SampleSystem.java template file.
- - change robot.java
-	- call your init method
-	- call your execute method
- - change your init method
-	- show how to look for documentation!!!
-	- initialize 3 digital inputs (dio 1,2,3)
- 	- initialize 1 digital output (dio 5)
- - change your execute method
-	- read each digital input
-	- calculate a boolean that is true if any 2, and only 2, inputs are true.
-	- write the result of this calculation to the digital output.
- - simulate this on your laptop
-	- use the built-in display to change digital inputs and see digital outputs
- - time permitting
-	- deploy to real robot and run.
- - extra credit....
-	- add 4150 library files to project
-	- create a network tables helper
-	- create getters for all 3 digital inputs, and the digital output
-	- modify your init routine to initialize the network tables helper
-	- modify your execute method to trigger updating network tables.
-	- test these changes with a real dashboard..
-
-	
+########################
+Week 3
+########################
 
  
